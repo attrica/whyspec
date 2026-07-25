@@ -737,9 +737,59 @@ role. An absent attribution **MUST** be read as *unrecorded*. It **MUST NOT** be
 the record; `decided` names who chose among the alternatives; `ratified` names who accepted it
 through a review process.
 
-**[REC-116]** A `ratified` attribution is what promotes a record from `captured` to `authored`
-(§5.3). Provenance **MUST NOT** be promoted on the basis of a filename, a heading form, or any
-other naming convention.
+**[REC-116]** Where a record carries an `## Attribution` section, ratification governs its
+provenance tier and the kind-based assignment of [PROV-005]/[PROV-006] **MUST NOT** be applied.
+Where a record carries no attribution, the kind-based assignment applies unchanged.
+
+**[REC-118]** A ratification is **self-ratification** when the same actor also carries the role
+`drafted` or `decided` on that record. Self-ratification **MUST** be marked, **MUST NOT** promote
+provenance, and **MUST NOT** be discarded.
+
+**[REC-119]** A ratification alone **MUST NOT** promote a record to `authored`. Promotion
+**MUST** additionally require **corroboration** — evidence, external to the record, that the named
+actor accepted it and was entitled to. An implementation unable to corroborate **MUST** mark the
+ratification *uncorroborated*, **MUST NOT** promote, and **MUST** leave the record at `captured`.
+
+**[REC-120]** Neither a self-ratification nor an uncorroborated ratification **MUST** be
+discarded. Each records that someone asserted acceptance, which is information about the record
+even when it is not evidence for its tier.
+
+This specification does not define what corroboration consists of; that depends on where a corpus
+lives. A review approval recorded by a hosting platform, a signature, or an attestation from a
+system that observed the acceptance would each serve. What the format fixes is that **the
+assertion alone is never sufficient**.
+
+The reason is the standing one: this format records *who claimed what*, and never adjudicates
+whether a claim is true. "X ratified this" is a claim about the world. The format can carry it
+faithfully; it cannot settle it, and a format that treated the assertion as the fact would be
+doing exactly the detection it refuses to do everywhere else.
+
+**[REC-118] exists because the mechanism it constrains is one this specification introduced.**
+Before ratification existed, the top tier was reached by typing an `# ADR-` heading — trivially
+assertable, but *transparently a convention*, and read as one. A line reading `ratified
+human:me` is equally assertable and looks like a record of verification. A claim that appears
+verified while resting on nothing is more dangerous than one that is visibly conventional, so
+adding the mechanism without the constraint would have been a regression wearing the appearance
+of rigour.
+
+Self-ratification is worth singling out because it is the one abuse checkable **from the record
+alone**: it requires no external data, no inference, and no classifier — only the observation
+that one identifier appears in two roles. It is the four-eyes principle, and it is the only part
+of entitlement the format can enforce by itself.
+
+Declining to promote is **not** enforcement in the sense the fences bound. The record is still
+ingested, still queryable, still intent, and still counted among the golden tiers, because
+`captured` is itself a trusted class ([PROV-010]). Nothing a person wants to do is blocked. The
+system simply declines to assert something it cannot support — and the fence against blocking
+governs whether a control obstructs a user, not whether an implementation must believe every
+claim made to it. The distinction matters because the fence's own reasoning turns on
+*heuristics* having false positives, while [REC-118] is structural and has none.
+
+A consequence worth stating plainly: in a corpus with no independent reviewer — a single
+maintainer, or an agent working alone — no record reaches `authored`, and that is the correct
+outcome rather than a penalty. `authored` means a review process accepted the record. Where no
+such process exists, claiming the tier would be false, and the honest tier is `captured`, which
+already counts as trusted evidence.
 
 **[REC-117]** Each attribution **MUST** carry its own provenance (§5.5) and **MAY** carry a date.
 Where a date is present it **MUST** be a full ISO-8601 calendar date.
@@ -939,9 +989,28 @@ any numeric confidence the secondary key. An implementation **MUST NOT** allow a
 
 ### 5.3 Assignment
 
-**[PROV-005]** An ADR record ([REC-009]) **MUST** yield `authored` intent.
+**[PROV-005]** An ADR record ([REC-009]) carrying no `## Attribution` section **MUST** yield
+`authored` intent.
 
-**[PROV-006]** A decision record ([REC-009]) **MUST** yield `captured` intent.
+**[PROV-006]** A decision record ([REC-009]) carrying no `## Attribution` section **MUST** yield
+`captured` intent.
+
+**[PROV-021]** Where a record carries an `## Attribution` section, its tier **MUST** be
+determined by ratification ([REC-116], [REC-119]) and **MUST NOT** be determined by record kind.
+A record with attribution but no corroborated ratification **MUST** be `captured`, whatever its
+heading form.
+
+[PROV-005] and [PROV-006] are retained for records that predate attribution, and they are a
+**compatibility affordance rather than an endorsement**. An `# ADR-` heading is a *convention*
+signalling that a review happened; it is not a record of one, and nothing about it is verifiable.
+Existing corpora keep their tiers and need no migration, while any record that states its
+attribution is judged on what it states.
+
+The direction of the override matters. Explicit attribution is stronger evidence than a naming
+convention, so where both are present the explicit form governs — including when it results in a
+*lower* tier than the heading alone would have given. An ADR-headed record whose only
+ratification is self-asserted is `captured`, and it should be: the heading claims a review the
+record's own attribution shows did not independently occur.
 
 **[PROV-007]** An assumption node **SHOULD** inherit the provenance tier of the record that
 declared it.
@@ -1582,8 +1651,11 @@ Every normative rule, with its one-line statement.
 | REC-113 | Supersession MUST be applied transitively along a chain. |
 | REC-114 | A record in a supersession cycle MUST be reported as indeterminate, never resolved by tiebreak. |
 | REC-115 | The roles `drafted`, `decided` and `ratified` are distinct and MUST NOT be conflated. |
-| REC-116 | A `ratified` attribution promotes a record from `captured` to `authored`; naming conventions MUST NOT. |
+| REC-116 | Attribution governs tier when present; kind-based assignment applies only when absent. |
 | REC-117 | Each attribution carries its own provenance and MAY carry an ISO-8601 date. |
+| REC-118 | A ratification by an actor who also drafted or decided is self-ratification: marked, never promoting. |
+| REC-119 | A ratification alone MUST NOT promote; promotion requires corroboration external to the record. |
+| REC-120 | Self-ratifications and uncorroborated ratifications MUST be retained, never discarded. |
 
 #### Provenance
 
@@ -1609,6 +1681,7 @@ Every normative rule, with its one-line statement.
 | PROV-018 | Foreclosure intent MUST NOT count toward a trusted-evidence metric at any tier. |
 | PROV-019 | A result containing intent MUST expose disposition so consumers can partition it. |
 | PROV-020 | A consumer MUST NOT present foreclosure intent as what the team does. |
+| PROV-021 | Where attribution is present, tier is determined by ratification and never by record kind. |
 
 #### Envelope
 
