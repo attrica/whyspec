@@ -356,34 +356,61 @@ them beyond [REC-032].
 > field is interpreted, and is therefore the one change in this revision that requires a version
 > marker and a migration note under [VER-001]. Every other addition here is additive.
 
-**[REC-101]** A status **MUST** be classified as **settled** or **unsettled**. `accepted` and
-`superseded` are settled. `proposed`, `draft`, and `rejected` are unsettled. A status outside
-this set **MUST** be classified unsettled.
+Status carries **two independent properties**, and collapsing them onto one axis is what makes
+`rejected` look like an unfinished thought rather than the most settled state a record can reach.
 
-**[REC-102]** Only a record with a **settled** status **MUST** yield ground-truth intent.
+**[REC-101]** A status **MUST** determine a **deliberation state** — `open` or `resolved` — and,
+when resolved, a **disposition** — `adopted` or `declined`:
 
-**[REC-103]** A record with an **unsettled** status other than `rejected` **MUST** still be
-ingested, **MUST** be marked as unsettled on the resulting intent, and **MUST NOT** be counted
-toward any trusted-evidence metric ([PROV-010]).
+| Status | Deliberation | Disposition | Yields |
+|---|---|---|---|
+| `draft` | open | — | provisional intent, marked open |
+| `proposed` | open | — | provisional intent, marked open |
+| `accepted` | resolved | adopted | ground-truth intent |
+| `rejected` | resolved | **declined** | **foreclosure intent** |
 
-**[REC-104]** A record whose status is `rejected` **MUST NOT** yield intent of any tier, per
-[REC-032], and this **MUST** hold at every layer that produces intent — not only at corpus
-ingest.
+A status outside this set **MUST** be treated as `open` with no disposition.
 
-The problem being fixed is that a record marked `proposed` currently becomes intent
-indistinguishable from a settled decision, at full confidence, and is counted as ground truth.
-Deliberation-in-progress and a decision therefore look identical to any consumer, which is
-precisely the confusion the provenance axis exists to prevent — applied to settledness instead
-of to source.
+**[REC-102]** Only a status that is **resolved** *and* **adopted** **MUST** yield ground-truth
+intent.
 
-[REC-103] deliberately keeps unsettled records *visible*. Excluding them entirely would hide
-what a team is actively considering, which is useful and often urgent information; the fix is to
-mark them, not to suppress them. Deciding whether something is settled is the author's act, and
-the format's job is to carry that decision faithfully rather than to infer it.
+**[REC-103]** A record whose deliberation is `open` **MUST** be ingested, **MUST** be marked
+open on the resulting intent, and **MUST NOT** be counted toward any trusted-evidence metric
+([PROV-010]).
 
-[REC-104] closes a layering gap: the `rejected` exclusion is currently enforced where a
-directory of records is ingested, so a consumer converting a single record to intent by another
-path bypasses it entirely.
+**[REC-104]** A record whose disposition is `declined` **MUST** yield **foreclosure intent**: it
+**MUST** be retained and queryable, **MUST NOT** be counted toward any trusted-evidence metric,
+and **MUST NOT** be presented as something the authoring team does. A consumer **MUST** be able
+to distinguish *decided against* from *never considered*.
+
+**[REC-108]** `superseded` **MUST NOT** be a status. A record is superseded when, and only when,
+another record declares a `supersedes` relation naming it (§4.16). Currency **MUST** be derived
+from the relation graph, never authored on the record itself.
+
+The `proposed` problem this replaces is real: such a record currently becomes intent
+indistinguishable from a decision, at full confidence, counted as ground truth. Marking it open
+rather than suppressing it keeps what a team is actively considering visible, which is often the
+most urgent information in a corpus.
+
+[REC-104] is the larger correction. A declined decision presently disappears from the graph
+entirely, which makes the question that most reliably prevents wasted work — *have we already
+considered and declined this?* — unanswerable for exactly the decisions where someone took the
+trouble to record the refusal. The asymmetry runs backwards: a rejected *alternative* inside an
+adopted record survives as prose, while a deliberately written rejection is deleted. The format
+keeps the weakly recorded foreclosures and discards the strong ones.
+
+Three states of a proposition must remain distinguishable: *we decided to*, *we decided not to*,
+and *we never considered it*. Collapsing the second into the third discards knowledge that was
+explicitly written down. The earlier instinct — that a rejection must never be read as a
+commitment — is correct and is preserved by [REC-104]'s presentation rule; the error was
+implementing it as deletion.
+
+[REC-108] removes a second source of truth. A status field asserting `superseded` and a
+`supersedes` edge asserting the same thing will drift the moment an author writes a superseding
+record without revisiting the record it replaces, and nothing can then determine which is
+correct. Deriving currency keeps one authority. It also matches how version control already
+works: a reverted commit is not flagged, it is referenced by the commit that reverts it, and
+whether its effect is current is computed from the history rather than stored on it.
 
 ### 4.7 Assumptions
 
@@ -1440,6 +1467,7 @@ Every normative rule, with its one-line statement.
 | REC-105 | A supersession reference that resolves to more than one candidate record MUST be dropped, exactly as [REC-044] drops a…. |
 | REC-106 | A filename MUST NOT be treated as carrying an ADR number when the four-digit run is part of a date. |
 | REC-107 | A parser MUST yield the Context body as a question field on the parsed record, and it MUST reach the intent node. |
+| REC-108 | `superseded` MUST NOT be a status; currency is derived from an incoming `supersedes` relation. |
 
 #### Provenance
 
