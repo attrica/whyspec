@@ -6,5 +6,5 @@
   "existing_file_context": "How do we parse dates?",
   "input": {"chosen": "Adopt library X", "question": "How do we parse dates?", "today": "2026-07-25"},
   "expected_output": "docs/decisions/adopt-library-x.md",
-  "note": "Verified against record_filename() on v0.8.3: the legacy file is returned unchanged because its Context matches the new question exactly."
+  "note": "Verified against record_filename(): the legacy file is returned unchanged because its Context matches the new question exactly."
 }

@@ -8,5 +8,5 @@
   "expected_output": "docs/decisions/2026-07-25-how-do-we-parse-dates.md",
   "wrong_output_a_non_conformant_implementation_might_return": "docs/decisions/adopt-library-x.md",
   "reason": "The legacy filename is keyed on the CHOSEN text ('Adopt library X'), which collides across unrelated decisions. Matching on filename alone (ignoring recorded Context) would silently overwrite the earlier, unrelated 'How do we log errors?' record -- the exact data-loss bug the dated scheme replaced.",
-  "note": "Verified against record_filename() on v0.8.3: a fresh dated file is created; the legacy file is left untouched."
+  "note": "Verified against record_filename(): a fresh dated file is created; the legacy file is left untouched."
 }

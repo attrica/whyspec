@@ -4,5 +4,5 @@
   "input_text": "One reviewed taxonomy document mapping existing error classes and their owners",
   "max_len": 60,
   "expected_slug": "one-reviewed-taxonomy-document-mapping-existing-error",
-  "note": "Verified against whyfile.passes.capture.slugify() on v0.8.3. Length 55, well under 60, cut lands after the word 'error' not mid-word."
+  "note": "Verified against whyfile.passes.capture.slugify(). Length 55, well under 60, cut lands after the word 'error' not mid-word."
 }

@@ -8,5 +8,5 @@
     {"provenance": "bogus-unrecognised-value"}
   ],
   "expected": "all four nodes rank equal to the reconstructed tier",
-  "note": "Verified: provenance_rank(None) == provenance_rank('') == provenance_rank('bogus') == provenance_rank('reconstructed') == 3 on v0.8.3."
+  "note": "Verified: provenance_rank(None) == provenance_rank('') == provenance_rank('bogus') == provenance_rank('reconstructed') == 3."
 }

@@ -33,5 +33,5 @@
     "intent_d",
     "intent_a"
   ],
-  "note": "Verified by execution: sorting on (provenance_rank, -confidence_score) at v0.8.3 yields this order. intent_b (authored, 0.10) leads intent_a (reconstructed, 0.99); intent_c precedes intent_d on confidence within `captured`."
+  "note": "Verified by execution: sorting on (provenance_rank, -confidence_score) yields this order. intent_b (authored, 0.10) leads intent_a (reconstructed, 0.99); intent_c precedes intent_d on confidence within `captured`."
 }

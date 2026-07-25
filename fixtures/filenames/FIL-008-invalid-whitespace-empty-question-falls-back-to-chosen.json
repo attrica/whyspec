@@ -13,6 +13,6 @@
     "today": "2026-07-25"
   },
   "expected_output": "docs/decisions/2026-07-25-adopt-library-x.md",
-  "engine_divergence": "This IS what the reference implementation produces at v0.8.3 (`slugify(question.strip() or chosen)`), and it is NOT what the specification requires. The fixture records the observed behaviour as the counter-example so the divergence is executable rather than prose-only. A conformant implementation MUST produce `2026-07-25-decision.md`.",
+  "engine_divergence": "This IS what the reference implementation produces (`slugify(question.strip() or chosen)`), and it is NOT what the specification requires. The fixture records the observed behaviour as the counter-example so the divergence is executable rather than prose-only. A conformant implementation MUST produce `2026-07-25-decision.md`.",
   "note": "Verified by execution. Divergence, not a conformance target."
 }

@@ -26,5 +26,5 @@
       "why": "single word longer than the bound; the only permitted mid-word cut"
     }
   ],
-  "note": "Verified by execution against slugify() at v0.8.3."
+  "note": "Verified by execution against slugify()."
 }

@@ -40,5 +40,5 @@
       "reconstructed": 3
     }
   },
-  "note": "Verified by execution against golden_fraction() at v0.8.3. Note the absent-provenance node is counted under `reconstructed`, never promoted."
+  "note": "Verified by execution against golden_fraction(). Note the absent-provenance node is counted under `reconstructed`, never promoted."
 }

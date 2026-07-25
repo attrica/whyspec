@@ -5,5 +5,5 @@
   "existing_files": ["2026-01-10-run-canary-rollout.md"],
   "input": {"chosen": "Unrelated pick", "question": "run canary rollout", "today": "2026-07-25"},
   "expected_output": "docs/decisions/2026-01-10-run-canary-rollout.md",
-  "note": "Verified against record_filename() on v0.8.3."
+  "note": "Verified against record_filename()."
 }

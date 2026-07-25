@@ -8,5 +8,5 @@
   "question": "",
   "today": "2026-07-25",
   "expected_filename": "2026-07-25-keep-the-window.md",
-  "note": "An EMPTY question against a legacy record whose `## Context` section exists but is EMPTY. REC-066 says an empty question matches a recorded context of `(none recorded)` AND ONLY THAT, so this MUST NOT match and a fresh dated record MUST be minted. DIVERGENCE: v0.8.3 compares whitespace-normalized strings first, so empty == empty matches and the legacy file IS claimed. The `expect` below states the SPEC-required outcome."
+  "note": "An EMPTY question against a legacy record whose `## Context` section exists but is EMPTY. REC-066 says an empty question matches a recorded context of `(none recorded)` AND ONLY THAT, so this MUST NOT match and a fresh dated record MUST be minted. DIVERGENCE: the reference implementation compares whitespace-normalized strings first, so empty == empty matches and the legacy file IS claimed. The `expect` below states the SPEC-required outcome."
 }

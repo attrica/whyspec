@@ -16,6 +16,6 @@
     "today": "2026-07-25"
   },
   "expected_output": "docs/decisions/adopt-library-x.md",
-  "engine_divergence": "The reference implementation at v0.8.3 matches this heading with a case-sensitive, level-2-only pattern, so it does NOT claim the legacy file and mints `2026-07-25-how-do-we-parse-dates.md` instead (verified by execution for both `## context` and `### Context`). The direction is safe -- it forks rather than overwrites -- but idempotency silently breaks for any record whose heading a case-insensitive parser accepted on the read path.",
+  "engine_divergence": "The reference implementation matches this heading with a case-sensitive, level-2-only pattern, so it does NOT claim the legacy file and mints `2026-07-25-how-do-we-parse-dates.md` instead (verified by execution for both `## context` and `### Context`). The direction is safe -- it forks rather than overwrites -- but idempotency silently breaks for any record whose heading a case-insensitive parser accepted on the read path.",
   "note": "Divergence, flagged. The conformance target is the reuse shown above."
 }

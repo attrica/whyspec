@@ -13,5 +13,5 @@
     "today": "2026-07-25"
   },
   "expected_output": "docs/decisions/2026-07-25-decision.md",
-  "note": "Verified by execution: record_filename() at v0.8.3 with a punctuation-only question yields `2026-07-25-decision.md`."
+  "note": "Verified by execution: record_filename() with a punctuation-only question yields `2026-07-25-decision.md`."
 }

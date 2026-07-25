@@ -3,7 +3,7 @@
 This corpus exists so that an agent given **only** the Whyfile specification -- with no
 access to the reference implementation -- can build a record parser and envelope validator
 and mechanically check it against every normative rule below. Every fixture was verified
-against the reference implementation (whyfile v0.8.3) before being written here; none of
+against the reference implementation (whyfile the reference implementation) before being written here; none of
 this is copied from the project's own real decision records, which are excluded from a
 public spec repo on principle (invented, neutral example content only).
 

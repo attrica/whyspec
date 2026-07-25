@@ -15,5 +15,5 @@
     "by_provenance": {"authored": 1, "captured": 1, "attested": 1, "reconstructed": 2}
   },
   "expected_empty_input": {"golden_fraction_pct": 0},
-  "note": "Verified against whyfile.provenance.golden_fraction() on v0.8.3."
+  "note": "Verified against whyfile.provenance.golden_fraction()."
 }

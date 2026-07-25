@@ -21,5 +21,5 @@
     3,
     3
   ],
-  "note": "Verified by execution against provenance_rank() at v0.8.3. Every listed value returns the reconstructed rank."
+  "note": "Verified by execution against provenance_rank(). Every listed value returns the reconstructed rank."
 }

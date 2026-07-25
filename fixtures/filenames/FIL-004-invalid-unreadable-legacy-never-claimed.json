@@ -8,5 +8,5 @@
   "expected_output": "docs/decisions/2026-07-25-how-do-we-parse-dates.md",
   "wrong_output_a_non_conformant_implementation_might_return": "docs/decisions/adopt-library-x.md",
   "reason": "A file we cannot verify as recording the same (or any) decision is not ours to overwrite. Treating any file with a matching slug as a match risks clobbering a human's hand-written notes that happen to share a filename.",
-  "note": "Verified against record_filename() on v0.8.3."
+  "note": "Verified against record_filename()."
 }

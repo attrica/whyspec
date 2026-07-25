@@ -1,5 +1,5 @@
 {
-  "$schema_note": "Machine-readable fixture manifest for the Whyfile conformance corpus. Each entry: id, rule_id (the CORPUS rule number), spec_rule_ids (the rule ids in the normative spec that this fixture exercises -- corpus numbering is independent of the spec's, so reconcile through this field, never by matching numbers), family, rule_statement, valid, kind (record | record_dir | filename_scenario | vector | envelope), path (relative to this manifest's directory), verdict_kind, expect, notes. THE VERDICT LIVES IN `verdict_kind` + `expect` AND NOWHERE ELSE: a harness must be able to decide every fixture without reading `notes` or any other prose. `valid` alone is not a verdict -- it does not distinguish 'must not parse at all' from 'is the counter-example for this rule'. verdict_kind values: `parse_rejects` (the input must not parse as a record at all); `field_expectation` (it parses, and `expect` names the required field values); `envelope_shape` (`expect` names `conformant`, the `command` tag, `required_keys`, `forbidden_keys`, and `constraints`, or for a counter-example the `violates` rule ids and the `failing_condition`); `vector` (`expect.compare_fields` names the fields in the fixture file that carry the expected output); `filename_scenario` (`expect.filename` is the destination the scenario must resolve to; on a counter-example `expect.conformant_filename` is what a conformant implementation produces instead). REC-family entries additionally carry `spec_rules`: the rule id(s) in the normative spec text that the fixture exercises -- the corpus's own `rule_id` numbering is INDEPENDENT of the spec's and collides with it in the REC-001..REC-011 range, so `spec_rules` is the only safe key to compute spec coverage from. `verdict_kind` is `parse_rejects` (the input must not parse as a record at all) or `field_expectation` (it parses; the fields in `expect` must hold), and `expect` states the required outcome field by field so a harness can decide every fixture without reading prose. `reference_conforms: false` plus `divergence` and `reference_actual` marks a fixture whose `expect` states the SPEC-required outcome that the v0.8.3 reference implementation does NOT currently produce. Additional `kind` values used by the REC family: render_scenario, slug_scenario, identity_scenario.",
+  "$schema_note": "Machine-readable fixture manifest for the Whyfile conformance corpus. Each entry: id, rule_id (the CORPUS rule number), spec_rule_ids (the rule ids in the normative spec that this fixture exercises -- corpus numbering is independent of the spec's, so reconcile through this field, never by matching numbers), family, rule_statement, valid, kind (record | record_dir | filename_scenario | vector | envelope), path (relative to this manifest's directory), verdict_kind, expect, notes. THE VERDICT LIVES IN `verdict_kind` + `expect` AND NOWHERE ELSE: a harness must be able to decide every fixture without reading `notes` or any other prose. `valid` alone is not a verdict -- it does not distinguish 'must not parse at all' from 'is the counter-example for this rule'. verdict_kind values: `parse_rejects` (the input must not parse as a record at all); `field_expectation` (it parses, and `expect` names the required field values); `envelope_shape` (`expect` names `conformant`, the `command` tag, `required_keys`, `forbidden_keys`, and `constraints`, or for a counter-example the `violates` rule ids and the `failing_condition`); `vector` (`expect.compare_fields` names the fields in the fixture file that carry the expected output); `filename_scenario` (`expect.filename` is the destination the scenario must resolve to; on a counter-example `expect.conformant_filename` is what a conformant implementation produces instead). REC-family entries additionally carry `spec_rules`: the rule id(s) in the normative spec text that the fixture exercises -- the corpus's own `rule_id` numbering is INDEPENDENT of the spec's and collides with it in the REC-001..REC-011 range, so `spec_rules` is the only safe key to compute spec coverage from. `verdict_kind` is `parse_rejects` (the input must not parse as a record at all) or `field_expectation` (it parses; the fields in `expect` must hold), and `expect` states the required outcome field by field so a harness can decide every fixture without reading prose. `reference_conforms: false` plus `divergence` and `reference_actual` marks a fixture whose `expect` states the SPEC-required outcome that the the reference implementation reference implementation does NOT currently produce. Additional `kind` values used by the REC family: render_scenario, slug_scenario, identity_scenario.",
   "rule_families": {
     "REC": "Record format -- what makes a markdown file a decision record, and how its fields parse.",
     "FIL": "Record filename scheme -- how a captured record's filename is chosen and matched over time. Renamed from VER after the two families collided; VER now means SPECIFICATION versioning and nothing else. In the normative spec these rules live under REC-056..REC-070.",
@@ -214,7 +214,7 @@
     {
       "rule_id": "ENV-002",
       "family": "ENV",
-      "statement": "The `why` command's envelope MUST carry {command, status, query, count, cutoff, score_stats, results}. It is NOT a closed key set: the reference implementation adds an eighth key, `note`, on the `topically_weak` status (verified by execution at v0.8.3), so a conformant validator MUST check for the required keys rather than assert an exact key set.",
+      "statement": "The `why` command's envelope MUST carry {command, status, query, count, cutoff, score_stats, results}. It is NOT a closed key set: the reference implementation adds an eighth key, `note`, on the `topically_weak` status (verified), so a conformant validator MUST check for the required keys rather than assert an exact key set.",
       "spec_rule_ids": [
         "ENV-013"
       ]
@@ -648,7 +648,7 @@
       "valid": false,
       "kind": "record",
       "path": "records/REC-001-invalid-no-record-h1.md",
-      "notes": "H1 is a generic heading matching neither prefix form. parse_adr() MUST return None (not a record), even though a `## Decision` section is present.",
+      "notes": "H1 is a generic heading matching neither prefix form. a conforming parser MUST reject the input as not a record, even though a `## Decision` section is present.",
       "verdict_kind": "parse_rejects",
       "expect": {
         "parses": false
@@ -672,7 +672,7 @@
       "valid": false,
       "kind": "record",
       "path": "records/REC-002-invalid-missing-decision-section.md",
-      "notes": "Valid ADR H1, but no `## Decision` heading anywhere. parse_adr() MUST return None.",
+      "notes": "Valid ADR H1, but no `## Decision` heading anywhere. a conforming parser MUST reject the input as not a record.",
       "verdict_kind": "parse_rejects",
       "expect": {
         "parses": false
@@ -721,7 +721,7 @@
       "valid": false,
       "kind": "record",
       "path": "records/REC-003-invalid-non-leading-bom-breaks-heading.md",
-      "notes": "A BOM sits immediately before the LATER '## Decision' heading (not the file's first character). It is NOT a leading BOM, so it is not stripped, and the stray character breaks the heading-line regex match for that heading. Net effect: no Decision section is found, so parse_adr() returns None -- this is the observable, testable signature of 'only a LEADING BOM is tolerated'.",
+      "notes": "A BOM sits immediately before the LATER '## Decision' heading (not the file's first character). It is NOT a leading BOM, so it is not stripped, and the stray character breaks the heading-line regex match for that heading. Net effect: no Decision section is found, so a conforming parser rejects the input -- this is the observable, testable signature of 'only a LEADING BOM is tolerated'.",
       "verdict_kind": "parse_rejects",
       "expect": {
         "parses": false
@@ -768,7 +768,7 @@
       "valid": false,
       "kind": "record",
       "path": "records/REC-005-invalid-nested-bullets-flatten-unexpectedly.md",
-      "notes": "Item 1 has two indented sub-bullets. A parser that treats them as elaboration of item 1 (producing 2 grouped alternatives) is WRONG. The conformant parser flattens ALL list markers regardless of indentation, producing 4 separate items: ['Single-page checkout.', 'Faster for returning customers.', 'Harder to A/B test individual steps.', 'Multi-step wizard checkout.']. Verified against ingest.parse_adr() on v0.8.3.",
+      "notes": "Item 1 has two indented sub-bullets. A parser that treats them as elaboration of item 1 (producing 2 grouped alternatives) is WRONG. The conformant parser flattens ALL list markers regardless of indentation, producing 4 separate items: ['Single-page checkout.', 'Faster for returning customers.', 'Harder to A/B test individual steps.', 'Multi-step wizard checkout.']. Verified against ingest.a conforming parser.",
       "verdict_kind": "field_expectation",
       "expect": {
         "parses": true,
@@ -890,7 +890,7 @@
       "valid": false,
       "kind": "record",
       "path": "records/REC-006-invalid-inline-status-wins-over-section.md",
-      "notes": "BOTH an inline '**Status:** Accepted' line AND a '## Status' section (body 'Proposed') are present, with DIFFERENT values. The correct status is 'accepted' (inline always wins). An implementation that reads the '## Status' section instead (or when both are present) would wrongly return 'proposed' -- that output MUST be rejected. Verified against ingest.parse_adr() on v0.8.3.",
+      "notes": "BOTH an inline '**Status:** Accepted' line AND a '## Status' section (body 'Proposed') are present, with DIFFERENT values. The correct status is 'accepted' (inline always wins). An implementation that reads the '## Status' section instead (or when both are present) would wrongly return 'proposed' -- that output MUST be rejected. Verified against ingest.a conforming parser.",
       "verdict_kind": "field_expectation",
       "expect": {
         "parses": true,
@@ -2089,7 +2089,7 @@
           }
         ]
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-007-invalid-top-level-array",
@@ -2113,7 +2113,7 @@
           "op": "is_array"
         }
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-008-valid-union-carries-only-its-own-variant-keys",
@@ -2148,7 +2148,7 @@
           "since"
         ]
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-008-invalid-struct-of-optionals-foreign-nulls",
@@ -2182,7 +2182,7 @@
         },
         "why_it_fails": "An explicit null means 'applicable here, value unavailable'. `filter` is not applicable to `why` at all, so it must be OMITTED, not nulled. Nulling every other command's keys is the one-struct-of-optionals model the union forbids."
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-009-valid-coverage-explain-variant",
@@ -2223,7 +2223,7 @@
           "present_means": "per-file explain variant"
         }
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-009-invalid-coverage-hybrid-both-shapes",
@@ -2254,7 +2254,7 @@
         },
         "why_it_fails": "The two `coverage` shapes are disjoint and share no key beyond command and status. An envelope carrying both makes the secondary discriminator undecidable."
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-010-valid-error-variant-no-variant-keys",
@@ -2288,7 +2288,7 @@
         ],
         "why_it_passes": "The error variant of every command is a legitimate shape with none of that command's variant keys. Absent `results`/`score_stats` is conformant here."
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-010-invalid-failure-envelope-omits-command",
@@ -2314,9 +2314,9 @@
           "path": "command",
           "op": "absent"
         },
-        "engine_divergence": "This is the shape four failure paths on the tool-call transport actually emit at v0.8.3 (the wrong-repository refusal). The specification keeps `command` a MUST and records the divergence; this fixture is the counter-example, NOT a conformance target."
+        "engine_divergence": "This is the shape four failure paths on the tool-call transport actually emit (the wrong-repository refusal). The specification keeps `command` a MUST and records the divergence; this fixture is the counter-example, NOT a conformance target."
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-011-valid-why-result-thirteen-fields",
@@ -2364,7 +2364,7 @@
           }
         ]
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-011-invalid-why-result-missing-distinctive-matches",
@@ -2389,7 +2389,7 @@
           "op": "absent"
         }
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-012-valid-alternatives-list-of-strings",
@@ -2422,7 +2422,7 @@
           }
         ]
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-012-invalid-alternatives-bare-string",
@@ -2448,7 +2448,7 @@
         },
         "why_it_fails": "A bare string is not a list. A consumer that iterates it walks the string character by character; a legacy scalar must be coerced to a one-element list before it is ever iterated."
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-013-valid-evidence-fields-well-formed",
@@ -2491,7 +2491,7 @@
           }
         ]
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-013-invalid-coverage-out-of-range-and-distinctive-not-a-subset",
@@ -2528,7 +2528,7 @@
           ]
         }
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-014-valid-topically-weak-above-cutoff",
@@ -2568,7 +2568,7 @@
         ],
         "why_it_passes": "`topically_weak` is an abstention ABOVE the cutoff: the top hit cleared the score threshold but its match evidence does not support treating it as an answer. A consumer must not read it as `ok`."
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-014-invalid-topically-weak-below-cutoff",
@@ -2594,7 +2594,7 @@
           "value_path": "cutoff"
         }
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-015-valid-weak-match-below-cutoff-with-margin",
@@ -2638,7 +2638,7 @@
           }
         ]
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-015-invalid-weak-match-above-cutoff",
@@ -2664,7 +2664,7 @@
           "value_path": "cutoff"
         }
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-016-valid-list-intent-entry-nine-fields",
@@ -2706,7 +2706,7 @@
           }
         ]
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-016-invalid-list-intent-entry-missing-confidence-score",
@@ -2731,7 +2731,7 @@
           "op": "absent"
         }
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-017-valid-explain-ambiguous-no-resolved",
@@ -2778,7 +2778,7 @@
           ]
         }
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-017-invalid-explain-ambiguous-auto-selected-resolved",
@@ -2805,7 +2805,7 @@
         },
         "why_it_fails": "Ambiguity is not a partial answer. Reporting `ambiguous` while also naming a `resolved` node silently picks one of the candidates for the consumer."
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-018-valid-intent-debt-explicit-nulls",
@@ -2860,7 +2860,7 @@
           }
         ]
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-018-invalid-intent-debt-uncomputable-reported-as-zero",
@@ -2889,7 +2889,7 @@
         },
         "why_it_fails": "A zero claims 'we measured and found none'. These two components are not computed at all, so an explicit null is the only honest report."
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-019-valid-capture-resolution-delta-explicit-null",
@@ -2943,7 +2943,7 @@
           }
         ]
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-019-invalid-capture-resolution-delta-omitted",
@@ -2973,7 +2973,7 @@
         },
         "why_it_fails": "This is the spec's deliberate exception to omitted-versus-null: the consumer is asking a yes/no question that a missing key cannot answer."
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-020-valid-changed-basename-ambiguity-reported",
@@ -3017,7 +3017,7 @@
           }
         ]
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-020-invalid-changed-basename-ambiguity-silently-resolved",
@@ -3058,7 +3058,7 @@
           ]
         }
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-021-valid-digest-four-keys",
@@ -3084,7 +3084,7 @@
           "superseded"
         ]
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-021-invalid-digest-missing-superseded",
@@ -3109,7 +3109,7 @@
           "op": "absent"
         }
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-022-valid-violation-cites-decision",
@@ -3144,7 +3144,7 @@
           }
         ]
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-022-invalid-violation-without-decision-citation",
@@ -3174,7 +3174,7 @@
         },
         "why_it_fails": "A rule whose failure cannot name the decision that motivated it is a lint, not a conformance check."
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-023-valid-transport-attaches-credential-block-as-null",
@@ -3213,7 +3213,7 @@
         ],
         "why_it_passes": "A transport that attaches a credential block must attach it unconditionally, with an explicit null when nothing resolved -- a key that is sometimes absent is unusable as a fail-closed signal. On the command-line surface the same envelope MUST NOT carry this key at all."
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-023-invalid-transport-key-collides-with-variant-key",
@@ -3242,7 +3242,7 @@
         },
         "why_it_fails": "The transport has overwritten `count`, a key the specification assigns to the `list-intent` variant, with credential data. A transport-attached key must never collide with a spec-assigned variant key."
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-024-valid-honest-negative-status-is-a-complete-answer",
@@ -3288,7 +3288,7 @@
         ],
         "why_it_passes": "`no_strong_match` is an honest negative -- 'I looked and there is nothing' -- and a complete answer, not an error. All the variant keys are still present and populated."
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "ENV-024-invalid-foreign-command-status-token",
@@ -3323,7 +3323,7 @@
         },
         "why_it_fails": "`no_changes` is a `digest` token. Status tokens are per-command, not global; a consumer enumerating `why`'s statuses must treat this as a failure."
       },
-      "notes": "Shape derived from an envelope captured by running the reference implementation at v0.8.3; prose content replaced with neutral invented text."
+      "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
     {
       "id": "PROV-005-valid-unrecognised-tier-ranks-as-reconstructed",
@@ -3344,7 +3344,7 @@
           "expected_rank"
         ]
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "PROV-005-invalid-unrecognised-tier-promoted",
@@ -3369,7 +3369,7 @@
           "PROV-001"
         ]
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "PROV-006-valid-provenance-primary-confidence-secondary",
@@ -3390,7 +3390,7 @@
           "expected_order"
         ]
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "PROV-006-invalid-confidence-outranks-provenance",
@@ -3414,7 +3414,7 @@
           "PROV-004"
         ]
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "PROV-007-valid-record-intent-confidence-is-one",
@@ -3436,7 +3436,7 @@
           "expected_decision_record_fields"
         ]
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "PROV-007-invalid-record-intent-scored-below-one",
@@ -3460,7 +3460,7 @@
           "PROV-008"
         ]
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "PROV-008-valid-blended-metric-reports-per-tier-breakdown",
@@ -3482,7 +3482,7 @@
           "expected_output"
         ]
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "PROV-008-invalid-bare-scalar-without-breakdown",
@@ -3507,7 +3507,7 @@
           "PROV-012"
         ]
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "FIL-008-valid-empty-slug-becomes-literal-decision",
@@ -3529,7 +3529,7 @@
         ],
         "filename": "2026-07-25-decision.md"
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "FIL-008-invalid-whitespace-empty-question-falls-back-to-chosen",
@@ -3556,7 +3556,7 @@
         ],
         "conformant_filename": "2026-07-25-decision.md"
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "FIL-009-valid-slug-bound-and-first-word-hard-cut",
@@ -3578,7 +3578,7 @@
           "cases"
         ]
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "FIL-009-invalid-slug-exceeds-bound",
@@ -3604,7 +3604,7 @@
           "REC-061"
         ]
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "FIL-010-valid-empty-question-matches-none-recorded",
@@ -3627,7 +3627,7 @@
         ],
         "filename": "adopt-library-x.md"
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "FIL-010-invalid-empty-question-claims-a-real-context",
@@ -3655,7 +3655,7 @@
         ],
         "conformant_filename": "2026-07-25-adopt-library-x.md"
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "FIL-011-valid-legacy-context-heading-matched-case-insensitively",
@@ -3679,9 +3679,9 @@
         "filename": "adopt-library-x.md",
         "engine_diverges": true,
         "engine_filename": "2026-07-25-how-do-we-parse-dates.md",
-        "divergence": "The reference implementation at v0.8.3 matches the legacy `## Context` heading with a case-sensitive, level-2-only pattern, so it does not claim the legacy file and mints a fresh dated name instead. `expect.filename` is the specification's requirement; `expect.engine_filename` is the observed behaviour. A harness run against the reference implementation MUST expect engine_filename and record the divergence -- it MUST NOT rewrite the conformance target to match."
+        "divergence": "The reference implementation matches the legacy `## Context` heading with a case-sensitive, level-2-only pattern, so it does not claim the legacy file and mints a fresh dated name instead. `expect.filename` is the specification's requirement; `expect.engine_filename` is the observed behaviour. A harness run against the reference implementation MUST expect engine_filename and record the divergence -- it MUST NOT rewrite the conformance target to match."
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "FIL-011-invalid-legacy-claimed-without-reading-context",
@@ -3708,7 +3708,7 @@
         ],
         "conformant_filename": "2026-07-25-how-do-we-parse-dates.md"
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "VER-001-valid-absence-stays-absent",
@@ -3729,7 +3729,7 @@
           "expect"
         ]
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "VER-001-invalid-absence-inferred-into-a-claim",
@@ -3754,7 +3754,7 @@
           "VER-006"
         ]
       },
-      "notes": "Verified by execution against the reference implementation at v0.8.3; see the fixture's own `note` field for the exact call."
+      "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
     {
       "id": "spec-REC-002-valid-utf8-non-ascii-body",
@@ -3810,7 +3810,7 @@
       "valid": false,
       "kind": "record",
       "path": "records/spec-REC-004-invalid-hash-without-space-is-not-a-heading.md",
-      "notes": "The would-be H1 is `#Decision: ...` with NO whitespace after the `#`, so it does not match the heading grammar and is not a heading at all. With no matching H1 the document is not a record and parse_adr() MUST return None -- even though a well-formed `## Decision` section is present.",
+      "notes": "The would-be H1 is `#Decision: ...` with NO whitespace after the `#`, so it does not match the heading grammar and is not a heading at all. With no matching H1 the document is not a record and a conforming parser MUST reject the input as not a record -- even though a well-formed `## Decision` section is present.",
       "verdict_kind": "parse_rejects",
       "expect": {
         "parses": false
@@ -4033,7 +4033,7 @@
       "valid": false,
       "kind": "record",
       "path": "records/spec-REC-012-invalid-adr-without-separator-is-not-a-record.md",
-      "notes": "`# ADR-0031 Adopt a single retry budget` -- digits followed by whitespace and a title, with NO separator. This is not an ADR heading, so the document is not a record and parse_adr() MUST return None. An implementation treating whitespace as an implicit separator would wrongly ingest it.",
+      "notes": "`# ADR-0031 Adopt a single retry budget` -- digits followed by whitespace and a title, with NO separator. This is not an ADR heading, so the document is not a record and a conforming parser MUST reject the input as not a record. An implementation treating whitespace as an implicit separator would wrongly ingest it.",
       "verdict_kind": "parse_rejects",
       "expect": {
         "parses": false
@@ -4118,7 +4118,7 @@
       "valid": false,
       "kind": "record",
       "path": "records/spec-REC-016-invalid-empty-title-is-not-a-record.md",
-      "notes": "The H1 matches the Decision grammar but its title reduces to the empty string. The document MUST NOT be treated as a record: parse_adr() returns None. An implementation that accepts an empty title mints a node whose label and identity are empty.",
+      "notes": "The H1 matches the Decision grammar but its title reduces to the empty string. The document MUST NOT be treated as a record: a conforming parser rejects the input. An implementation that accepts an empty title mints a node whose label and identity are empty.",
       "verdict_kind": "parse_rejects",
       "expect": {
         "parses": false
@@ -4158,7 +4158,7 @@
       "valid": false,
       "kind": "record",
       "path": "records/spec-REC-019-invalid-duplicate-alternatives-first-wins.md",
-      "notes": "Two `## Alternatives considered` sections. Per REC-019 the FIRST wins, so alternatives MUST be the 3-item list. DIVERGENCE: the v0.8.3 reference implementation applies first-wins ONLY to `Decision` (guarded by `rationale is None`); for `Alternatives`, `Recommendation`, `Assumptions` and `Status` the loop overwrites, so the LAST occurrence wins and the reference yields 1 alternative here. The `expect` below states the SPEC-required outcome.",
+      "notes": "Two `## Alternatives considered` sections. Per REC-019 the FIRST wins, so alternatives MUST be the 3-item list. DIVERGENCE: the the reference implementation reference implementation applies first-wins ONLY to `Decision` (guarded by `rationale is None`); for `Alternatives`, `Recommendation`, `Assumptions` and `Status` the loop overwrites, so the LAST occurrence wins and the reference yields 1 alternative here. The `expect` below states the SPEC-required outcome.",
       "verdict_kind": "field_expectation",
       "expect": {
         "parses": true,
@@ -4178,7 +4178,7 @@
         "engine_recommendation": null,
         "engine_supersedes": [],
         "engine_assumptions": 0,
-        "divergence": "REC-019 first-wins is implemented for `Decision` only; Alternatives, Recommendation, Assumptions and Status are last-wins in v0.8.3. Reference actual for this fixture: alternatives == ['One pool per thread.'] (1 item). `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed at v0.8.3. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
+        "divergence": "REC-019 first-wins is implemented for `Decision` only; Alternatives, Recommendation, Assumptions and Status are last-wins in the reference implementation. Reference actual for this fixture: alternatives == ['One pool per thread.'] (1 item). `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
       },
       "spec_rule_ids": [
         "REC-019"
@@ -4802,7 +4802,7 @@
       "valid": true,
       "kind": "render_scenario",
       "path": "rendering/spec-REC-051-valid-empty-rationale-renders-chosen.json",
-      "notes": "The rationale is empty, so the `## Decision` body is the CHOSEN option. A record must never be emitted without a Decision body: parse_adr() returns None when the Decision section is empty, so an emitter that leaves it blank writes a file that is not a record (REC-008) and the write path and read path stop agreeing.",
+      "notes": "The rationale is empty, so the `## Decision` body is the CHOSEN option. A record must never be emitted without a Decision body: a conforming parser rejects the input when the Decision section is empty, so an emitter that leaves it blank writes a file that is not a record (REC-008) and the write path and read path stop agreeing.",
       "verdict_kind": "field_expectation",
       "expect": {
         "output": "# Decision: Keep the current scheduler\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nShould the scheduler change?\n\n## Decision\n\nKeep the current scheduler\n\n## Alternatives considered\n\n1. Keep the current scheduler\n2. Rewrite it\n",
@@ -5008,13 +5008,13 @@
       "valid": false,
       "kind": "filename_scenario",
       "path": "filenames/spec-REC-066-invalid-empty-question-must-not-match-an-empty-context.json",
-      "notes": "An EMPTY question against a legacy record whose `## Context` section exists but is EMPTY. REC-066 says an empty question matches a recorded context of `(none recorded)` AND ONLY THAT, so this MUST NOT match and a fresh dated record MUST be minted. DIVERGENCE: v0.8.3 compares whitespace-normalized strings first, so empty == empty matches and the legacy file IS claimed. The `expect` below states the SPEC-required outcome.",
+      "notes": "An EMPTY question against a legacy record whose `## Context` section exists but is EMPTY. REC-066 says an empty question matches a recorded context of `(none recorded)` AND ONLY THAT, so this MUST NOT match and a fresh dated record MUST be minted. DIVERGENCE: the reference implementation compares whitespace-normalized strings first, so empty == empty matches and the legacy file IS claimed. The `expect` below states the SPEC-required outcome.",
       "verdict_kind": "field_expectation",
       "expect": {
         "filename": "2026-07-25-keep-the-window.md",
         "engine_diverges": true,
         "engine_filename": "keep-the-window.md",
-        "divergence": "REC-066's 'and only that' is not enforced: an empty recorded Context also matches an empty question, because the equality test runs before the `(none recorded)` special case. `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed at v0.8.3. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
+        "divergence": "REC-066's 'and only that' is not enforced: an empty recorded Context also matches an empty question, because the equality test runs before the `(none recorded)` special case. `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
       },
       "spec_rule_ids": [
         "REC-066"
@@ -5368,14 +5368,14 @@
       "valid": false,
       "kind": "identity_scenario",
       "path": "identity/spec-REC-074-invalid-canonicalization-must-not-raise.json",
-      "notes": "A path containing a NUL byte. REC-074 states canonicalization MUST NOT raise, so a conformant implementation returns SOME string (or declines the path through its normal absent-value channel) rather than propagating an exception. DIVERGENCE: v0.8.3 propagates ValueError('embedded null byte') from the underlying path resolution. Path spellings arrive from tool-call arguments and configuration, so this is a reachable trust boundary, not a theoretical one. The `expect` below states the SPEC-required outcome.",
+      "notes": "A path containing a NUL byte. REC-074 states canonicalization MUST NOT raise, so a conformant implementation returns SOME string (or declines the path through its normal absent-value channel) rather than propagating an exception. DIVERGENCE: the reference implementation propagates ValueError('embedded null byte') from the underlying path resolution. Path spellings arrive from tool-call arguments and configuration, so this is a reachable trust boundary, not a theoretical one. The `expect` below states the SPEC-required outcome.",
       "verdict_kind": "field_expectation",
       "expect": {
         "raised": false,
         "engine_diverges": true,
         "engine_raised": true,
         "engine_exception": "ValueError",
-        "divergence": "REC-074's 'MUST NOT raise' is not honoured: a NUL byte in an absolute path propagates ValueError out of canonical_source_path(). `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed at v0.8.3. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
+        "divergence": "REC-074's 'MUST NOT raise' is not honoured: a NUL byte in an absolute path propagates ValueError out of canonical_source_path(). `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
       },
       "spec_rule_ids": [
         "REC-074"
@@ -5388,7 +5388,7 @@
       "valid": false,
       "kind": "record_bytes",
       "path": "records/spec-REC-002-invalid-not-utf8.md",
-      "notes": "The file contains the bytes 0xFF 0xFE, which begin no valid UTF-8 sequence, so it is not a UTF-8 document and therefore not a conformant record. Read this fixture as RAW BYTES, not as text. DIVERGENCE: the v0.8.3 reference reads record files with `encoding='utf-8-sig', errors='replace'`, so the undecodable bytes become U+FFFD and the file is ingested as a record whose rationale silently differs from the bytes on disk. The `expect` below states the SPEC-required outcome.",
+      "notes": "The file contains the bytes 0xFF 0xFE, which begin no valid UTF-8 sequence, so it is not a UTF-8 document and therefore not a conformant record. Read this fixture as RAW BYTES, not as text. DIVERGENCE: the the reference implementation reference reads record files with `encoding='utf-8-sig', errors='replace'`, so the undecodable bytes become U+FFFD and the file is ingested as a record whose rationale silently differs from the bytes on disk. The `expect` below states the SPEC-required outcome.",
       "verdict_kind": "parse_rejects",
       "expect": {
         "is_valid_utf8": false,
@@ -5397,7 +5397,7 @@
         "engine_is_valid_utf8": false,
         "engine_conformant_record": true,
         "engine_note": "ingest_dir() ingests the file with replacement characters in the rationale",
-        "divergence": "REC-002 has no reject branch in v0.8.3: undecodable bytes are replaced with U+FFFD rather than the file being rejected as a non-conformant record. `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed at v0.8.3. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
+        "divergence": "REC-002 has no reject branch in the reference implementation: undecodable bytes are replaced with U+FFFD rather than the file being rejected as a non-conformant record. `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
       },
       "spec_rule_ids": [
         "REC-002"
@@ -5592,13 +5592,13 @@
       "valid": false,
       "kind": "filename_scenario",
       "path": "filenames/spec-REC-069-invalid-empty-question-must-not-fall-back-to-the-chosen-slug.json",
-      "notes": "An empty records directory and an EMPTY question. The question slug of an empty string is the literal `decision` (REC-062), so REC-069 requires `2026-07-25-decision.md`. DIVERGENCE: v0.8.3 substitutes the CHOSEN option for an empty question before slugging (`slugify(question.strip() or chosen)`) and emits `2026-07-25-keep-the-window.md` -- a chosen-derived filename, which is precisely the collision class REC-056 exists to kill. Two captures with no question that happen to choose the same words would land on the same file. The spec does not describe this fallback at all: either REC-069 must state it, or the implementation must drop it.",
+      "notes": "An empty records directory and an EMPTY question. The question slug of an empty string is the literal `decision` (REC-062), so REC-069 requires `2026-07-25-decision.md`. DIVERGENCE: the reference implementation substitutes the CHOSEN option for an empty question before slugging (`slugify(question.strip() or chosen)`) and emits `2026-07-25-keep-the-window.md` -- a chosen-derived filename, which is precisely the collision class REC-056 exists to kill. Two captures with no question that happen to choose the same words would land on the same file. The spec does not describe this fallback at all: either REC-069 must state it, or the implementation must drop it.",
       "verdict_kind": "field_expectation",
       "expect": {
         "filename": "2026-07-25-decision.md",
         "engine_diverges": true,
         "engine_filename": "2026-07-25-keep-the-window.md",
-        "divergence": "REC-069 has an undocumented empty-question fallback: the destination slug is derived from the CHOSEN option, not the question, whenever the question is empty. `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed at v0.8.3. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
+        "divergence": "REC-069 has an undocumented empty-question fallback: the destination slug is derived from the CHOSEN option, not the question, whenever the question is empty. `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
       }
     }
   ]

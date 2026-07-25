@@ -17,5 +17,5 @@
     "confidence_score": 1.0,
     "provenance": "captured"
   },
-  "note": "Verified by execution: record_to_node() at v0.8.3 sets confidence_score=1.0 for both record kinds, and the kind decides only the tier."
+  "note": "Verified by execution: the reference implementation sets confidence_score=1.0 for both record kinds, and the kind decides only the tier."
 }

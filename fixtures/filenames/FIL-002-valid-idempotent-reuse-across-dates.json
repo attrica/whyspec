@@ -5,5 +5,5 @@
   "existing_files": ["2020-01-01-how-do-we-parse-dates.md"],
   "input": {"chosen": "Adopt library X", "question": "How do we parse dates?", "today": "2026-07-25"},
   "expected_output": "docs/decisions/2020-01-01-how-do-we-parse-dates.md",
-  "note": "Verified against record_filename() on v0.8.3: the pre-existing 2020-01-01 file is returned unchanged, not a new 2026-07-25 file."
+  "note": "Verified against record_filename(): the pre-existing 2020-01-01 file is returned unchanged, not a new 2026-07-25 file."
 }

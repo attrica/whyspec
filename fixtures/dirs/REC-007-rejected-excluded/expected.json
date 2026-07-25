@@ -13,5 +13,5 @@
     "wrong_decision_count_a_non_conformant_implementation_might_return": 2,
     "reason": "0002-rejected.md's status normalises to 'rejected' (see REC-006). Including it promotes an explicitly-not-chosen option to ground truth."
   },
-  "note": "Verified against whyfile.passes.ingest.ingest_dir() on v0.8.3: ingesting this directory yields exactly 1 node, status='accepted'."
+  "note": "Verified against whyfile.passes.ingest.ingest_dir(): ingesting this directory yields exactly 1 node, status='accepted'."
 }

@@ -20,5 +20,5 @@
     ],
     "alternatives": []
   },
-  "note": "Verified by execution: parse_adr() + record_to_node() at v0.8.3 emit a node with neither a `status` nor a `resolution_delta` key."
+  "note": "Verified by execution: the reference implementation emit a node with neither a `status` nor a `resolution_delta` key."
 }

@@ -7,5 +7,5 @@
   "expected_output": "docs/decisions/2026-07-25-queue.md",
   "wrong_output_an_unanchored_star_glob_would_return": "docs/decisions/2026-01-10-how-should-the-team-pick-a-message-queue.md",
   "reason": "`*-queue.md` matches '...-message-queue.md' because it ends in '-queue.md'; the two are unrelated decisions ('queue?' vs 'how should the team pick a message queue?'). Reusing the older file would silently overwrite it -- the regression this glob-anchoring rule exists to prevent.",
-  "note": "Verified against record_filename() on v0.8.3: the correct output is a brand-new file, NOT the longer-slug file."
+  "note": "Verified against record_filename(): the correct output is a brand-new file, NOT the longer-slug file."
 }

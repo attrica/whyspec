@@ -5,5 +5,5 @@
   "existing_files": ["2026-01-10-queue.md"],
   "input": {"chosen": "Unrelated pick", "question": "queue?", "today": "2026-07-25"},
   "expected_output": "docs/decisions/2026-01-10-queue.md",
-  "note": "Verified against record_filename() on v0.8.3."
+  "note": "Verified against record_filename()."
 }

@@ -3,5 +3,5 @@
   "statement": "Valid provenance tier values are exactly {authored, captured, attested, reconstructed}; trust ranking, most to least trusted, is authored < captured < attested < reconstructed (lower rank integer = more trusted).",
   "input": ["authored", "captured", "attested", "reconstructed"],
   "expected_rank": [0, 1, 2, 3],
-  "note": "Verified against whyfile.provenance.provenance_rank() / PROVENANCE_TIERS on v0.8.3."
+  "note": "Verified against whyfile.provenance.provenance_rank() / PROVENANCE_TIERS."
 }

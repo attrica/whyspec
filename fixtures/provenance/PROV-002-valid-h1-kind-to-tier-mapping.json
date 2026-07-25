@@ -5,5 +5,5 @@
     {"h1_form": "ADR", "record_fixture": "records/REC-001-valid-adr-h1.md", "expected_provenance": "authored"},
     {"h1_form": "Decision", "record_fixture": "records/REC-001-valid-decision-h1.md", "expected_provenance": "captured"}
   ],
-  "note": "Verified by running both fixtures through ingest.parse_adr + ingest.record_to_node on v0.8.3."
+  "note": "Verified by running both fixtures through ingest.the reference implementation."
 }
