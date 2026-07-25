@@ -1,7 +1,7 @@
 {
-  "rule": "VER-006",
+  "rule": "FIL-006",
   "statement": "The digit-CLASS-anchored glob must also beat a `?`-positional pattern (`????-??-??-<qslug>.md`), which matches ANY character, not only digits. Positive control: the anchored pattern still correctly matches a genuinely dated file.",
-  "scenario_dir": "dirs/VER-006-valid-real-dated-prefix",
+  "scenario_dir": "dirs/FIL-006-valid-real-dated-prefix",
   "existing_files": ["2026-01-10-run-canary-rollout.md"],
   "input": {"chosen": "Unrelated pick", "question": "run canary rollout", "today": "2026-07-25"},
   "expected_output": "docs/decisions/2026-01-10-run-canary-rollout.md",

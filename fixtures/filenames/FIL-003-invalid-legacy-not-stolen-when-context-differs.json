@@ -1,7 +1,7 @@
 {
-  "rule": "VER-003",
+  "rule": "FIL-003",
   "statement": "A legacy file whose `## Context` records a DIFFERENT question than the one being captured MUST NOT be reused, even though its chosen-derived filename slug is identical.",
-  "scenario_dir": "dirs/VER-003-invalid-legacy-not-stolen",
+  "scenario_dir": "dirs/FIL-003-invalid-legacy-not-stolen",
   "existing_files": ["adopt-library-x.md"],
   "existing_file_context": "How do we log errors?",
   "input": {"chosen": "Adopt library X", "question": "How do we parse dates?", "today": "2026-07-25"},

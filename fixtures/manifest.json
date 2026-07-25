@@ -2,7 +2,7 @@
   "$schema_note": "Machine-readable fixture manifest for the Whyfile conformance corpus (B2). Each entry: id, rule_id (family+number, independent numbering from the normative spec text -- reconcile by rule_statement, not by id), family, rule_statement (one-line natural-language restatement of the rule), valid (true = this fixture demonstrates conformant behaviour a correct implementation MUST produce; false = this fixture demonstrates a MUST-reject / MUST-NOT-produce case), kind (record | record_dir | filename_scenario | vector | envelope), path (relative to this manifest's directory), notes (what specifically must be accepted/rejected and why).",
   "rule_families": {
     "REC": "Record format -- what makes a markdown file a decision record, and how its fields parse.",
-    "VER": "Versioning / filename scheme -- how a captured record's filename is chosen and matched over time.",
+    "FIL": "Versioning / filename scheme -- how a captured record's filename is chosen and matched over time.",
     "PROV": "Provenance -- the trust-tier vocabulary and how it ranks/aggregates.",
     "ENV": "Result envelope -- the per-command JSON shape returned by the CLI."
   },
@@ -63,38 +63,38 @@
       "statement": "Supersession is recorded ONLY for the ACTIVE phrasing `supersedes ADR-<digits>` found anywhere in the record text. The passive phrasing `superseded by ADR-<digits>` MUST NOT be captured as an outgoing `supersedes` reference."
     },
     {
-      "rule_id": "VER-001",
-      "family": "VER",
+      "rule_id": "FIL-001",
+      "family": "FIL",
       "statement": "A brand-new captured record is named `YYYY-MM-DD-<question-slug>.md`. The slug MUST derive from the QUESTION text, never from the chosen option."
     },
     {
-      "rule_id": "VER-002",
-      "family": "VER",
+      "rule_id": "FIL-002",
+      "family": "FIL",
       "statement": "Re-capturing the SAME question on a later date MUST reuse the existing dated record file (whatever its own date), never create a second one. Reuse requires a well-formed 4-2-2 all-digit date prefix; a malformed prefix does not count as an existing dated record."
     },
     {
-      "rule_id": "VER-003",
-      "family": "VER",
+      "rule_id": "FIL-003",
+      "family": "FIL",
       "statement": "A pre-dated-scheme (legacy) filename `<chosen-slug>.md` is reused ONLY when the file's recorded `## Context` body matches the new question (whitespace/case-normalised). A legacy file recording a DIFFERENT question, even with an identical chosen-derived filename, MUST NOT be reused/overwritten."
     },
     {
-      "rule_id": "VER-004",
-      "family": "VER",
+      "rule_id": "FIL-004",
+      "family": "FIL",
       "statement": "A legacy-named file that cannot be recognised as a decision record at all (no parseable `## Context` section) MUST NEVER be treated as a match, regardless of filename."
     },
     {
-      "rule_id": "VER-005",
-      "family": "VER",
+      "rule_id": "FIL-005",
+      "family": "FIL",
       "statement": "The lookup for an existing dated record MUST use a digit-CLASS-anchored glob (`[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-<qslug>.md`), never an unanchored `*`-prefixed pattern -- `*` can match a short question's slug as a mere suffix of an unrelated, longer, older record's slug."
     },
     {
-      "rule_id": "VER-006",
-      "family": "VER",
+      "rule_id": "FIL-006",
+      "family": "FIL",
       "statement": "The digit-CLASS-anchored glob must also beat a `?`-positional pattern (`????-??-??-<qslug>.md`): `?` matches ANY character, not only digits, so it can mistake a legacy undated filename for a dated one when the legacy slug happens to be 'date-shaped' in its first 11 characters."
     },
     {
-      "rule_id": "VER-007",
-      "family": "VER",
+      "rule_id": "FIL-007",
+      "family": "FIL",
       "statement": "A new-scheme (question-derived) slug longer than 60 characters is truncated at a WORD boundary, never mid-word. (The separate LEGACY slug function intentionally hard-cuts at exactly 60 chars and must never be changed to match -- it exists only to reproduce old filenames byte-for-byte.)"
     },
     {
@@ -157,7 +157,18 @@
       "valid": true,
       "kind": "record",
       "path": "records/REC-001-valid-adr-h1.md",
-      "notes": "Cross-references REC-001-valid-adr-h1.md, which has a '## Decision' section and therefore parses. No separate file needed: any record that parses at all is positive evidence for REC-002."
+      "notes": "Cross-references REC-001-valid-adr-h1.md, which has a '## Decision' section and therefore parses. No separate file needed: any record that parses at all is positive evidence for REC-002.",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": null,
+        "kind": "adr",
+        "title": "Use a shared cache layer",
+        "alternatives": 2,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-005-valid-flat-numbered-list",
@@ -167,7 +178,18 @@
       "valid": true,
       "kind": "record",
       "path": "records/REC-001-valid-adr-h1.md",
-      "notes": "Cross-references REC-001-valid-adr-h1.md: a clean flat numbered '## Alternatives considered' list, parsing to exactly 2 items."
+      "notes": "Cross-references REC-001-valid-adr-h1.md: a clean flat numbered '## Alternatives considered' list, parsing to exactly 2 items.",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": null,
+        "kind": "adr",
+        "title": "Use a shared cache layer",
+        "alternatives": 2,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-009-valid-adr-prefix-stripped",
@@ -177,7 +199,18 @@
       "valid": true,
       "kind": "record",
       "path": "records/REC-001-valid-adr-h1.md",
-      "notes": "Cross-references REC-001-valid-adr-h1.md: H1 is '# ADR-0042 \u2014 Use a shared cache layer'; parsed title is 'Use a shared cache layer' (prefix + separator stripped). No meaningful invalid fixture: prefix-stripping is a deterministic string transform with no reject branch -- see report item (d)."
+      "notes": "Cross-references REC-001-valid-adr-h1.md: H1 is '# ADR-0042 — Use a shared cache layer'; parsed title is 'Use a shared cache layer' (prefix + separator stripped). No meaningful invalid fixture: prefix-stripping is a deterministic string transform with no reject branch -- see report item (d).",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": null,
+        "kind": "adr",
+        "title": "Use a shared cache layer",
+        "alternatives": 2,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-001-valid-adr-h1",
@@ -187,7 +220,18 @@
       "valid": true,
       "kind": "record",
       "path": "records/REC-001-valid-adr-h1.md",
-      "notes": "Parses; title='Use a shared cache layer', kind='adr', provenance='authored'. Also the positive fixture for REC-002 (has a Decision section), REC-005 (flat numbered alternatives), and REC-009 (ADR-NNNN prefix stripped from title)."
+      "notes": "Parses; title='Use a shared cache layer', kind='adr', provenance='authored'. Also the positive fixture for REC-002 (has a Decision section), REC-005 (flat numbered alternatives), and REC-009 (ADR-NNNN prefix stripped from title).",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": null,
+        "kind": "adr",
+        "title": "Use a shared cache layer",
+        "alternatives": 2,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-001-valid-decision-h1",
@@ -197,7 +241,18 @@
       "valid": true,
       "kind": "record",
       "path": "records/REC-001-valid-decision-h1.md",
-      "notes": "Parses; title='Store session tokens in the encrypted cookie', kind='decision', provenance='captured'."
+      "notes": "Parses; title='Store session tokens in the encrypted cookie', kind='decision', provenance='captured'.",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": "resolved",
+        "kind": "decision",
+        "title": "Store session tokens in the encrypted cookie",
+        "alternatives": 2,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-001-invalid-no-record-h1",
@@ -207,7 +262,11 @@
       "valid": false,
       "kind": "record",
       "path": "records/REC-001-invalid-no-record-h1.md",
-      "notes": "H1 is a generic heading matching neither prefix form. parse_adr() MUST return None (not a record), even though a `## Decision` section is present."
+      "notes": "H1 is a generic heading matching neither prefix form. parse_adr() MUST return None (not a record), even though a `## Decision` section is present.",
+      "verdict_kind": "parse_rejects",
+      "expect": {
+        "parses": false
+      }
     },
     {
       "id": "REC-002-invalid-missing-decision-section",
@@ -217,7 +276,11 @@
       "valid": false,
       "kind": "record",
       "path": "records/REC-002-invalid-missing-decision-section.md",
-      "notes": "Valid ADR H1, but no `## Decision` heading anywhere. parse_adr() MUST return None."
+      "notes": "Valid ADR H1, but no `## Decision` heading anywhere. parse_adr() MUST return None.",
+      "verdict_kind": "parse_rejects",
+      "expect": {
+        "parses": false
+      }
     },
     {
       "id": "REC-003-valid-leading-bom",
@@ -227,7 +290,18 @@
       "valid": true,
       "kind": "record",
       "path": "records/REC-003-valid-leading-bom.md",
-      "notes": "File's very first byte is a UTF-8 BOM (U+FEFF) directly before '# ADR-0044'. MUST parse identically to the same file without the BOM: title='Pin the lockfile in CI'."
+      "notes": "File's very first byte is a UTF-8 BOM (U+FEFF) directly before '# ADR-0044'. MUST parse identically to the same file without the BOM: title='Pin the lockfile in CI'.",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": null,
+        "kind": "adr",
+        "title": "Pin the lockfile in CI",
+        "alternatives": 1,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-003-invalid-non-leading-bom-breaks-heading",
@@ -237,7 +311,11 @@
       "valid": false,
       "kind": "record",
       "path": "records/REC-003-invalid-non-leading-bom-breaks-heading.md",
-      "notes": "A BOM sits immediately before the LATER '## Decision' heading (not the file's first character). It is NOT a leading BOM, so it is not stripped, and the stray character breaks the heading-line regex match for that heading. Net effect: no Decision section is found, so parse_adr() returns None -- this is the observable, testable signature of 'only a LEADING BOM is tolerated'."
+      "notes": "A BOM sits immediately before the LATER '## Decision' heading (not the file's first character). It is NOT a leading BOM, so it is not stripped, and the stray character breaks the heading-line regex match for that heading. Net effect: no Decision section is found, so parse_adr() returns None -- this is the observable, testable signature of 'only a LEADING BOM is tolerated'.",
+      "verdict_kind": "parse_rejects",
+      "expect": {
+        "parses": false
+      }
     },
     {
       "id": "REC-004-valid-no-alternatives-section",
@@ -247,7 +325,18 @@
       "valid": true,
       "kind": "record",
       "path": "records/REC-004-valid-no-alternatives-section.md",
-      "notes": "No 'Alternatives considered' section at all. MUST still parse as a valid record, with alternatives == []."
+      "notes": "No 'Alternatives considered' section at all. MUST still parse as a valid record, with alternatives == [].",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": null,
+        "kind": "adr",
+        "title": "Expose health checks on /healthz",
+        "alternatives": 0,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-005-invalid-nested-bullets-flatten-unexpectedly",
@@ -257,7 +346,18 @@
       "valid": false,
       "kind": "record",
       "path": "records/REC-005-invalid-nested-bullets-flatten-unexpectedly.md",
-      "notes": "Item 1 has two indented sub-bullets. A parser that treats them as elaboration of item 1 (producing 2 grouped alternatives) is WRONG. The conformant parser flattens ALL list markers regardless of indentation, producing 4 separate items: ['Single-page checkout.', 'Faster for returning customers.', 'Harder to A/B test individual steps.', 'Multi-step wizard checkout.']. Verified against ingest.parse_adr() on v0.8.3."
+      "notes": "Item 1 has two indented sub-bullets. A parser that treats them as elaboration of item 1 (producing 2 grouped alternatives) is WRONG. The conformant parser flattens ALL list markers regardless of indentation, producing 4 separate items: ['Single-page checkout.', 'Faster for returning customers.', 'Harder to A/B test individual steps.', 'Multi-step wizard checkout.']. Verified against ingest.parse_adr() on v0.8.3.",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": null,
+        "kind": "adr",
+        "title": "Pick a checkout flow",
+        "alternatives": 4,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-006-valid-inline-status",
@@ -267,7 +367,18 @@
       "valid": true,
       "kind": "record",
       "path": "records/REC-006-valid-inline-status.md",
-      "notes": "Only an inline '**Status:** Accepted' line. status == 'accepted'."
+      "notes": "Only an inline '**Status:** Accepted' line. status == 'accepted'.",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": "accepted",
+        "kind": "adr",
+        "title": "Serve the docs site from a CDN",
+        "alternatives": 1,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-006-valid-status-section-heading",
@@ -277,7 +388,18 @@
       "valid": true,
       "kind": "record",
       "path": "records/REC-006-valid-status-section-heading.md",
-      "notes": "Only a '## Status' section (body 'Proposed'), no inline Status line. status == 'proposed' (the fallback form)."
+      "notes": "Only a '## Status' section (body 'Proposed'), no inline Status line. status == 'proposed' (the fallback form).",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": "proposed",
+        "kind": "adr",
+        "title": "Move config to environment variables",
+        "alternatives": 0,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-006-valid-status-with-trailing-clause",
@@ -287,7 +409,18 @@
       "valid": true,
       "kind": "record",
       "path": "records/REC-006-valid-status-with-trailing-clause.md",
-      "notes": "Inline '**Status:** Rejected in favor of ADR-0049' -- normalises to the first lowercase word only: status == 'rejected', dropping the trailing clause."
+      "notes": "Inline '**Status:** Rejected in favor of ADR-0049' -- normalises to the first lowercase word only: status == 'rejected', dropping the trailing clause.",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": "rejected",
+        "kind": "adr",
+        "title": "Rename the export CLI flag",
+        "alternatives": 1,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-006-invalid-inline-status-wins-over-section",
@@ -297,7 +430,18 @@
       "valid": false,
       "kind": "record",
       "path": "records/REC-006-invalid-inline-status-wins-over-section.md",
-      "notes": "BOTH an inline '**Status:** Accepted' line AND a '## Status' section (body 'Proposed') are present, with DIFFERENT values. The correct status is 'accepted' (inline always wins). An implementation that reads the '## Status' section instead (or when both are present) would wrongly return 'proposed' -- that output MUST be rejected. Verified against ingest.parse_adr() on v0.8.3."
+      "notes": "BOTH an inline '**Status:** Accepted' line AND a '## Status' section (body 'Proposed') are present, with DIFFERENT values. The correct status is 'accepted' (inline always wins). An implementation that reads the '## Status' section instead (or when both are present) would wrongly return 'proposed' -- that output MUST be rejected. Verified against ingest.parse_adr() on v0.8.3.",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": "accepted",
+        "kind": "adr",
+        "title": "Cache DNS lookups client-side",
+        "alternatives": 0,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-007-valid-rejected-excluded",
@@ -327,7 +471,18 @@
       "valid": true,
       "kind": "record",
       "path": "records/REC-008-valid-assumptions-review-by-and-expiry.md",
-      "notes": "Two assumptions: one with '(review by 2026-12-01)', one with '(expires: traffic exceeds 50 req/s)'. Both clauses are stripped from the claim text into separate fields."
+      "notes": "Two assumptions: one with '(review by 2026-12-01)', one with '(expires: traffic exceeds 50 req/s)'. Both clauses are stripped from the claim text into separate fields.",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": null,
+        "kind": "adr",
+        "title": "Back the search index with the vendor's hosted service",
+        "alternatives": 0,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 2
+      }
     },
     {
       "id": "REC-008-invalid-malformed-review-by-date-not-extracted",
@@ -337,7 +492,18 @@
       "valid": false,
       "kind": "record",
       "path": "records/REC-008-invalid-malformed-review-by-date-not-extracted.md",
-      "notes": "Assumption carries '(review by 12/01/2026)' -- NOT the required YYYY-MM-DD form. The conformant parser leaves this un-extracted: no `review_by` key, and the parenthetical stays embedded in the claim text verbatim. An implementation that extracts '12/01/2026' as review_by (or silently reformats it) is non-conformant."
+      "notes": "Assumption carries '(review by 12/01/2026)' -- NOT the required YYYY-MM-DD form. The conformant parser leaves this un-extracted: no `review_by` key, and the parenthetical stays embedded in the claim text verbatim. An implementation that extracts '12/01/2026' as review_by (or silently reformats it) is non-conformant.",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": null,
+        "kind": "adr",
+        "title": "Rely on the CDN's default TLS certificate",
+        "alternatives": 0,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 1
+      }
     },
     {
       "id": "REC-010-valid-recommendation-differs-resolution-delta",
@@ -347,7 +513,18 @@
       "valid": true,
       "kind": "record",
       "path": "records/REC-010-valid-recommendation-differs-resolution-delta.md",
-      "notes": "Chosen ('Use SQLite') differs from the '## Recommendation' text ('Use Postgres locally...'). MUST produce resolution_delta == {'recommended': 'Use Postgres locally, for parity with the hosted environment.', 'chosen': 'Use SQLite'}."
+      "notes": "Chosen ('Use SQLite') differs from the '## Recommendation' text ('Use Postgres locally...'). MUST produce resolution_delta == {'recommended': 'Use Postgres locally, for parity with the hosted environment.', 'chosen': 'Use SQLite'}.",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": "resolved",
+        "kind": "decision",
+        "title": "Use SQLite",
+        "alternatives": 2,
+        "recommendation": "Use Postgres locally, for parity with the hosted environment.",
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-010-invalid-recommendation-equals-chosen-no-delta",
@@ -357,7 +534,18 @@
       "valid": false,
       "kind": "record",
       "path": "records/REC-010-invalid-recommendation-equals-chosen-no-delta.md",
-      "notes": "'## Recommendation' text is textually identical to the chosen title ('Use SQLite'). resolution_delta MUST be entirely absent from the node. An implementation that still emits a (redundant, recommended==chosen) resolution_delta is non-conformant -- it would fabricate a calibration gap that does not exist."
+      "notes": "'## Recommendation' text is textually identical to the chosen title ('Use SQLite'). resolution_delta MUST be entirely absent from the node. An implementation that still emits a (redundant, recommended==chosen) resolution_delta is non-conformant -- it would fabricate a calibration gap that does not exist.",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": "resolved",
+        "kind": "decision",
+        "title": "Use SQLite",
+        "alternatives": 2,
+        "recommendation": "Use SQLite",
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-011-valid-active-supersedes",
@@ -367,7 +555,20 @@
       "valid": true,
       "kind": "record",
       "path": "records/REC-011-valid-active-supersedes.md",
-      "notes": "Text contains both 'This supersedes ADR-0031' (active) and 'it is superseded by ADR-0090' (passive). MUST yield supersedes == ['ADR-0031'] only."
+      "notes": "Text contains both 'This supersedes ADR-0031' (active) and 'it is superseded by ADR-0090' (passive). MUST yield supersedes == ['ADR-0031'] only.",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": null,
+        "kind": "adr",
+        "title": "Replace the polling sync loop with webhooks",
+        "alternatives": 0,
+        "recommendation": null,
+        "supersedes": [
+          "ADR-0031"
+        ],
+        "assumptions": 0
+      }
     },
     {
       "id": "REC-011-invalid-passive-superseded-by-is-not-active-supersession",
@@ -377,134 +578,145 @@
       "valid": false,
       "kind": "record",
       "path": "records/REC-011-invalid-passive-superseded-by-is-not-active-supersession.md",
-      "notes": "Text contains ONLY the passive phrasing 'is superseded by ADR-0056'. supersedes MUST be []. An implementation that also matches the passive form (yielding supersedes == ['ADR-0056']) is non-conformant -- it would record this record as superseding the very ADR that superseded it."
+      "notes": "Text contains ONLY the passive phrasing 'is superseded by ADR-0056'. supersedes MUST be []. An implementation that also matches the passive form (yielding supersedes == ['ADR-0056']) is non-conformant -- it would record this record as superseding the very ADR that superseded it.",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": null,
+        "kind": "adr",
+        "title": "An older approach",
+        "alternatives": 0,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 0
+      }
     },
     {
-      "id": "VER-001-valid-new-dated-from-question",
-      "rule_id": "VER-001",
-      "family": "VER",
+      "id": "FIL-001-valid-new-dated-from-question",
+      "rule_id": "FIL-001",
+      "family": "FIL",
       "rule_statement": "A brand-new captured record is named `YYYY-MM-DD-<question-slug>.md`. The slug MUST derive from the QUESTION text, never from the chosen option.",
       "valid": true,
       "kind": "filename_scenario",
-      "path": "filenames/VER-001-valid-new-dated-from-question.json"
+      "path": "filenames/FIL-001-valid-new-dated-from-question.json"
     },
     {
-      "id": "VER-001-invalid-slug-from-chosen-not-question",
-      "rule_id": "VER-001",
-      "family": "VER",
+      "id": "FIL-001-invalid-slug-from-chosen-not-question",
+      "rule_id": "FIL-001",
+      "family": "FIL",
       "rule_statement": "A brand-new captured record is named `YYYY-MM-DD-<question-slug>.md`. The slug MUST derive from the QUESTION text, never from the chosen option.",
       "valid": false,
       "kind": "filename_scenario",
-      "path": "filenames/VER-001-invalid-slug-from-chosen-not-question.json"
+      "path": "filenames/FIL-001-invalid-slug-from-chosen-not-question.json"
     },
     {
-      "id": "VER-002-valid-idempotent-reuse-across-dates",
-      "rule_id": "VER-002",
-      "family": "VER",
+      "id": "FIL-002-valid-idempotent-reuse-across-dates",
+      "rule_id": "FIL-002",
+      "family": "FIL",
       "rule_statement": "Re-capturing the SAME question on a later date MUST reuse the existing dated record file (whatever its own date), never create a second one. Reuse requires a well-formed 4-2-2 all-digit date prefix; a malformed prefix does not count as an existing dated record.",
       "valid": true,
       "kind": "filename_scenario",
-      "path": "filenames/VER-002-valid-idempotent-reuse-across-dates.json"
+      "path": "filenames/FIL-002-valid-idempotent-reuse-across-dates.json"
     },
     {
-      "id": "VER-002-invalid-malformed-date-prefix-not-reused",
-      "rule_id": "VER-002",
-      "family": "VER",
+      "id": "FIL-002-invalid-malformed-date-prefix-not-reused",
+      "rule_id": "FIL-002",
+      "family": "FIL",
       "rule_statement": "Re-capturing the SAME question on a later date MUST reuse the existing dated record file (whatever its own date), never create a second one. Reuse requires a well-formed 4-2-2 all-digit date prefix; a malformed prefix does not count as an existing dated record.",
       "valid": false,
       "kind": "filename_scenario",
-      "path": "filenames/VER-002-invalid-malformed-date-prefix-not-reused.json"
+      "path": "filenames/FIL-002-invalid-malformed-date-prefix-not-reused.json"
     },
     {
-      "id": "VER-003-valid-legacy-reused-when-context-matches",
-      "rule_id": "VER-003",
-      "family": "VER",
+      "id": "FIL-003-valid-legacy-reused-when-context-matches",
+      "rule_id": "FIL-003",
+      "family": "FIL",
       "rule_statement": "A pre-dated-scheme (legacy) filename `<chosen-slug>.md` is reused ONLY when the file's recorded `## Context` body matches the new question (whitespace/case-normalised). A legacy file recording a DIFFERENT question, even with an identical chosen-derived filename, MUST NOT be reused/overwritten.",
       "valid": true,
       "kind": "filename_scenario",
-      "path": "filenames/VER-003-valid-legacy-reused-when-context-matches.json"
+      "path": "filenames/FIL-003-valid-legacy-reused-when-context-matches.json"
     },
     {
-      "id": "VER-003-invalid-legacy-not-stolen-when-context-differs",
-      "rule_id": "VER-003",
-      "family": "VER",
+      "id": "FIL-003-invalid-legacy-not-stolen-when-context-differs",
+      "rule_id": "FIL-003",
+      "family": "FIL",
       "rule_statement": "A pre-dated-scheme (legacy) filename `<chosen-slug>.md` is reused ONLY when the file's recorded `## Context` body matches the new question (whitespace/case-normalised). A legacy file recording a DIFFERENT question, even with an identical chosen-derived filename, MUST NOT be reused/overwritten.",
       "valid": false,
       "kind": "filename_scenario",
-      "path": "filenames/VER-003-invalid-legacy-not-stolen-when-context-differs.json"
+      "path": "filenames/FIL-003-invalid-legacy-not-stolen-when-context-differs.json"
     },
     {
-      "id": "VER-004-valid-legacy-resolution-shares-VER-003",
-      "rule_id": "VER-004",
-      "family": "VER",
+      "id": "FIL-004-valid-legacy-resolution-shares-FIL-003",
+      "rule_id": "FIL-004",
+      "family": "FIL",
       "rule_statement": "A legacy-named file that cannot be recognised as a decision record at all (no parseable `## Context` section) MUST NEVER be treated as a match, regardless of filename.",
       "valid": true,
       "kind": "filename_scenario",
-      "path": "filenames/VER-003-valid-legacy-reused-when-context-matches.json",
-      "notes": "VER-004 is the reject-branch of the SAME legacy-resolution mechanism VER-003 exercises; there is no separate 'positive unreadable-file' case to construct (a positive case IS just VER-003's valid scenario). Cross-referenced here rather than duplicated."
+      "path": "filenames/FIL-003-valid-legacy-reused-when-context-matches.json",
+      "notes": "FIL-004 is the reject-branch of the SAME legacy-resolution mechanism FIL-003 exercises; there is no separate 'positive unreadable-file' case to construct (a positive case IS just FIL-003's valid scenario). Cross-referenced here rather than duplicated."
     },
     {
-      "id": "VER-004-invalid-unreadable-legacy-never-claimed",
-      "rule_id": "VER-004",
-      "family": "VER",
+      "id": "FIL-004-invalid-unreadable-legacy-never-claimed",
+      "rule_id": "FIL-004",
+      "family": "FIL",
       "rule_statement": "A legacy-named file that cannot be recognised as a decision record at all (no parseable `## Context` section) MUST NEVER be treated as a match, regardless of filename.",
       "valid": false,
       "kind": "filename_scenario",
-      "path": "filenames/VER-004-invalid-unreadable-legacy-never-claimed.json"
+      "path": "filenames/FIL-004-invalid-unreadable-legacy-never-claimed.json"
     },
     {
-      "id": "VER-005-valid-anchored-glob-matches-own-file",
-      "rule_id": "VER-005",
-      "family": "VER",
+      "id": "FIL-005-valid-anchored-glob-matches-own-file",
+      "rule_id": "FIL-005",
+      "family": "FIL",
       "rule_statement": "The lookup for an existing dated record MUST use a digit-CLASS-anchored glob (`[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-<qslug>.md`), never an unanchored `*`-prefixed pattern -- `*` can match a short question's slug as a mere suffix of an unrelated, longer, older record's slug.",
       "valid": true,
       "kind": "filename_scenario",
-      "path": "filenames/VER-005-valid-anchored-glob-matches-own-file.json"
+      "path": "filenames/FIL-005-valid-anchored-glob-matches-own-file.json"
     },
     {
-      "id": "VER-005-invalid-unanchored-star-glob-suffix-collision",
-      "rule_id": "VER-005",
-      "family": "VER",
+      "id": "FIL-005-invalid-unanchored-star-glob-suffix-collision",
+      "rule_id": "FIL-005",
+      "family": "FIL",
       "rule_statement": "The lookup for an existing dated record MUST use a digit-CLASS-anchored glob (`[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-<qslug>.md`), never an unanchored `*`-prefixed pattern -- `*` can match a short question's slug as a mere suffix of an unrelated, longer, older record's slug.",
       "valid": false,
       "kind": "filename_scenario",
-      "path": "filenames/VER-005-invalid-unanchored-star-glob-suffix-collision.json"
+      "path": "filenames/FIL-005-invalid-unanchored-star-glob-suffix-collision.json"
     },
     {
-      "id": "VER-006-valid-anchored-glob-real-dated-prefix",
-      "rule_id": "VER-006",
-      "family": "VER",
+      "id": "FIL-006-valid-anchored-glob-real-dated-prefix",
+      "rule_id": "FIL-006",
+      "family": "FIL",
       "rule_statement": "The digit-CLASS-anchored glob must also beat a `?`-positional pattern (`????-??-??-<qslug>.md`): `?` matches ANY character, not only digits, so it can mistake a legacy undated filename for a dated one when the legacy slug happens to be 'date-shaped' in its first 11 characters.",
       "valid": true,
       "kind": "filename_scenario",
-      "path": "filenames/VER-006-valid-anchored-glob-real-dated-prefix.json"
+      "path": "filenames/FIL-006-valid-anchored-glob-real-dated-prefix.json"
     },
     {
-      "id": "VER-006-invalid-question-glob-digit-costume-collision",
-      "rule_id": "VER-006",
-      "family": "VER",
+      "id": "FIL-006-invalid-question-glob-digit-costume-collision",
+      "rule_id": "FIL-006",
+      "family": "FIL",
       "rule_statement": "The digit-CLASS-anchored glob must also beat a `?`-positional pattern (`????-??-??-<qslug>.md`): `?` matches ANY character, not only digits, so it can mistake a legacy undated filename for a dated one when the legacy slug happens to be 'date-shaped' in its first 11 characters.",
       "valid": false,
       "kind": "filename_scenario",
-      "path": "filenames/VER-006-invalid-question-glob-digit-costume-collision.json"
+      "path": "filenames/FIL-006-invalid-question-glob-digit-costume-collision.json"
     },
     {
-      "id": "VER-007-valid-word-boundary-truncation",
-      "rule_id": "VER-007",
-      "family": "VER",
+      "id": "FIL-007-valid-word-boundary-truncation",
+      "rule_id": "FIL-007",
+      "family": "FIL",
       "rule_statement": "A new-scheme (question-derived) slug longer than 60 characters is truncated at a WORD boundary, never mid-word. (The separate LEGACY slug function intentionally hard-cuts at exactly 60 chars and must never be changed to match -- it exists only to reproduce old filenames byte-for-byte.)",
       "valid": true,
       "kind": "filename_scenario",
-      "path": "filenames/VER-007-valid-word-boundary-truncation.json"
+      "path": "filenames/FIL-007-valid-word-boundary-truncation.json"
     },
     {
-      "id": "VER-007-invalid-mid-word-truncation",
-      "rule_id": "VER-007",
-      "family": "VER",
+      "id": "FIL-007-invalid-mid-word-truncation",
+      "rule_id": "FIL-007",
+      "family": "FIL",
       "rule_statement": "A new-scheme (question-derived) slug longer than 60 characters is truncated at a WORD boundary, never mid-word. (The separate LEGACY slug function intentionally hard-cuts at exactly 60 chars and must never be changed to match -- it exists only to reproduce old filenames byte-for-byte.)",
       "valid": false,
       "kind": "filename_scenario",
-      "path": "filenames/VER-007-invalid-mid-word-truncation.json"
+      "path": "filenames/FIL-007-invalid-mid-word-truncation.json"
     },
     {
       "id": "PROV-001-valid-rank-order",

@@ -1,7 +1,7 @@
 {
-  "rule": "VER-002",
+  "rule": "FIL-002",
   "statement": "Only a properly-formed 4-2-2 all-digit date prefix counts as an existing dated record for reuse purposes; a malformed prefix (e.g. a 2-digit year) MUST NOT be matched.",
-  "scenario_dir": "dirs/VER-002-invalid-malformed-date-prefix",
+  "scenario_dir": "dirs/FIL-002-invalid-malformed-date-prefix",
   "existing_files": ["26-07-01-how-do-we-parse-dates.md"],
   "input": {"chosen": "Adopt library X", "question": "How do we parse dates?", "today": "2026-07-25"},
   "expected_output": "docs/decisions/2026-07-25-how-do-we-parse-dates.md",

@@ -1,5 +1,5 @@
 {
-  "rule": "VER-007",
+  "rule": "FIL-007",
   "statement": "A new-scheme slug (question-derived) that exceeds 60 characters MUST be truncated at a WORD boundary, never mid-word.",
   "input_text": "One reviewed taxonomy document mapping existing error classes and their owners",
   "max_len": 60,

@@ -1,7 +1,7 @@
 {
-  "rule": "VER-005",
+  "rule": "FIL-005",
   "statement": "An UNANCHORED glob (`*-<qslug>.md`) is WRONG: `*` matches any text, so a short question's slug can match as a mere SUFFIX of an unrelated, longer, older record's slug.",
-  "scenario_dir": "dirs/VER-005-invalid-suffix-collision",
+  "scenario_dir": "dirs/FIL-005-invalid-suffix-collision",
   "existing_files": ["2026-01-10-how-should-the-team-pick-a-message-queue.md"],
   "input": {"chosen": "Unrelated pick", "question": "queue?", "today": "2026-07-25"},
   "expected_output": "docs/decisions/2026-07-25-queue.md",

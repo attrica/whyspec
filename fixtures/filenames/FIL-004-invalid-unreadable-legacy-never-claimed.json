@@ -1,7 +1,7 @@
 {
-  "rule": "VER-004",
+  "rule": "FIL-004",
   "statement": "A legacy-named file that cannot be recognised as a decision record (no parseable `## Context` section -- e.g. hand-written notes in a foreign format) MUST NEVER be treated as a match, even if its filename slug matches exactly.",
-  "scenario_dir": "dirs/VER-004-invalid-unreadable-legacy",
+  "scenario_dir": "dirs/FIL-004-invalid-unreadable-legacy",
   "existing_files": ["adopt-library-x.md"],
   "existing_file_is_unrecognised_freeform_text": true,
   "input": {"chosen": "Adopt library X", "question": "How do we parse dates?", "today": "2026-07-25"},
