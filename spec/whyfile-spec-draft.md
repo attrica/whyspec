@@ -716,25 +716,59 @@ cited; a format with only the second cannot detect that anything changed. Both a
 conflating them is what makes an in-place title correction silently fork a node and dangle every
 reference to it.
 
-### 4.14 Actor
+### 4.14 Attribution
 
-**[REC-079]** A record **MAY** carry an actor in the inline field form, `**Actor:** <kind>:<id>`.
+Attribution is a **relation**, not a field. A record routinely involves more than one actor in
+more than one capacity, and a single-valued author field cannot represent that without
+misreporting it.
 
-**[REC-080]** `<kind>` **MUST** be one of exactly `human` or `agent`. The set is closed; adding a
-kind requires a version marker (§7).
+**[REC-079]** A record **MAY** carry an `## Attribution` section, one attribution per list item,
+in the form `<role> <kind>:<id> [on <date>]`.
 
-**[REC-081]** An absent actor **MUST** be read as *unrecorded*. It **MUST NOT** be defaulted to
+**[REC-080]** `<kind>` **MUST** be one of exactly `human` or `agent`. `<role>` **MUST** be one of
+exactly `drafted`, `decided`, or `ratified`. Both sets are closed; adding to either requires a
+version marker (§7).
+
+**[REC-081]** A record **MAY** carry any number of attributions, including several sharing a
+role. An absent attribution **MUST** be read as *unrecorded*. It **MUST NOT** be defaulted to
 `human`, and **MUST NOT** be inferred from any other field.
 
-The actor is not the same claim as provenance. Provenance says what *kind of source* a record
-came from and therefore how much it is worth; the actor says *who or what* wrote it. A format
-that records attribution without recording the attributee is incomplete in the middle of its own
-central commitment — and the gap only becomes load-bearing once corpora contain records written
-by automated agents, at which point a reader who cannot distinguish an agent's capture from a
-human's decision has lost the ability to filter on the distinction that matters most.
+**[REC-115]** The roles are distinct and **MUST NOT** be conflated. `drafted` names who composed
+the record; `decided` names who chose among the alternatives; `ratified` names who accepted it
+through a review process.
 
-[REC-081]'s absence rule follows the same logic as the provenance default (§5.2): defaulting an
+**[REC-116]** A `ratified` attribution is what promotes a record from `captured` to `authored`
+(§5.3). Provenance **MUST NOT** be promoted on the basis of a filename, a heading form, or any
+other naming convention.
+
+**[REC-117]** Each attribution **MUST** carry its own provenance (§5.5) and **MAY** carry a date.
+Where a date is present it **MUST** be a full ISO-8601 calendar date.
+
+Attribution is not provenance. Provenance says what *kind of source* a claim came from and
+therefore how much it is worth; attribution says *who* did what, in what capacity, and when. A
+format that promises attribution while recording no attributee is incomplete in the middle of its
+own central commitment.
+
+The multiplicity is not a hypothetical refinement. The common case for machine-assisted capture
+is an agent composing a record — options, rationale, alternatives — and a human choosing among
+them: two actors, two roles, one record. A single author field must misreport one of them, and
+will tend to misreport in whichever direction flatters the writer. Recording both is also what
+makes an actor-centric history answerable at all, since a scalar buried on each record cannot be
+traversed from a person back to their decisions.
+
+[REC-116] closes a gap the format previously left open. The distinction between `captured` and
+`authored` is, by the tier table's own words, whether a review process accepted the record — yet
+nothing recorded a review ever happening, so the strongest tier was earned by how a file was
+named. Ratification is an act with an actor and a date, and the tier now follows the act rather
+than the naming.
+
+[REC-081]'s absence rule follows the logic of the provenance default (§5.2): defaulting an
 unknown to the stronger reading silently promotes unattributed material.
+
+Attribution composes with declared scope and with time to answer the question audit actually
+asks — *was this decided by someone entitled to decide it, at the time they decided it?* That
+question is unanswerable from a scalar field, because it needs the capacity as well as the
+identity, and because authority itself moves between people.
 
 ### 4.15 Governs — declared artifact scope
 
@@ -1511,9 +1545,9 @@ Every normative rule, with its one-line statement.
 | REC-076 | An identifier, once written, MUST NOT be regenerated, and MUST NOT be derived from any mutable part of the record. |
 | REC-077 | An identifier MUST be stable across an edit to any other part of the record. |
 | REC-078 | An identifier MUST be unique within a corpus. |
-| REC-079 | A record MAY carry an actor in the inline field form, Actor: <kind>:<id>. |
-| REC-080 | <kind> MUST be one of exactly human or agent. |
-| REC-081 | An absent actor MUST be read as *unrecorded*. |
+| REC-079 | A record MAY carry an `## Attribution` section, one `<role> <kind>:<id> [on <date>]` per item. |
+| REC-080 | `<kind>` is `human` or `agent`; `<role>` is `drafted`, `decided` or `ratified`. Both closed. |
+| REC-081 | A record MAY carry any number of attributions; absence means unrecorded, never `human`. |
 | REC-082 | A record MAY carry a ## Governs section listing the artifacts the decision governs, one per list item, parsed per [REC…. |
 | REC-083 | Each item MUST be an artifact reference. |
 | REC-084 | An absent ## Governs section MUST be read as *scope not declared*. |
@@ -1547,6 +1581,9 @@ Every normative rule, with its one-line statement.
 | REC-112 | A record is historical when a `supersedes` relation names it, and current otherwise. |
 | REC-113 | Supersession MUST be applied transitively along a chain. |
 | REC-114 | A record in a supersession cycle MUST be reported as indeterminate, never resolved by tiebreak. |
+| REC-115 | The roles `drafted`, `decided` and `ratified` are distinct and MUST NOT be conflated. |
+| REC-116 | A `ratified` attribution promotes a record from `captured` to `authored`; naming conventions MUST NOT. |
+| REC-117 | Each attribution carries its own provenance and MAY carry an ISO-8601 date. |
 
 #### Provenance
 
