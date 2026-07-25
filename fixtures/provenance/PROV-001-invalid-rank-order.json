@@ -1,0 +1,7 @@
+{
+  "rule": "PROV-001",
+  "statement": "A conformant ranking MUST place authored above (numerically lower than) reconstructed; this ordering claims the opposite and MUST be rejected as non-conformant.",
+  "input": ["authored", "captured", "attested", "reconstructed"],
+  "wrong_rank_a_non_conformant_implementation_might_return": [3, 2, 1, 0],
+  "reason": "Ranks reconstructed as most-trusted and authored as least-trusted -- the exact inverse of the required order. A validator MUST reject an implementation that produces this ordering."
+}

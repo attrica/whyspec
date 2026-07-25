@@ -1,0 +1,7 @@
+{
+  "rule": "PROV-002",
+  "statement": "The ADR-shaped record and the Decision-shaped record MUST map to DIFFERENT provenance tiers; an implementation that assigns them the same tier, or swaps which gets which, is non-conformant.",
+  "case": {"h1_form": "ADR", "record_fixture": "records/REC-001-valid-adr-h1.md"},
+  "wrong_provenance_a_non_conformant_implementation_might_assign": "captured",
+  "reason": "An ADR-shaped record (# ADR-NNNN H1) MUST be 'authored', not 'captured' -- 'captured' is reserved for the live-capture `# Decision:` shape. Swapping the two collapses a real trust distinction (a reviewed ADR outranks a live, possibly-unreviewed capture)."
+}

@@ -1,0 +1,17 @@
+{
+  "rule": "REC-007",
+  "statement": "A record whose normalised status is 'rejected' MUST be excluded from an authored/captured node set built from a directory of records (e.g. ingest_dir semantics) -- a rejected decision is the option NOT taken, so it (and any assumptions attached to it) must never become ground truth.",
+  "valid_case": {
+    "description": "Directory of 2 records: one accepted, one rejected. The conformant node set contains exactly 1 decision node (the accepted one).",
+    "input_dir": ".",
+    "files": ["0001-accepted.md", "0002-rejected.md"],
+    "expected_decision_count": 1,
+    "expected_surviving_titles": ["Use structured logging"]
+  },
+  "invalid_case": {
+    "description": "The same directory; a non-conformant implementation that fails to filter on status would surface BOTH records.",
+    "wrong_decision_count_a_non_conformant_implementation_might_return": 2,
+    "reason": "0002-rejected.md's status normalises to 'rejected' (see REC-006). Including it promotes an explicitly-not-chosen option to ground truth."
+  },
+  "note": "Verified against whyfile.passes.ingest.ingest_dir() on v0.8.3: ingesting this directory yields exactly 1 node, status='accepted'."
+}

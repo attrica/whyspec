@@ -1,0 +1,11 @@
+{
+  "rule": "VER-005",
+  "statement": "An UNANCHORED glob (`*-<qslug>.md`) is WRONG: `*` matches any text, so a short question's slug can match as a mere SUFFIX of an unrelated, longer, older record's slug.",
+  "scenario_dir": "dirs/VER-005-invalid-suffix-collision",
+  "existing_files": ["2026-01-10-how-should-the-team-pick-a-message-queue.md"],
+  "input": {"chosen": "Unrelated pick", "question": "queue?", "today": "2026-07-25"},
+  "expected_output": "docs/decisions/2026-07-25-queue.md",
+  "wrong_output_an_unanchored_star_glob_would_return": "docs/decisions/2026-01-10-how-should-the-team-pick-a-message-queue.md",
+  "reason": "`*-queue.md` matches '...-message-queue.md' because it ends in '-queue.md'; the two are unrelated decisions ('queue?' vs 'how should the team pick a message queue?'). Reusing the older file would silently overwrite it -- the regression this glob-anchoring rule exists to prevent.",
+  "note": "Verified against record_filename() on v0.8.3: the correct output is a brand-new file, NOT the longer-slug file."
+}

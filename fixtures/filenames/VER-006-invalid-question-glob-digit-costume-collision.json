@@ -1,0 +1,11 @@
+{
+  "rule": "VER-006",
+  "statement": "A `?`-positional glob (`????-??-??-<qslug>.md`) is WRONG: `?` matches ANY character, so it can mistake a LEGACY undated filename for a dated one when the legacy chosen-derived slug happens to be 'date-shaped' in its first 11 characters.",
+  "scenario_dir": "dirs/VER-006-invalid-digit-costume-collision",
+  "existing_files": ["skip-qa-22-run-canary-rollout.md"],
+  "input": {"chosen": "Unrelated pick", "question": "run canary rollout", "today": "2026-07-25"},
+  "expected_output": "docs/decisions/2026-07-25-run-canary-rollout.md",
+  "wrong_output_a_question_mark_positional_glob_would_return": "docs/decisions/skip-qa-22-run-canary-rollout.md",
+  "reason": "'skip-qa-22-' positionally satisfies '????-??-??-' (4 chars, dash, 2 chars, dash, 2 chars, dash) without being a date -- it is a legacy filename slugged from the chosen text 'Skip QA pass 22'. Only a digit-CLASS-anchored glob (`[0-9]` character classes, not `?`) correctly rejects this. The conformant result is a brand-new dated file, not the legacy one.",
+  "note": "Verified against record_filename() on v0.8.3."
+}

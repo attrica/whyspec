@@ -1,0 +1,12 @@
+{
+  "command": "why",
+  "count": 0,
+  "cutoff": 60,
+  "query": "why sqlite",
+  "results": [],
+  "score_stats": {
+    "median": 0,
+    "runner_up": 0,
+    "top": 0
+  }
+}

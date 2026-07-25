@@ -1,0 +1,9 @@
+{
+  "rule": "VER-001",
+  "statement": "A brand-new captured record is named `YYYY-MM-DD-<question-slug>.md`. The slug MUST derive from the QUESTION, not the chosen option -- the question is what makes a decision unique; the chosen text repeats constantly across unrelated decisions.",
+  "scenario_dir": "dirs/VER-001-fresh",
+  "existing_files": [],
+  "input": {"chosen": "Adopt library X", "question": "How do we parse dates?", "today": "2026-07-25"},
+  "expected_output": "docs/decisions/2026-07-25-how-do-we-parse-dates.md",
+  "note": "Verified against whyfile.passes.capture.record_filename() on v0.8.3 with an empty records dir."
+}

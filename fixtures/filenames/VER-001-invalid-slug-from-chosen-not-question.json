@@ -1,0 +1,9 @@
+{
+  "rule": "VER-001",
+  "statement": "The filename slug MUST come from the question text, never from the chosen option.",
+  "scenario_dir": "dirs/VER-001-fresh",
+  "existing_files": [],
+  "input": {"chosen": "Adopt library X", "question": "How do we parse dates?", "today": "2026-07-25"},
+  "wrong_output_a_non_conformant_implementation_might_return": "docs/decisions/2026-07-25-adopt-library-x.md",
+  "reason": "Slugging from `chosen` ('Adopt library X') instead of `question` reintroduces the data-loss bug the dated scheme replaced: two different questions answered with the same chosen text ('document only', 'use SQLite', etc.) would collide on the same filename and silently overwrite each other."
+}

@@ -1,0 +1,699 @@
+{
+  "$schema_note": "Machine-readable fixture manifest for the Whyfile conformance corpus (B2). Each entry: id, rule_id (family+number, independent numbering from the normative spec text -- reconcile by rule_statement, not by id), family, rule_statement (one-line natural-language restatement of the rule), valid (true = this fixture demonstrates conformant behaviour a correct implementation MUST produce; false = this fixture demonstrates a MUST-reject / MUST-NOT-produce case), kind (record | record_dir | filename_scenario | vector | envelope), path (relative to this manifest's directory), notes (what specifically must be accepted/rejected and why).",
+  "rule_families": {
+    "REC": "Record format -- what makes a markdown file a decision record, and how its fields parse.",
+    "VER": "Versioning / filename scheme -- how a captured record's filename is chosen and matched over time.",
+    "PROV": "Provenance -- the trust-tier vocabulary and how it ranks/aggregates.",
+    "ENV": "Result envelope -- the per-command JSON shape returned by the CLI."
+  },
+  "rules": [
+    {
+      "rule_id": "REC-001",
+      "family": "REC",
+      "statement": "A record's H1 MUST be `# ADR-<digits><sep><title>` (sep in em-dash/en-dash/colon/hyphen) or `# Decision: <title>`; any other H1 means the file is NOT a decision record."
+    },
+    {
+      "rule_id": "REC-002",
+      "family": "REC",
+      "statement": "A record MUST have a `## Decision` section (case-insensitive heading); its body becomes the rationale. Without it the file is not a record, even if the H1 gate passes."
+    },
+    {
+      "rule_id": "REC-003",
+      "family": "REC",
+      "statement": "A BOM (U+FEFF) is stripped only when it is the very FIRST character of the file. A BOM occurring elsewhere (e.g. immediately before a later heading) is left in place and is NOT treated as part of the heading gate."
+    },
+    {
+      "rule_id": "REC-004",
+      "family": "REC",
+      "statement": "`## Alternatives considered` (or `## Alternatives`) is OPTIONAL; when absent, `alternatives` MUST be an empty list, not an error."
+    },
+    {
+      "rule_id": "REC-005",
+      "family": "REC",
+      "statement": "Alternatives are parsed as a FLAT top-level list only (numbered `1.`/`2.` or bulleted `-`/`*`). Nested/indented sub-bullets are NOT attached to their parent item; each becomes its own separate flat list item."
+    },
+    {
+      "rule_id": "REC-006",
+      "family": "REC",
+      "statement": "Status comes from the inline `**Status:**` line when present; normalised to the first lowercase alphabetic word (tolerating trailing punctuation/clauses). A `## Status` section heading is used ONLY as a fallback when no inline `**Status:**` line exists -- if both are present, the inline line always wins."
+    },
+    {
+      "rule_id": "REC-007",
+      "family": "REC",
+      "statement": "A record whose normalised status is 'rejected' MUST be excluded from the authored/captured ground-truth node set built from a directory of records -- the option not taken must never become ground truth."
+    },
+    {
+      "rule_id": "REC-008",
+      "family": "REC",
+      "statement": "A `## Assumptions` list item MAY carry a `(review by YYYY-MM-DD)` clause and/or an `(expires: ...)` clause, both stripped from the claim text into separate `review_by`/`expiry` fields. A review-by date that is not in YYYY-MM-DD form is NOT extracted -- it stays embedded in the claim text."
+    },
+    {
+      "rule_id": "REC-009",
+      "family": "REC",
+      "statement": "An ADR H1's `ADR-<digits>` prefix and its separator are stripped from the parsed title; the title is the H1 text with that prefix removed, not the raw heading."
+    },
+    {
+      "rule_id": "REC-010",
+      "family": "REC",
+      "statement": "A `## Recommendation` section produces a `resolution_delta: {recommended, chosen}` field on the node ONLY when its text differs from the chosen/title text. When it is absent, or textually equal to the title, `resolution_delta` MUST be omitted entirely (never emitted as null/empty)."
+    },
+    {
+      "rule_id": "REC-011",
+      "family": "REC",
+      "statement": "Supersession is recorded ONLY for the ACTIVE phrasing `supersedes ADR-<digits>` found anywhere in the record text. The passive phrasing `superseded by ADR-<digits>` MUST NOT be captured as an outgoing `supersedes` reference."
+    },
+    {
+      "rule_id": "VER-001",
+      "family": "VER",
+      "statement": "A brand-new captured record is named `YYYY-MM-DD-<question-slug>.md`. The slug MUST derive from the QUESTION text, never from the chosen option."
+    },
+    {
+      "rule_id": "VER-002",
+      "family": "VER",
+      "statement": "Re-capturing the SAME question on a later date MUST reuse the existing dated record file (whatever its own date), never create a second one. Reuse requires a well-formed 4-2-2 all-digit date prefix; a malformed prefix does not count as an existing dated record."
+    },
+    {
+      "rule_id": "VER-003",
+      "family": "VER",
+      "statement": "A pre-dated-scheme (legacy) filename `<chosen-slug>.md` is reused ONLY when the file's recorded `## Context` body matches the new question (whitespace/case-normalised). A legacy file recording a DIFFERENT question, even with an identical chosen-derived filename, MUST NOT be reused/overwritten."
+    },
+    {
+      "rule_id": "VER-004",
+      "family": "VER",
+      "statement": "A legacy-named file that cannot be recognised as a decision record at all (no parseable `## Context` section) MUST NEVER be treated as a match, regardless of filename."
+    },
+    {
+      "rule_id": "VER-005",
+      "family": "VER",
+      "statement": "The lookup for an existing dated record MUST use a digit-CLASS-anchored glob (`[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-<qslug>.md`), never an unanchored `*`-prefixed pattern -- `*` can match a short question's slug as a mere suffix of an unrelated, longer, older record's slug."
+    },
+    {
+      "rule_id": "VER-006",
+      "family": "VER",
+      "statement": "The digit-CLASS-anchored glob must also beat a `?`-positional pattern (`????-??-??-<qslug>.md`): `?` matches ANY character, not only digits, so it can mistake a legacy undated filename for a dated one when the legacy slug happens to be 'date-shaped' in its first 11 characters."
+    },
+    {
+      "rule_id": "VER-007",
+      "family": "VER",
+      "statement": "A new-scheme (question-derived) slug longer than 60 characters is truncated at a WORD boundary, never mid-word. (The separate LEGACY slug function intentionally hard-cuts at exactly 60 chars and must never be changed to match -- it exists only to reproduce old filenames byte-for-byte.)"
+    },
+    {
+      "rule_id": "PROV-001",
+      "family": "PROV",
+      "statement": "Valid provenance tier values are exactly {authored, captured, attested, reconstructed}. Trust ranking, most to least trusted: authored < captured < attested < reconstructed (lower rank integer = more trusted)."
+    },
+    {
+      "rule_id": "PROV-002",
+      "family": "PROV",
+      "statement": "A record whose H1 is `# ADR-...` ingests with provenance='authored'; a record whose H1 is `# Decision: ...` ingests with provenance='captured'. The two MUST map to different tiers."
+    },
+    {
+      "rule_id": "PROV-003",
+      "family": "PROV",
+      "statement": "A node with a missing/absent `provenance` key, an empty string, or any unrecognised value MUST rank/count identically to `reconstructed` (the lowest tier) -- never silently promoted to a trusted tier."
+    },
+    {
+      "rule_id": "PROV-004",
+      "family": "PROV",
+      "statement": "golden_fraction counts only nodes whose provenance is in {authored, captured, attested}; reconstructed (and absent-provenance) nodes never contribute to the golden numerator under any circumstance. An empty node list yields 0%, not an error."
+    },
+    {
+      "rule_id": "ENV-001",
+      "family": "ENV",
+      "statement": "Every command's JSON envelope MUST include a `command` key (the subcommand name) and a `status` key. These are the ONLY two keys guaranteed common to every command -- the envelope is a per-command tagged union, not one fixed shape."
+    },
+    {
+      "rule_id": "ENV-002",
+      "family": "ENV",
+      "statement": "The `why` command's envelope keys are EXACTLY {command, count, cutoff, query, results, score_stats, status} -- no more, no fewer."
+    },
+    {
+      "rule_id": "ENV-003",
+      "family": "ENV",
+      "statement": "The `list-intent` command's envelope keys are EXACTLY {command, count, filter, intent, status}."
+    },
+    {
+      "rule_id": "ENV-004",
+      "family": "ENV",
+      "statement": "The `coverage` command's envelope keys are EXACTLY {command, status, authored_anchored_files, authored_anchored_symbols, code_files, code_symbols, dark_files, file_coverage_pct, files_with_intent, golden, intent_by_kind, intent_debt, symbol_coverage_pct, symbols_with_intent} (14 keys total)."
+    },
+    {
+      "rule_id": "ENV-005",
+      "family": "ENV",
+      "statement": "The `check` command's envelope keys are EXACTLY {command, status, rules, files_checked, violations}."
+    },
+    {
+      "rule_id": "ENV-006",
+      "family": "ENV",
+      "statement": "`graph_identity` is NEVER part of the CLI's JSON envelope for any command. It is attached only by the MCP transport layer (mcp_server.py), and its presence or absence must never be used to satisfy or substitute for a command's real required-key set."
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "REC-002-valid-has-decision-section",
+      "rule_id": "REC-002",
+      "family": "REC",
+      "rule_statement": "A record MUST have a `## Decision` section (case-insensitive heading); its body becomes the rationale. Without it the file is not a record, even if the H1 gate passes.",
+      "valid": true,
+      "kind": "record",
+      "path": "records/REC-001-valid-adr-h1.md",
+      "notes": "Cross-references REC-001-valid-adr-h1.md, which has a '## Decision' section and therefore parses. No separate file needed: any record that parses at all is positive evidence for REC-002."
+    },
+    {
+      "id": "REC-005-valid-flat-numbered-list",
+      "rule_id": "REC-005",
+      "family": "REC",
+      "rule_statement": "Alternatives are parsed as a FLAT top-level list only (numbered `1.`/`2.` or bulleted `-`/`*`). Nested/indented sub-bullets are NOT attached to their parent item; each becomes its own separate flat list item.",
+      "valid": true,
+      "kind": "record",
+      "path": "records/REC-001-valid-adr-h1.md",
+      "notes": "Cross-references REC-001-valid-adr-h1.md: a clean flat numbered '## Alternatives considered' list, parsing to exactly 2 items."
+    },
+    {
+      "id": "REC-009-valid-adr-prefix-stripped",
+      "rule_id": "REC-009",
+      "family": "REC",
+      "rule_statement": "An ADR H1's `ADR-<digits>` prefix and its separator are stripped from the parsed title; the title is the H1 text with that prefix removed, not the raw heading.",
+      "valid": true,
+      "kind": "record",
+      "path": "records/REC-001-valid-adr-h1.md",
+      "notes": "Cross-references REC-001-valid-adr-h1.md: H1 is '# ADR-0042 \u2014 Use a shared cache layer'; parsed title is 'Use a shared cache layer' (prefix + separator stripped). No meaningful invalid fixture: prefix-stripping is a deterministic string transform with no reject branch -- see report item (d)."
+    },
+    {
+      "id": "REC-001-valid-adr-h1",
+      "rule_id": "REC-001",
+      "family": "REC",
+      "rule_statement": "A record's H1 MUST be `# ADR-<digits><sep><title>` (sep in em-dash/en-dash/colon/hyphen) or `# Decision: <title>`; any other H1 means the file is NOT a decision record.",
+      "valid": true,
+      "kind": "record",
+      "path": "records/REC-001-valid-adr-h1.md",
+      "notes": "Parses; title='Use a shared cache layer', kind='adr', provenance='authored'. Also the positive fixture for REC-002 (has a Decision section), REC-005 (flat numbered alternatives), and REC-009 (ADR-NNNN prefix stripped from title)."
+    },
+    {
+      "id": "REC-001-valid-decision-h1",
+      "rule_id": "REC-001",
+      "family": "REC",
+      "rule_statement": "A record's H1 MUST be `# ADR-<digits><sep><title>` (sep in em-dash/en-dash/colon/hyphen) or `# Decision: <title>`; any other H1 means the file is NOT a decision record.",
+      "valid": true,
+      "kind": "record",
+      "path": "records/REC-001-valid-decision-h1.md",
+      "notes": "Parses; title='Store session tokens in the encrypted cookie', kind='decision', provenance='captured'."
+    },
+    {
+      "id": "REC-001-invalid-no-record-h1",
+      "rule_id": "REC-001",
+      "family": "REC",
+      "rule_statement": "A record's H1 MUST be `# ADR-<digits><sep><title>` (sep in em-dash/en-dash/colon/hyphen) or `# Decision: <title>`; any other H1 means the file is NOT a decision record.",
+      "valid": false,
+      "kind": "record",
+      "path": "records/REC-001-invalid-no-record-h1.md",
+      "notes": "H1 is a generic heading matching neither prefix form. parse_adr() MUST return None (not a record), even though a `## Decision` section is present."
+    },
+    {
+      "id": "REC-002-invalid-missing-decision-section",
+      "rule_id": "REC-002",
+      "family": "REC",
+      "rule_statement": "A record MUST have a `## Decision` section (case-insensitive heading); its body becomes the rationale. Without it the file is not a record, even if the H1 gate passes.",
+      "valid": false,
+      "kind": "record",
+      "path": "records/REC-002-invalid-missing-decision-section.md",
+      "notes": "Valid ADR H1, but no `## Decision` heading anywhere. parse_adr() MUST return None."
+    },
+    {
+      "id": "REC-003-valid-leading-bom",
+      "rule_id": "REC-003",
+      "family": "REC",
+      "rule_statement": "A BOM (U+FEFF) is stripped only when it is the very FIRST character of the file. A BOM occurring elsewhere (e.g. immediately before a later heading) is left in place and is NOT treated as part of the heading gate.",
+      "valid": true,
+      "kind": "record",
+      "path": "records/REC-003-valid-leading-bom.md",
+      "notes": "File's very first byte is a UTF-8 BOM (U+FEFF) directly before '# ADR-0044'. MUST parse identically to the same file without the BOM: title='Pin the lockfile in CI'."
+    },
+    {
+      "id": "REC-003-invalid-non-leading-bom-breaks-heading",
+      "rule_id": "REC-003",
+      "family": "REC",
+      "rule_statement": "A BOM (U+FEFF) is stripped only when it is the very FIRST character of the file. A BOM occurring elsewhere (e.g. immediately before a later heading) is left in place and is NOT treated as part of the heading gate.",
+      "valid": false,
+      "kind": "record",
+      "path": "records/REC-003-invalid-non-leading-bom-breaks-heading.md",
+      "notes": "A BOM sits immediately before the LATER '## Decision' heading (not the file's first character). It is NOT a leading BOM, so it is not stripped, and the stray character breaks the heading-line regex match for that heading. Net effect: no Decision section is found, so parse_adr() returns None -- this is the observable, testable signature of 'only a LEADING BOM is tolerated'."
+    },
+    {
+      "id": "REC-004-valid-no-alternatives-section",
+      "rule_id": "REC-004",
+      "family": "REC",
+      "rule_statement": "`## Alternatives considered` (or `## Alternatives`) is OPTIONAL; when absent, `alternatives` MUST be an empty list, not an error.",
+      "valid": true,
+      "kind": "record",
+      "path": "records/REC-004-valid-no-alternatives-section.md",
+      "notes": "No 'Alternatives considered' section at all. MUST still parse as a valid record, with alternatives == []."
+    },
+    {
+      "id": "REC-005-invalid-nested-bullets-flatten-unexpectedly",
+      "rule_id": "REC-005",
+      "family": "REC",
+      "rule_statement": "Alternatives are parsed as a FLAT top-level list only (numbered `1.`/`2.` or bulleted `-`/`*`). Nested/indented sub-bullets are NOT attached to their parent item; each becomes its own separate flat list item.",
+      "valid": false,
+      "kind": "record",
+      "path": "records/REC-005-invalid-nested-bullets-flatten-unexpectedly.md",
+      "notes": "Item 1 has two indented sub-bullets. A parser that treats them as elaboration of item 1 (producing 2 grouped alternatives) is WRONG. The conformant parser flattens ALL list markers regardless of indentation, producing 4 separate items: ['Single-page checkout.', 'Faster for returning customers.', 'Harder to A/B test individual steps.', 'Multi-step wizard checkout.']. Verified against ingest.parse_adr() on v0.8.3."
+    },
+    {
+      "id": "REC-006-valid-inline-status",
+      "rule_id": "REC-006",
+      "family": "REC",
+      "rule_statement": "Status comes from the inline `**Status:**` line when present; normalised to the first lowercase alphabetic word (tolerating trailing punctuation/clauses). A `## Status` section heading is used ONLY as a fallback when no inline `**Status:**` line exists -- if both are present, the inline line always wins.",
+      "valid": true,
+      "kind": "record",
+      "path": "records/REC-006-valid-inline-status.md",
+      "notes": "Only an inline '**Status:** Accepted' line. status == 'accepted'."
+    },
+    {
+      "id": "REC-006-valid-status-section-heading",
+      "rule_id": "REC-006",
+      "family": "REC",
+      "rule_statement": "Status comes from the inline `**Status:**` line when present; normalised to the first lowercase alphabetic word (tolerating trailing punctuation/clauses). A `## Status` section heading is used ONLY as a fallback when no inline `**Status:**` line exists -- if both are present, the inline line always wins.",
+      "valid": true,
+      "kind": "record",
+      "path": "records/REC-006-valid-status-section-heading.md",
+      "notes": "Only a '## Status' section (body 'Proposed'), no inline Status line. status == 'proposed' (the fallback form)."
+    },
+    {
+      "id": "REC-006-valid-status-with-trailing-clause",
+      "rule_id": "REC-006",
+      "family": "REC",
+      "rule_statement": "Status comes from the inline `**Status:**` line when present; normalised to the first lowercase alphabetic word (tolerating trailing punctuation/clauses). A `## Status` section heading is used ONLY as a fallback when no inline `**Status:**` line exists -- if both are present, the inline line always wins.",
+      "valid": true,
+      "kind": "record",
+      "path": "records/REC-006-valid-status-with-trailing-clause.md",
+      "notes": "Inline '**Status:** Rejected in favor of ADR-0049' -- normalises to the first lowercase word only: status == 'rejected', dropping the trailing clause."
+    },
+    {
+      "id": "REC-006-invalid-inline-status-wins-over-section",
+      "rule_id": "REC-006",
+      "family": "REC",
+      "rule_statement": "Status comes from the inline `**Status:**` line when present; normalised to the first lowercase alphabetic word (tolerating trailing punctuation/clauses). A `## Status` section heading is used ONLY as a fallback when no inline `**Status:**` line exists -- if both are present, the inline line always wins.",
+      "valid": false,
+      "kind": "record",
+      "path": "records/REC-006-invalid-inline-status-wins-over-section.md",
+      "notes": "BOTH an inline '**Status:** Accepted' line AND a '## Status' section (body 'Proposed') are present, with DIFFERENT values. The correct status is 'accepted' (inline always wins). An implementation that reads the '## Status' section instead (or when both are present) would wrongly return 'proposed' -- that output MUST be rejected. Verified against ingest.parse_adr() on v0.8.3."
+    },
+    {
+      "id": "REC-007-valid-rejected-excluded",
+      "rule_id": "REC-007",
+      "family": "REC",
+      "rule_statement": "A record whose normalised status is 'rejected' MUST be excluded from the authored/captured ground-truth node set built from a directory of records -- the option not taken must never become ground truth.",
+      "valid": true,
+      "kind": "record_dir",
+      "path": "dirs/REC-007-rejected-excluded/",
+      "notes": "See dirs/REC-007-rejected-excluded/expected.json (`valid_case`). Directory of 2 records (one accepted, one rejected); the conformant ground-truth node set has exactly 1 decision node."
+    },
+    {
+      "id": "REC-007-invalid-rejected-included",
+      "rule_id": "REC-007",
+      "family": "REC",
+      "rule_statement": "A record whose normalised status is 'rejected' MUST be excluded from the authored/captured ground-truth node set built from a directory of records -- the option not taken must never become ground truth.",
+      "valid": false,
+      "kind": "record_dir",
+      "path": "dirs/REC-007-rejected-excluded/",
+      "notes": "See dirs/REC-007-rejected-excluded/expected.json (`invalid_case`). Same directory; a non-conformant implementation that omits the status filter would surface 2 nodes instead of 1 -- that output MUST be rejected."
+    },
+    {
+      "id": "REC-008-valid-assumptions-review-by-and-expiry",
+      "rule_id": "REC-008",
+      "family": "REC",
+      "rule_statement": "A `## Assumptions` list item MAY carry a `(review by YYYY-MM-DD)` clause and/or an `(expires: ...)` clause, both stripped from the claim text into separate `review_by`/`expiry` fields. A review-by date that is not in YYYY-MM-DD form is NOT extracted -- it stays embedded in the claim text.",
+      "valid": true,
+      "kind": "record",
+      "path": "records/REC-008-valid-assumptions-review-by-and-expiry.md",
+      "notes": "Two assumptions: one with '(review by 2026-12-01)', one with '(expires: traffic exceeds 50 req/s)'. Both clauses are stripped from the claim text into separate fields."
+    },
+    {
+      "id": "REC-008-invalid-malformed-review-by-date-not-extracted",
+      "rule_id": "REC-008",
+      "family": "REC",
+      "rule_statement": "A `## Assumptions` list item MAY carry a `(review by YYYY-MM-DD)` clause and/or an `(expires: ...)` clause, both stripped from the claim text into separate `review_by`/`expiry` fields. A review-by date that is not in YYYY-MM-DD form is NOT extracted -- it stays embedded in the claim text.",
+      "valid": false,
+      "kind": "record",
+      "path": "records/REC-008-invalid-malformed-review-by-date-not-extracted.md",
+      "notes": "Assumption carries '(review by 12/01/2026)' -- NOT the required YYYY-MM-DD form. The conformant parser leaves this un-extracted: no `review_by` key, and the parenthetical stays embedded in the claim text verbatim. An implementation that extracts '12/01/2026' as review_by (or silently reformats it) is non-conformant."
+    },
+    {
+      "id": "REC-010-valid-recommendation-differs-resolution-delta",
+      "rule_id": "REC-010",
+      "family": "REC",
+      "rule_statement": "A `## Recommendation` section produces a `resolution_delta: {recommended, chosen}` field on the node ONLY when its text differs from the chosen/title text. When it is absent, or textually equal to the title, `resolution_delta` MUST be omitted entirely (never emitted as null/empty).",
+      "valid": true,
+      "kind": "record",
+      "path": "records/REC-010-valid-recommendation-differs-resolution-delta.md",
+      "notes": "Chosen ('Use SQLite') differs from the '## Recommendation' text ('Use Postgres locally...'). MUST produce resolution_delta == {'recommended': 'Use Postgres locally, for parity with the hosted environment.', 'chosen': 'Use SQLite'}."
+    },
+    {
+      "id": "REC-010-invalid-recommendation-equals-chosen-no-delta",
+      "rule_id": "REC-010",
+      "family": "REC",
+      "rule_statement": "A `## Recommendation` section produces a `resolution_delta: {recommended, chosen}` field on the node ONLY when its text differs from the chosen/title text. When it is absent, or textually equal to the title, `resolution_delta` MUST be omitted entirely (never emitted as null/empty).",
+      "valid": false,
+      "kind": "record",
+      "path": "records/REC-010-invalid-recommendation-equals-chosen-no-delta.md",
+      "notes": "'## Recommendation' text is textually identical to the chosen title ('Use SQLite'). resolution_delta MUST be entirely absent from the node. An implementation that still emits a (redundant, recommended==chosen) resolution_delta is non-conformant -- it would fabricate a calibration gap that does not exist."
+    },
+    {
+      "id": "REC-011-valid-active-supersedes",
+      "rule_id": "REC-011",
+      "family": "REC",
+      "rule_statement": "Supersession is recorded ONLY for the ACTIVE phrasing `supersedes ADR-<digits>` found anywhere in the record text. The passive phrasing `superseded by ADR-<digits>` MUST NOT be captured as an outgoing `supersedes` reference.",
+      "valid": true,
+      "kind": "record",
+      "path": "records/REC-011-valid-active-supersedes.md",
+      "notes": "Text contains both 'This supersedes ADR-0031' (active) and 'it is superseded by ADR-0090' (passive). MUST yield supersedes == ['ADR-0031'] only."
+    },
+    {
+      "id": "REC-011-invalid-passive-superseded-by-is-not-active-supersession",
+      "rule_id": "REC-011",
+      "family": "REC",
+      "rule_statement": "Supersession is recorded ONLY for the ACTIVE phrasing `supersedes ADR-<digits>` found anywhere in the record text. The passive phrasing `superseded by ADR-<digits>` MUST NOT be captured as an outgoing `supersedes` reference.",
+      "valid": false,
+      "kind": "record",
+      "path": "records/REC-011-invalid-passive-superseded-by-is-not-active-supersession.md",
+      "notes": "Text contains ONLY the passive phrasing 'is superseded by ADR-0056'. supersedes MUST be []. An implementation that also matches the passive form (yielding supersedes == ['ADR-0056']) is non-conformant -- it would record this record as superseding the very ADR that superseded it."
+    },
+    {
+      "id": "VER-001-valid-new-dated-from-question",
+      "rule_id": "VER-001",
+      "family": "VER",
+      "rule_statement": "A brand-new captured record is named `YYYY-MM-DD-<question-slug>.md`. The slug MUST derive from the QUESTION text, never from the chosen option.",
+      "valid": true,
+      "kind": "filename_scenario",
+      "path": "filenames/VER-001-valid-new-dated-from-question.json"
+    },
+    {
+      "id": "VER-001-invalid-slug-from-chosen-not-question",
+      "rule_id": "VER-001",
+      "family": "VER",
+      "rule_statement": "A brand-new captured record is named `YYYY-MM-DD-<question-slug>.md`. The slug MUST derive from the QUESTION text, never from the chosen option.",
+      "valid": false,
+      "kind": "filename_scenario",
+      "path": "filenames/VER-001-invalid-slug-from-chosen-not-question.json"
+    },
+    {
+      "id": "VER-002-valid-idempotent-reuse-across-dates",
+      "rule_id": "VER-002",
+      "family": "VER",
+      "rule_statement": "Re-capturing the SAME question on a later date MUST reuse the existing dated record file (whatever its own date), never create a second one. Reuse requires a well-formed 4-2-2 all-digit date prefix; a malformed prefix does not count as an existing dated record.",
+      "valid": true,
+      "kind": "filename_scenario",
+      "path": "filenames/VER-002-valid-idempotent-reuse-across-dates.json"
+    },
+    {
+      "id": "VER-002-invalid-malformed-date-prefix-not-reused",
+      "rule_id": "VER-002",
+      "family": "VER",
+      "rule_statement": "Re-capturing the SAME question on a later date MUST reuse the existing dated record file (whatever its own date), never create a second one. Reuse requires a well-formed 4-2-2 all-digit date prefix; a malformed prefix does not count as an existing dated record.",
+      "valid": false,
+      "kind": "filename_scenario",
+      "path": "filenames/VER-002-invalid-malformed-date-prefix-not-reused.json"
+    },
+    {
+      "id": "VER-003-valid-legacy-reused-when-context-matches",
+      "rule_id": "VER-003",
+      "family": "VER",
+      "rule_statement": "A pre-dated-scheme (legacy) filename `<chosen-slug>.md` is reused ONLY when the file's recorded `## Context` body matches the new question (whitespace/case-normalised). A legacy file recording a DIFFERENT question, even with an identical chosen-derived filename, MUST NOT be reused/overwritten.",
+      "valid": true,
+      "kind": "filename_scenario",
+      "path": "filenames/VER-003-valid-legacy-reused-when-context-matches.json"
+    },
+    {
+      "id": "VER-003-invalid-legacy-not-stolen-when-context-differs",
+      "rule_id": "VER-003",
+      "family": "VER",
+      "rule_statement": "A pre-dated-scheme (legacy) filename `<chosen-slug>.md` is reused ONLY when the file's recorded `## Context` body matches the new question (whitespace/case-normalised). A legacy file recording a DIFFERENT question, even with an identical chosen-derived filename, MUST NOT be reused/overwritten.",
+      "valid": false,
+      "kind": "filename_scenario",
+      "path": "filenames/VER-003-invalid-legacy-not-stolen-when-context-differs.json"
+    },
+    {
+      "id": "VER-004-valid-legacy-resolution-shares-VER-003",
+      "rule_id": "VER-004",
+      "family": "VER",
+      "rule_statement": "A legacy-named file that cannot be recognised as a decision record at all (no parseable `## Context` section) MUST NEVER be treated as a match, regardless of filename.",
+      "valid": true,
+      "kind": "filename_scenario",
+      "path": "filenames/VER-003-valid-legacy-reused-when-context-matches.json",
+      "notes": "VER-004 is the reject-branch of the SAME legacy-resolution mechanism VER-003 exercises; there is no separate 'positive unreadable-file' case to construct (a positive case IS just VER-003's valid scenario). Cross-referenced here rather than duplicated."
+    },
+    {
+      "id": "VER-004-invalid-unreadable-legacy-never-claimed",
+      "rule_id": "VER-004",
+      "family": "VER",
+      "rule_statement": "A legacy-named file that cannot be recognised as a decision record at all (no parseable `## Context` section) MUST NEVER be treated as a match, regardless of filename.",
+      "valid": false,
+      "kind": "filename_scenario",
+      "path": "filenames/VER-004-invalid-unreadable-legacy-never-claimed.json"
+    },
+    {
+      "id": "VER-005-valid-anchored-glob-matches-own-file",
+      "rule_id": "VER-005",
+      "family": "VER",
+      "rule_statement": "The lookup for an existing dated record MUST use a digit-CLASS-anchored glob (`[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-<qslug>.md`), never an unanchored `*`-prefixed pattern -- `*` can match a short question's slug as a mere suffix of an unrelated, longer, older record's slug.",
+      "valid": true,
+      "kind": "filename_scenario",
+      "path": "filenames/VER-005-valid-anchored-glob-matches-own-file.json"
+    },
+    {
+      "id": "VER-005-invalid-unanchored-star-glob-suffix-collision",
+      "rule_id": "VER-005",
+      "family": "VER",
+      "rule_statement": "The lookup for an existing dated record MUST use a digit-CLASS-anchored glob (`[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-<qslug>.md`), never an unanchored `*`-prefixed pattern -- `*` can match a short question's slug as a mere suffix of an unrelated, longer, older record's slug.",
+      "valid": false,
+      "kind": "filename_scenario",
+      "path": "filenames/VER-005-invalid-unanchored-star-glob-suffix-collision.json"
+    },
+    {
+      "id": "VER-006-valid-anchored-glob-real-dated-prefix",
+      "rule_id": "VER-006",
+      "family": "VER",
+      "rule_statement": "The digit-CLASS-anchored glob must also beat a `?`-positional pattern (`????-??-??-<qslug>.md`): `?` matches ANY character, not only digits, so it can mistake a legacy undated filename for a dated one when the legacy slug happens to be 'date-shaped' in its first 11 characters.",
+      "valid": true,
+      "kind": "filename_scenario",
+      "path": "filenames/VER-006-valid-anchored-glob-real-dated-prefix.json"
+    },
+    {
+      "id": "VER-006-invalid-question-glob-digit-costume-collision",
+      "rule_id": "VER-006",
+      "family": "VER",
+      "rule_statement": "The digit-CLASS-anchored glob must also beat a `?`-positional pattern (`????-??-??-<qslug>.md`): `?` matches ANY character, not only digits, so it can mistake a legacy undated filename for a dated one when the legacy slug happens to be 'date-shaped' in its first 11 characters.",
+      "valid": false,
+      "kind": "filename_scenario",
+      "path": "filenames/VER-006-invalid-question-glob-digit-costume-collision.json"
+    },
+    {
+      "id": "VER-007-valid-word-boundary-truncation",
+      "rule_id": "VER-007",
+      "family": "VER",
+      "rule_statement": "A new-scheme (question-derived) slug longer than 60 characters is truncated at a WORD boundary, never mid-word. (The separate LEGACY slug function intentionally hard-cuts at exactly 60 chars and must never be changed to match -- it exists only to reproduce old filenames byte-for-byte.)",
+      "valid": true,
+      "kind": "filename_scenario",
+      "path": "filenames/VER-007-valid-word-boundary-truncation.json"
+    },
+    {
+      "id": "VER-007-invalid-mid-word-truncation",
+      "rule_id": "VER-007",
+      "family": "VER",
+      "rule_statement": "A new-scheme (question-derived) slug longer than 60 characters is truncated at a WORD boundary, never mid-word. (The separate LEGACY slug function intentionally hard-cuts at exactly 60 chars and must never be changed to match -- it exists only to reproduce old filenames byte-for-byte.)",
+      "valid": false,
+      "kind": "filename_scenario",
+      "path": "filenames/VER-007-invalid-mid-word-truncation.json"
+    },
+    {
+      "id": "PROV-001-valid-rank-order",
+      "rule_id": "PROV-001",
+      "family": "PROV",
+      "rule_statement": "Valid provenance tier values are exactly {authored, captured, attested, reconstructed}. Trust ranking, most to least trusted: authored < captured < attested < reconstructed (lower rank integer = more trusted).",
+      "valid": true,
+      "kind": "vector",
+      "path": "provenance/PROV-001-valid-rank-order.json"
+    },
+    {
+      "id": "PROV-001-invalid-rank-order",
+      "rule_id": "PROV-001",
+      "family": "PROV",
+      "rule_statement": "Valid provenance tier values are exactly {authored, captured, attested, reconstructed}. Trust ranking, most to least trusted: authored < captured < attested < reconstructed (lower rank integer = more trusted).",
+      "valid": false,
+      "kind": "vector",
+      "path": "provenance/PROV-001-invalid-rank-order.json"
+    },
+    {
+      "id": "PROV-002-valid-h1-kind-to-tier-mapping",
+      "rule_id": "PROV-002",
+      "family": "PROV",
+      "rule_statement": "A record whose H1 is `# ADR-...` ingests with provenance='authored'; a record whose H1 is `# Decision: ...` ingests with provenance='captured'. The two MUST map to different tiers.",
+      "valid": true,
+      "kind": "vector",
+      "path": "provenance/PROV-002-valid-h1-kind-to-tier-mapping.json",
+      "notes": "Cross-references records/REC-001-valid-adr-h1.md (-> authored) and records/REC-001-valid-decision-h1.md (-> captured)."
+    },
+    {
+      "id": "PROV-002-invalid-swapped-tier-mapping",
+      "rule_id": "PROV-002",
+      "family": "PROV",
+      "rule_statement": "A record whose H1 is `# ADR-...` ingests with provenance='authored'; a record whose H1 is `# Decision: ...` ingests with provenance='captured'. The two MUST map to different tiers.",
+      "valid": false,
+      "kind": "vector",
+      "path": "provenance/PROV-002-invalid-swapped-tier-mapping.json"
+    },
+    {
+      "id": "PROV-003-valid-absent-defaults-to-reconstructed",
+      "rule_id": "PROV-003",
+      "family": "PROV",
+      "rule_statement": "A node with a missing/absent `provenance` key, an empty string, or any unrecognised value MUST rank/count identically to `reconstructed` (the lowest tier) -- never silently promoted to a trusted tier.",
+      "valid": true,
+      "kind": "vector",
+      "path": "provenance/PROV-003-valid-absent-defaults-to-reconstructed.json"
+    },
+    {
+      "id": "PROV-003-invalid-absent-treated-as-authored",
+      "rule_id": "PROV-003",
+      "family": "PROV",
+      "rule_statement": "A node with a missing/absent `provenance` key, an empty string, or any unrecognised value MUST rank/count identically to `reconstructed` (the lowest tier) -- never silently promoted to a trusted tier.",
+      "valid": false,
+      "kind": "vector",
+      "path": "provenance/PROV-003-invalid-absent-treated-as-authored.json"
+    },
+    {
+      "id": "PROV-004-valid-golden-fraction",
+      "rule_id": "PROV-004",
+      "family": "PROV",
+      "rule_statement": "golden_fraction counts only nodes whose provenance is in {authored, captured, attested}; reconstructed (and absent-provenance) nodes never contribute to the golden numerator under any circumstance. An empty node list yields 0%, not an error.",
+      "valid": true,
+      "kind": "vector",
+      "path": "provenance/PROV-004-valid-golden-fraction.json"
+    },
+    {
+      "id": "PROV-004-invalid-golden-fraction-blends-reconstructed",
+      "rule_id": "PROV-004",
+      "family": "PROV",
+      "rule_statement": "golden_fraction counts only nodes whose provenance is in {authored, captured, attested}; reconstructed (and absent-provenance) nodes never contribute to the golden numerator under any circumstance. An empty node list yields 0%, not an error.",
+      "valid": false,
+      "kind": "vector",
+      "path": "provenance/PROV-004-invalid-golden-fraction-blends-reconstructed.json"
+    },
+    {
+      "id": "ENV-001-valid-universal-keys-present",
+      "rule_id": "ENV-001",
+      "family": "ENV",
+      "rule_statement": "Every command's JSON envelope MUST include a `command` key (the subcommand name) and a `status` key. These are the ONLY two keys guaranteed common to every command -- the envelope is a per-command tagged union, not one fixed shape.",
+      "valid": true,
+      "kind": "envelope",
+      "path": "envelopes/ENV-002-valid-why.json",
+      "notes": "Any of the 4 valid envelope fixtures in this directory demonstrates 'command' and 'status' both present; this entry cites the 'why' one. See also ENV-003/004/005-valid."
+    },
+    {
+      "id": "ENV-001-invalid-missing-status",
+      "rule_id": "ENV-001",
+      "family": "ENV",
+      "rule_statement": "Every command's JSON envelope MUST include a `command` key (the subcommand name) and a `status` key. These are the ONLY two keys guaranteed common to every command -- the envelope is a per-command tagged union, not one fixed shape.",
+      "valid": false,
+      "kind": "envelope",
+      "path": "envelopes/ENV-001-invalid-missing-status.json",
+      "notes": "A 'why'-shaped envelope with no 'status' key at all. MUST be rejected -- status is universal."
+    },
+    {
+      "id": "ENV-002-valid-why",
+      "rule_id": "ENV-002",
+      "family": "ENV",
+      "rule_statement": "The `why` command's envelope keys are EXACTLY {command, count, cutoff, query, results, score_stats, status} -- no more, no fewer.",
+      "valid": true,
+      "kind": "envelope",
+      "path": "envelopes/ENV-002-valid-why.json"
+    },
+    {
+      "id": "ENV-002-invalid-why-missing-score-stats",
+      "rule_id": "ENV-002",
+      "family": "ENV",
+      "rule_statement": "The `why` command's envelope keys are EXACTLY {command, count, cutoff, query, results, score_stats, status} -- no more, no fewer.",
+      "valid": false,
+      "kind": "envelope",
+      "path": "envelopes/ENV-002-invalid-why-missing-score-stats.json",
+      "notes": "Otherwise-correct 'why' envelope with 'score_stats' removed. MUST be rejected: score_stats is one of why's 7 required keys, not optional."
+    },
+    {
+      "id": "ENV-003-valid-list-intent",
+      "rule_id": "ENV-003",
+      "family": "ENV",
+      "rule_statement": "The `list-intent` command's envelope keys are EXACTLY {command, count, filter, intent, status}.",
+      "valid": true,
+      "kind": "envelope",
+      "path": "envelopes/ENV-003-valid-list-intent.json"
+    },
+    {
+      "id": "ENV-003-invalid-list-intent-missing-filter",
+      "rule_id": "ENV-003",
+      "family": "ENV",
+      "rule_statement": "The `list-intent` command's envelope keys are EXACTLY {command, count, filter, intent, status}.",
+      "valid": false,
+      "kind": "envelope",
+      "path": "envelopes/ENV-003-invalid-list-intent-missing-filter.json",
+      "notes": "'filter' removed. MUST be rejected."
+    },
+    {
+      "id": "ENV-004-valid-coverage",
+      "rule_id": "ENV-004",
+      "family": "ENV",
+      "rule_statement": "The `coverage` command's envelope keys are EXACTLY {command, status, authored_anchored_files, authored_anchored_symbols, code_files, code_symbols, dark_files, file_coverage_pct, files_with_intent, golden, intent_by_kind, intent_debt, symbol_coverage_pct, symbols_with_intent} (14 keys total).",
+      "valid": true,
+      "kind": "envelope",
+      "path": "envelopes/ENV-004-valid-coverage.json"
+    },
+    {
+      "id": "ENV-004-invalid-coverage-missing-golden",
+      "rule_id": "ENV-004",
+      "family": "ENV",
+      "rule_statement": "The `coverage` command's envelope keys are EXACTLY {command, status, authored_anchored_files, authored_anchored_symbols, code_files, code_symbols, dark_files, file_coverage_pct, files_with_intent, golden, intent_by_kind, intent_debt, symbol_coverage_pct, symbols_with_intent} (14 keys total).",
+      "valid": false,
+      "kind": "envelope",
+      "path": "envelopes/ENV-004-invalid-coverage-missing-golden.json",
+      "notes": "'golden' removed (all other 13 keys present, zeroed). MUST be rejected."
+    },
+    {
+      "id": "ENV-005-valid-check",
+      "rule_id": "ENV-005",
+      "family": "ENV",
+      "rule_statement": "The `check` command's envelope keys are EXACTLY {command, status, rules, files_checked, violations}.",
+      "valid": true,
+      "kind": "envelope",
+      "path": "envelopes/ENV-005-valid-check.json"
+    },
+    {
+      "id": "ENV-005-invalid-check-missing-violations",
+      "rule_id": "ENV-005",
+      "family": "ENV",
+      "rule_statement": "The `check` command's envelope keys are EXACTLY {command, status, rules, files_checked, violations}.",
+      "valid": false,
+      "kind": "envelope",
+      "path": "envelopes/ENV-005-invalid-check-missing-violations.json",
+      "notes": "'violations' removed. MUST be rejected."
+    },
+    {
+      "id": "ENV-006-valid-no-graph-identity-in-cli-envelope",
+      "rule_id": "ENV-006",
+      "family": "ENV",
+      "rule_statement": "`graph_identity` is NEVER part of the CLI's JSON envelope for any command. It is attached only by the MCP transport layer (mcp_server.py), and its presence or absence must never be used to satisfy or substitute for a command's real required-key set.",
+      "valid": true,
+      "kind": "envelope",
+      "path": "envelopes/ENV-003-valid-list-intent.json",
+      "notes": "The real captured list-intent envelope has NO 'graph_identity' key -- this is the conformant shape."
+    },
+    {
+      "id": "ENV-006-invalid-graph-identity-not-a-substitute-for-required-field",
+      "rule_id": "ENV-006",
+      "family": "ENV",
+      "rule_statement": "`graph_identity` is NEVER part of the CLI's JSON envelope for any command. It is attached only by the MCP transport layer (mcp_server.py), and its presence or absence must never be used to satisfy or substitute for a command's real required-key set.",
+      "valid": false,
+      "kind": "envelope",
+      "path": "envelopes/ENV-006-invalid-graph-identity-not-a-substitute-for-required-field.json",
+      "notes": "list-intent envelope missing 'count' (a real required key) but carrying an extra 'graph_identity' key. A validator that treats graph_identity's presence as compensating for the missing required field is non-conformant -- this envelope MUST be rejected purely on the missing 'count', and graph_identity's presence is irrelevant to that verdict (it is never part of the CLI schema at all)."
+    }
+  ]
+}

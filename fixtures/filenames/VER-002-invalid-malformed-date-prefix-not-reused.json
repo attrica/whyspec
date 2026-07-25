@@ -1,0 +1,11 @@
+{
+  "rule": "VER-002",
+  "statement": "Only a properly-formed 4-2-2 all-digit date prefix counts as an existing dated record for reuse purposes; a malformed prefix (e.g. a 2-digit year) MUST NOT be matched.",
+  "scenario_dir": "dirs/VER-002-invalid-malformed-date-prefix",
+  "existing_files": ["26-07-01-how-do-we-parse-dates.md"],
+  "input": {"chosen": "Adopt library X", "question": "How do we parse dates?", "today": "2026-07-25"},
+  "expected_output": "docs/decisions/2026-07-25-how-do-we-parse-dates.md",
+  "wrong_output_a_non_conformant_implementation_might_return": "docs/decisions/26-07-01-how-do-we-parse-dates.md",
+  "reason": "'26-07-01-' has only 2 digits in the year position, not 4, so the digit-anchored glob `[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-` does not match it. The conformant result is a FRESH dated file for today; reusing the malformed-prefix file is non-conformant.",
+  "note": "Verified against record_filename() on v0.8.3."
+}

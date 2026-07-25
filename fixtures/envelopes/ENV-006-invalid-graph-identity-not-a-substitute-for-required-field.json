@@ -1,0 +1,14 @@
+{
+  "command": "list-intent",
+  "filter": {
+    "kind": null,
+    "min_confidence": null,
+    "provenance": null
+  },
+  "graph_identity": {
+    "repo": "example/repo",
+    "path": "/abs/path/to/graph.json"
+  },
+  "intent": [],
+  "status": "ok"
+}

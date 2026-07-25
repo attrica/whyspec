@@ -1,0 +1,26 @@
+{
+  "authored_anchored_files": 0,
+  "authored_anchored_symbols": 0,
+  "code_files": 0,
+  "code_symbols": 0,
+  "command": "coverage",
+  "dark_files": [],
+  "file_coverage_pct": 0,
+  "files_with_intent": 0,
+  "intent_by_kind": {
+    "assumption": 0,
+    "constraint": 0,
+    "decision": 0,
+    "mechanism": 0,
+    "tradeoff": 0
+  },
+  "intent_debt": {
+    "dark_files": 0,
+    "orphaned_intent": 0,
+    "stale_decisions": null,
+    "unresolved_disputes": null
+  },
+  "status": "ok",
+  "symbol_coverage_pct": 0,
+  "symbols_with_intent": 0
+}

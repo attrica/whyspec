@@ -1,0 +1,7 @@
+{
+  "rule": "PROV-003",
+  "statement": "A node with an absent `provenance` key must NOT be treated as authored (or any tier above reconstructed) -- doing so silently inflates the golden fraction with unverified data.",
+  "input_nodes": [{}],
+  "wrong_treatment_a_non_conformant_implementation_might_apply": "treats the absent-provenance node as provenance='authored' (rank 0)",
+  "reason": "The absent case has NO evidence behind it. Defaulting it to a trusted tier (rather than the lowest tier, reconstructed) is exactly the silent promotion PROV-003 forbids. A validator MUST reject an implementation that ranks this node above reconstructed."
+}

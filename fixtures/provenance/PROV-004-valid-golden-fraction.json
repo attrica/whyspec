@@ -1,0 +1,19 @@
+{
+  "rule": "PROV-004",
+  "statement": "golden_fraction counts only nodes whose provenance is in {authored, captured, attested} toward the golden numerator; reconstructed (and absent-provenance) nodes never count, and an empty node list yields 0% rather than an error.",
+  "input_nodes": [
+    {"provenance": "authored"},
+    {"provenance": "captured"},
+    {"provenance": "attested"},
+    {"provenance": "reconstructed"},
+    {}
+  ],
+  "expected": {
+    "golden_count": 3,
+    "total_intent": 5,
+    "golden_fraction_pct": 60,
+    "by_provenance": {"authored": 1, "captured": 1, "attested": 1, "reconstructed": 2}
+  },
+  "expected_empty_input": {"golden_fraction_pct": 0},
+  "note": "Verified against whyfile.provenance.golden_fraction() on v0.8.3."
+}

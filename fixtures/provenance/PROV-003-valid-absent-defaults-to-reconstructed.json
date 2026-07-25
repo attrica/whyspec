@@ -1,0 +1,12 @@
+{
+  "rule": "PROV-003",
+  "statement": "A node with a missing/absent `provenance` key, an empty string, or any unrecognised value MUST sort/rank identically to `reconstructed` (the lowest-trust tier) -- never silently promoted to a golden tier.",
+  "input_nodes": [
+    {"provenance": "reconstructed"},
+    {},
+    {"provenance": ""},
+    {"provenance": "bogus-unrecognised-value"}
+  ],
+  "expected": "all four nodes rank equal to the reconstructed tier",
+  "note": "Verified: provenance_rank(None) == provenance_rank('') == provenance_rank('bogus') == provenance_rank('reconstructed') == 3 on v0.8.3."
+}

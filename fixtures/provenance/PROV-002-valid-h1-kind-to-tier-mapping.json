@@ -1,0 +1,9 @@
+{
+  "rule": "PROV-002",
+  "statement": "A record whose H1 is `# ADR-<digits> ...` ingests with provenance='authored'; a record whose H1 is `# Decision: ...` ingests with provenance='captured'. These are the only two record shapes REC-001 accepts, and they map to different provenance tiers.",
+  "cases": [
+    {"h1_form": "ADR", "record_fixture": "records/REC-001-valid-adr-h1.md", "expected_provenance": "authored"},
+    {"h1_form": "Decision", "record_fixture": "records/REC-001-valid-decision-h1.md", "expected_provenance": "captured"}
+  ],
+  "note": "Verified by running both fixtures through ingest.parse_adr + ingest.record_to_node on v0.8.3."
+}

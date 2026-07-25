@@ -1,0 +1,12 @@
+{
+  "rule": "VER-004",
+  "statement": "A legacy-named file that cannot be recognised as a decision record (no parseable `## Context` section -- e.g. hand-written notes in a foreign format) MUST NEVER be treated as a match, even if its filename slug matches exactly.",
+  "scenario_dir": "dirs/VER-004-invalid-unreadable-legacy",
+  "existing_files": ["adopt-library-x.md"],
+  "existing_file_is_unrecognised_freeform_text": true,
+  "input": {"chosen": "Adopt library X", "question": "How do we parse dates?", "today": "2026-07-25"},
+  "expected_output": "docs/decisions/2026-07-25-how-do-we-parse-dates.md",
+  "wrong_output_a_non_conformant_implementation_might_return": "docs/decisions/adopt-library-x.md",
+  "reason": "A file we cannot verify as recording the same (or any) decision is not ours to overwrite. Treating any file with a matching slug as a match risks clobbering a human's hand-written notes that happen to share a filename.",
+  "note": "Verified against record_filename() on v0.8.3."
+}

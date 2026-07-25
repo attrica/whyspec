@@ -1,0 +1,12 @@
+{
+  "rule": "VER-003",
+  "statement": "A legacy file whose `## Context` records a DIFFERENT question than the one being captured MUST NOT be reused, even though its chosen-derived filename slug is identical.",
+  "scenario_dir": "dirs/VER-003-invalid-legacy-not-stolen",
+  "existing_files": ["adopt-library-x.md"],
+  "existing_file_context": "How do we log errors?",
+  "input": {"chosen": "Adopt library X", "question": "How do we parse dates?", "today": "2026-07-25"},
+  "expected_output": "docs/decisions/2026-07-25-how-do-we-parse-dates.md",
+  "wrong_output_a_non_conformant_implementation_might_return": "docs/decisions/adopt-library-x.md",
+  "reason": "The legacy filename is keyed on the CHOSEN text ('Adopt library X'), which collides across unrelated decisions. Matching on filename alone (ignoring recorded Context) would silently overwrite the earlier, unrelated 'How do we log errors?' record -- the exact data-loss bug the dated scheme replaced.",
+  "note": "Verified against record_filename() on v0.8.3: a fresh dated file is created; the legacy file is left untouched."
+}

@@ -1,0 +1,9 @@
+{
+  "rule": "VER-007",
+  "statement": "A naive hard character-count truncation at exactly 60 chars is NOT conformant for the new (question-derived) slug scheme -- it must be rejected even though it is what a byte-for-byte port of a generic slugify() would produce.",
+  "input_text": "One reviewed taxonomy document mapping existing error classes and their owners",
+  "max_len": 60,
+  "wrong_slug_a_naive_hard_cut_would_produce": "one-reviewed-taxonomy-document-mapping-existing-error-classe",
+  "reason": "A plain 60-character hard cut lands mid-word, splitting 'classes' into 'classe'. The conformant slugify() finds the last '-' inside the 60-char window and cuts there instead, yielding 'one-reviewed-taxonomy-document-mapping-existing-error' (55 chars). NOTE: the pre-existing LEGACY slug function (used only to recognise old filenames, see VER-003/VER-004) intentionally reproduces this exact hard-cut behaviour and must never be changed to match -- this invalid example applies to the NEW-scheme slugify() only.",
+  "note": "Verified: whyfile.passes.capture._legacy_slug() on this exact input DOES produce 'one-reviewed-taxonomy-document-mapping-existing-error-classe' (mid-word) by design -- that legacy behaviour is correct for ITS rule (VER-004-adjacent: reproduce old filenames exactly); slugify() must not be 'simplified' to match it."
+}

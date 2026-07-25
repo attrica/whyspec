@@ -1,0 +1,13 @@
+{
+  "rule": "PROV-004",
+  "statement": "reconstructed nodes MUST NOT contribute to golden_count under any circumstance -- 'no blended metrics' is a hard rule, not an approximation.",
+  "input_nodes": [
+    {"provenance": "authored"},
+    {"provenance": "reconstructed"}
+  ],
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "golden_count": 2,
+    "golden_fraction_pct": 100
+  },
+  "reason": "Counts the reconstructed node as golden. The correct golden_count for this input is 1 (50%), not 2 (100%). A validator MUST reject an implementation that blends reconstructed intent into the golden numerator."
+}

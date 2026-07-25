@@ -1,0 +1,10 @@
+{
+  "rule": "VER-003",
+  "statement": "A pre-dated-scheme (legacy) filename `<chosen-slug>.md` is reused ONLY when the file's recorded `## Context` body matches the new question (whitespace/case-normalised).",
+  "scenario_dir": "dirs/VER-003-legacy-reused",
+  "existing_files": ["adopt-library-x.md"],
+  "existing_file_context": "How do we parse dates?",
+  "input": {"chosen": "Adopt library X", "question": "How do we parse dates?", "today": "2026-07-25"},
+  "expected_output": "docs/decisions/adopt-library-x.md",
+  "note": "Verified against record_filename() on v0.8.3: the legacy file is returned unchanged because its Context matches the new question exactly."
+}
