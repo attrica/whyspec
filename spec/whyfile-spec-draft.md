@@ -252,13 +252,25 @@ case-insensitively against the full trimmed heading text:
 > emitted level at 2. See §8, gap G2.
 
 **[REC-021]** The `Context` section carries the **question** the record answers. Emitters **MUST**
-render it (§4.10). A parser **MAY** ignore it: the reference implementation does not surface it as a
-parsed field, and it therefore does not reach the intent node.
+render it (§4.10).
 
-> **Known gap.** This makes the question durable in the file but absent from the queryable layer,
-> even though the question is the field the filename is derived from (§4.11) and the field used to
-> decide whether an existing record is *this* decision. The asymmetry is real and unresolved; this
-> document records it rather than inventing a parse rule. See §8, gap G3.
+**[REC-107]** A parser **MUST** yield the `Context` body as a `question` field on the parsed
+record, and it **MUST** reach the intent node. An empty or absent `Context` yields an absent
+`question`, never an empty string.
+
+> **Resolves gap G3.** The question was previously parsed for filename derivation (§4.11) and for
+> deciding whether an existing record answers *this* decision (§4.11), then discarded — durable in
+> the file and absent from the queryable layer.
+>
+> The asymmetry was not merely a missing field. **The question is what identifies a decision.**
+> A record is the answer currently occupying a question-shaped slot: that is why the filename is
+> derived from the question rather than from the chosen option, and why re-deciding the same
+> question updates an existing record instead of forking a new one. A representation that omits
+> the question therefore omits the very thing that makes two records comparable, and cannot
+> recognise that two answers written a year apart address the same slot.
+>
+> It is also the retrieval key. A reader's query is almost always shaped like the question, while
+> a record without one can only be matched against its answer.
 
 ### 4.5.1 Alternatives
 
@@ -277,6 +289,36 @@ not an error and not the prose.
 **[REC-026]** Records **SHOULD NOT** nest list items under an alternative. Nesting carries no
 meaning in this format: the reference implementation flattens every marker to a top-level item, so
 a sub-bullet becomes an alternative in its own right.
+
+#### 4.5.2 Alternative disposition
+
+**[REC-097]** An alternative item **MAY** carry a **disposition** and a **rejection rationale**,
+in the form `<option> — <disposition>: <rationale>`.
+
+**[REC-098]** `<disposition>` **MUST** be one of exactly `rejected`, `deferred`,
+`partially-adopted`, or `not-evaluated`. The set is closed; adding one requires a version marker
+(§7).
+
+**[REC-099]** An alternative carrying no disposition **MUST** yield the whole item as its option
+text, with disposition and rationale absent. This preserves [REC-022]–[REC-025] exactly: a bare
+string remains a valid alternative.
+
+**[REC-100]** `deferred` **MUST NOT** be treated as equivalent to `rejected`. A deferred option
+remains available.
+
+This is the format's answer to its own central question. A decision that records only what was
+chosen has recorded a commitment; a decision that records why the alternatives *lost* has
+recorded a belief. Two teams that chose the same option for opposite reasons — one rejecting the
+alternative on operating cost, one on data-model fit — hold different beliefs and will diverge at
+the next decision, and a format that stores both cases identically cannot show why.
+
+The distinction [REC-100] draws is the one most often lost. "We ruled this out" and "we might
+still do this" are different states of the world, and a corpus that conflates them cannot answer
+what it has left on the table.
+
+The rule is additive by construction ([REC-099]): every existing record continues to parse
+unchanged, with disposition simply absent. Absence means *not recorded*, never *no disposition
+existed*.
 
 ### 4.6 Status
 
@@ -307,6 +349,41 @@ ingesting it would invert its meaning.
 **[REC-033]** No other status value is normative. `accepted`, `open`, `resolved`, `superseded`,
 `proposed` and similar values are conventional; implementations **MUST NOT** attach behaviour to
 them beyond [REC-032].
+
+#### 4.6.1 Settled and unsettled status
+
+> **This subsection is a meaning change, not a vocabulary extension.** It alters how an existing
+> field is interpreted, and is therefore the one change in this revision that requires a version
+> marker and a migration note under [VER-001]. Every other addition here is additive.
+
+**[REC-101]** A status **MUST** be classified as **settled** or **unsettled**. `accepted` and
+`superseded` are settled. `proposed`, `draft`, and `rejected` are unsettled. A status outside
+this set **MUST** be classified unsettled.
+
+**[REC-102]** Only a record with a **settled** status **MUST** yield ground-truth intent.
+
+**[REC-103]** A record with an **unsettled** status other than `rejected` **MUST** still be
+ingested, **MUST** be marked as unsettled on the resulting intent, and **MUST NOT** be counted
+toward any trusted-evidence metric ([PROV-010]).
+
+**[REC-104]** A record whose status is `rejected` **MUST NOT** yield intent of any tier, per
+[REC-032], and this **MUST** hold at every layer that produces intent — not only at corpus
+ingest.
+
+The problem being fixed is that a record marked `proposed` currently becomes intent
+indistinguishable from a settled decision, at full confidence, and is counted as ground truth.
+Deliberation-in-progress and a decision therefore look identical to any consumer, which is
+precisely the confusion the provenance axis exists to prevent — applied to settledness instead
+of to source.
+
+[REC-103] deliberately keeps unsettled records *visible*. Excluding them entirely would hide
+what a team is actively considering, which is useful and often urgent information; the fix is to
+mark them, not to suppress them. Deciding whether something is settled is the author's act, and
+the format's job is to carry that decision faithfully rather than to infer it.
+
+[REC-104] closes a layering gap: the `rejected` exclusion is currently enforced where a
+directory of records is ingested, so a consumer converting a single record to intent by another
+path bypasses it entirely.
 
 ### 4.7 Assumptions
 
@@ -356,6 +433,26 @@ filename carries no such run **MUST NOT** be resolvable as a supersession target
 
 **[REC-044]** A supersession reference that resolves to no known record **MUST** be dropped
 silently, not reported as a violation. Records are ingested from a directory that may be partial.
+
+**[REC-105]** A supersession reference that resolves to **more than one** candidate record
+**MUST** be dropped, exactly as [REC-044] drops an unresolved one. An implementation **MUST NOT**
+select among the candidates by ingest order, filesystem order, recency, or any other tiebreak.
+
+**[REC-106]** A filename **MUST NOT** be treated as carrying an ADR number when the four-digit
+run is part of a date. A dated filename of the form `YYYY-MM-DD-<slug>` **MUST NOT** be
+resolvable as `ADR-<YYYY>`.
+
+[REC-106] fixes a defect rather than adding a capability, and the defect is severe because it
+produces confident wrong answers rather than absences. Where target resolution takes the first
+four-digit run in a filename, every dated record captured in a given year registers under the
+same key — so a reference intended for one decision resolves to an unrelated record that merely
+shares a year, chosen by ingest order. A reference to a decision about connection pooling can
+resolve to a decision about logging, and the resulting edge is indistinguishable from a correct
+one.
+
+Together [REC-105] and [REC-106] state the general principle: **an ambiguous reference is an
+absent reference.** A format may decline to answer. It may not guess and present the guess as
+fact.
 
 ### 4.9 Resolution delta
 
@@ -558,6 +655,147 @@ absolute spelling makes every node id machine-specific: the same record ingested
 happens to pass an absolute path forks the node that a repository-relative re-ingest produces, and
 every reference to the original silently dangles.
 
+### 4.13 Record identifier
+
+**[REC-075]** A record **MAY** carry an identifier in the inline field form, `**Id:** <value>`,
+placed with `Status` and `Date`.
+
+**[REC-076]** An identifier, once written, **MUST NOT** be regenerated, and **MUST NOT** be
+derived from any mutable part of the record. In particular it **MUST NOT** be derived from the
+title, the body, or the filename.
+
+**[REC-077]** An identifier **MUST** be stable across an edit to any other part of the record. A
+record whose title is corrected retains its identifier.
+
+**[REC-078]** An identifier **MUST** be unique within a corpus. Two records sharing an
+identifier is an error; neither **MUST** be treated as the referent.
+
+Node identity (§4.12) and the record identifier answer different questions. The node identity is
+content-derived and exact: it names *this* record as it is now, and it necessarily changes when
+the content it hashes changes. The identifier is *citational*: it survives revision so that other
+records can refer to this decision across its lifetime. A format with only the first cannot be
+cited; a format with only the second cannot detect that anything changed. Both are required, and
+conflating them is what makes an in-place title correction silently fork a node and dangle every
+reference to it.
+
+### 4.14 Actor
+
+**[REC-079]** A record **MAY** carry an actor in the inline field form, `**Actor:** <kind>:<id>`.
+
+**[REC-080]** `<kind>` **MUST** be one of exactly `human` or `agent`. The set is closed; adding a
+kind requires a version marker (§7).
+
+**[REC-081]** An absent actor **MUST** be read as *unrecorded*. It **MUST NOT** be defaulted to
+`human`, and **MUST NOT** be inferred from any other field.
+
+The actor is not the same claim as provenance. Provenance says what *kind of source* a record
+came from and therefore how much it is worth; the actor says *who or what* wrote it. A format
+that records attribution without recording the attributee is incomplete in the middle of its own
+central commitment — and the gap only becomes load-bearing once corpora contain records written
+by automated agents, at which point a reader who cannot distinguish an agent's capture from a
+human's decision has lost the ability to filter on the distinction that matters most.
+
+[REC-081]'s absence rule follows the same logic as the provenance default (§5.2): defaulting an
+unknown to the stronger reading silently promotes unattributed material.
+
+### 4.15 Governs — declared artifact scope
+
+**[REC-082]** A record **MAY** carry a `## Governs` section listing the artifacts the decision
+governs, one per list item, parsed per [REC-022]–[REC-025].
+
+**[REC-083]** Each item **MUST** be an **artifact reference**. This version defines exactly one
+kind of artifact reference: a **repository-relative path glob**. Other kinds are reserved and
+undefined; an implementation **MUST NOT** invent one, and adding a kind requires a version marker
+(§7).
+
+**[REC-084]** An absent `## Governs` section **MUST** be read as *scope not declared*. It
+**MUST NOT** be read as *governs nothing*.
+
+**[REC-085]** A declared scope **MUST** inherit the provenance of the record that declares it.
+
+**[REC-086]** An artifact reference that resolves to **zero** artifacts **MUST** be reported as a
+distinct, named state — neither silently dropped nor treated as an error.
+
+[REC-086] is the section's most useful rule and the least obvious. A declared scope can go stale:
+code moves, and a glob outlives the thing it named. The objection this invites is that a stale
+declaration is worse than an honest inference, because it carries the authority of something a
+human wrote. The answer is that **a declaration that matches nothing is mechanically detectable,
+and a stale inference is not** — an inference that has quietly stopped being true simply
+disappears, while an empty resolution announces itself. Requiring the empty case to be reported
+converts the format's most-feared failure mode into its best staleness signal.
+
+[REC-085] is what moves a decision's binding to its code out of the weakest evidence tier. An
+implementation that *infers* which code a decision governs produces `reconstructed` intent, which
+[PROV-001] says a consumer must never present as something a human decided. A declared scope was
+written by whoever wrote the record, and is worth exactly what the record is worth.
+
+### 4.16 Relations
+
+**[REC-087]** A record **MAY** carry a `## Relations` section, one relation per list item, in the
+form `<relation> <identifier>`.
+
+**[REC-088]** `<relation>` **MUST** be one of exactly `supersedes`, `refines`, `constrains`,
+`motivated_by`, `trade_off_against`, or `contradicts`. The set is closed; adding a relation
+requires a version marker (§7).
+
+**[REC-089]** `<identifier>` **MUST** be a record identifier ([REC-075]) or an ADR number.
+
+**[REC-090]** A relation whose target cannot be resolved **MUST** be dropped silently, per the
+same reasoning as [REC-044] — a corpus may be partial.
+
+**[REC-091]** A relation whose target is **ambiguous** — resolving to more than one candidate
+record — **MUST** be dropped, and **MUST NOT** be resolved to any one of them. An implementation
+**MUST NOT** select by ingest order, recency, or any other tiebreak.
+
+**[REC-092]** A declared relation **MUST** carry the provenance of the record declaring it
+(§5.5). An inferred relation **MUST NOT** be presented as a declared one.
+
+[REC-091] is the single most important rule added in this revision, because it is the only one
+that stops the format from asserting something false. An unresolvable reference produces no edge,
+which is a safe failure — a reader sees nothing and knows nothing. An *ambiguous* reference
+resolved by tiebreak produces a **wrong** edge that is indistinguishable from a correct one, and
+it inherits the authority of whatever tier the declaring record carries. Silence is recoverable;
+a confident wrong answer is not.
+
+Prose supersession ([REC-040]–[REC-044]) remains valid and is unaffected. `## Relations` is the
+declared form; neither supersedes the other.
+
+### 4.17 Evidence
+
+**[REC-093]** A record **MAY** carry an `## Evidence` section, one entry per list item, in the
+form `<method>: <qualifier>`, where the qualifier is optional.
+
+**[REC-094]** `<method>` **MUST** be one of exactly `grep`, `diff`, `executed`, `read`, or
+`traced`. The set is closed; an unrecognized method is a validation error at capture time, not a
+silently unflagged value.
+
+**[REC-095]** An entry **MAY** cite the deliberation that produced the decision, as a reference
+to where that deliberation occurred. A citation **MUST** be a reference. An implementation
+**MUST NOT** embed deliberation content in the record, and this specification defines no field
+for doing so.
+
+**[REC-096]** A record with no `## Evidence` section records nothing about method. It
+**MUST NOT** be read as *no evidence existed*, and **MUST NOT** be flagged on that basis.
+
+Evidence and provenance are orthogonal, and the distinction is easy to lose. Provenance answers
+*how strong is this claim*; evidence method answers *how did the author come to make it*. The
+second is what tells a later reader **how far a claim can be stretched** — a conclusion recorded
+as "executed, one command" is visibly unable to support a claim about every command, and a reader
+sees that without re-running anything.
+
+[REC-095] draws a deliberate line. Deliberation is how intent forms and is therefore genuinely
+valuable as an evidence chain, but it is not itself a claim and must not become intent: ingesting
+it would fill a corpus of decisions with tentative positions and abandoned reasoning, and a
+reader could no longer distinguish *we decided this* from *someone said this while thinking*.
+Pointing rather than embedding also keeps a conforming implementation from becoming the store of
+record for conversational content, which carries privacy exposure wholly disproportionate to the
+value of the citation.
+
+The corollary is worth stating plainly for implementers: where deliberation occurred somewhere
+durable, cite it; where it occurred somewhere ephemeral, **do not cite it at all — distil the
+reasoning into the record's rationale.** A citation that resolves to nothing is worse than no
+citation, because it presents as evidence and yields none.
+
 ---
 
 ## 5. Provenance vocabulary
@@ -630,6 +868,33 @@ exactly `{authored, captured, attested}`.
 **[PROV-012]** A trust metric **MUST NOT** blend tiers into a single scalar without also reporting
 the per-tier breakdown. A blended number is the one output that makes a corpus of inferences look
 like a corpus of decisions.
+
+### 5.5 Provenance of relationships
+
+**[PROV-013]** An **edge** — any relationship between two intent nodes, or between an intent node
+and an artifact — **MUST** carry its own provenance. An edge **MUST NOT** inherit provenance from
+either node it connects.
+
+**[PROV-014]** A relation declared in a record (§4.16) **MUST** carry the provenance of the
+declaring record. A relation produced by inference **MUST** be `reconstructed`.
+
+**[PROV-015]** A binding between intent and an artifact **MUST** be `reconstructed` unless it was
+declared (§4.15). An implementation **MUST NOT** present an inferred binding at any stronger
+tier.
+
+**[PROV-016]** Ordering and trust rules ([PROV-002], [PROV-004]) apply to edges exactly as they
+apply to nodes.
+
+Treating provenance as a property of nodes alone is a category error with a concrete consequence.
+A relationship is itself a claim — *this decision depends on that one*, *this decision governs
+this code* — and it can be asserted by a human or guessed by a heuristic. Those are not equally
+trustworthy, and inheriting a tier from a connected node makes them indistinguishable.
+
+The failure this prevents is already observable in practice: an implementation that binds intent
+to code with a similarity heuristic at moderate confidence, over nodes that were authored, yields
+edges wearing the strongest tier the format has. Every downstream consumer then reads a guess as
+a human decision. [PROV-015] makes the tier honest, and §4.15's declared scope is what allows a
+binding to legitimately earn a stronger one.
 
 ---
 
@@ -975,6 +1240,33 @@ hypothetical.
 
 ---
 
+### 7.5 Applying the rule to this revision
+
+This revision is the first occasion the versioning rule has had to adjudicate real changes, so
+the working is shown.
+
+**Vocabulary extensions — no version marker.** The record identifier (§4.13), actor (§4.14),
+declared scope (§4.15), relations (§4.16), evidence (§4.17), alternative disposition (§4.5.2),
+and the question field ([REC-107]) are all new optional sections or fields. Every existing record
+parses unchanged, and in each case absence means *not recorded* rather than a claim. Edge
+provenance (§5.5) constrains a structure the format did not previously describe at all.
+
+**A meaning change — version marker required.** Settled and unsettled status (§4.6.1) alters how
+an existing field is interpreted: a status of `proposed` previously yielded ground-truth intent
+and now does not. Records do not change, but their *meaning* does, and a consumer written against
+the earlier reading would silently disagree with one written against this. That is exactly the
+line [VER-001] draws, and this change sits on the far side of it.
+
+**The ambiguity rules are a defect fix, not a change of meaning** ([REC-105], [REC-106]). They
+narrow behaviour that produced demonstrably wrong output — a reference resolving to an unrelated
+record that merely shared a year. No conforming implementation could have relied on the previous
+behaviour, because the previous behaviour was not deterministic with respect to anything a reader
+could see.
+
+That one change of the eight requires a marker is the rule working as designed: additive
+extension is cheap and meaning change is expensive, so the format grows freely and reinterprets
+rarely.
+
 ## 8. Known gaps
 
 Places where the reference implementation is genuinely silent or ambiguous. These are recorded as
@@ -985,7 +1277,7 @@ gap: implementers build on it, and it becomes real without ever having been deci
 |---|---|
 | **G1** | **Fenced code blocks are not excluded from parsing.** Headings and the inline status line are matched over raw text (§3.1). A record demonstrating record syntax inside a fence can change its own parse — and a `**Status:** Rejected` line in a fence causes the record to be excluded from ingest entirely ([REC-032]). Whether the fix is fence-aware scanning or scoping the status search to the pre-first-H2 region is undecided. |
 | **G2** | **Section heading level is unconstrained.** `### Decision` and `###### Decision` are both accepted (§4.5). Whether parsers should tighten to level 2 or emitters should merely be constrained is undecided. |
-| **G3** | **The `Context` section is written but never parsed.** The question is durable in the file, used for filename derivation ([REC-056]) and for legacy-record claiming ([REC-064]), yet never reaches the intent node (§4.5, [REC-021]). Whether the question should become a node field is undecided. |
+| ~~G3~~ | **RESOLVED by [REC-107].** The `Context` body is now parsed as `question` and reaches the intent node. The question is what identifies a decision — it is why the filename derives from it and why re-deciding updates rather than forks — so a representation omitting it could not recognise two answers to the same question. |
 | **G4** | **`resolution_delta` is not queryable.** Set on the node and reported at capture, but projected into no query result envelope ([REC-045]). The highest-signal field in the format is write-only from a consumer's point of view. |
 | **G5** | **Assumption provenance does not inherit.** Every assumption is minted `authored` regardless of its record's kind ([PROV-007]). |
 | **G6** | **`command` is not universal on every transport.** Four failure paths on the tool-call transport omit it ([ENV-012]). |
@@ -1115,6 +1407,39 @@ Every normative rule, with its one-line statement.
 | REC-072 | Normalized label: lowercase, non-`[a-z0-9]` runs → `_`, strip edge `_`. |
 | REC-073 | The source path in identity MUST be repository-relative, POSIX-separated. |
 | REC-074 | A path outside a repository falls back to POSIX absolute; canonicalization MUST NOT raise. |
+| REC-075 | A record MAY carry an identifier in the inline field form, Id: <value>, placed with Status and Date. |
+| REC-076 | An identifier, once written, MUST NOT be regenerated, and MUST NOT be derived from any mutable part of the record. |
+| REC-077 | An identifier MUST be stable across an edit to any other part of the record. |
+| REC-078 | An identifier MUST be unique within a corpus. |
+| REC-079 | A record MAY carry an actor in the inline field form, Actor: <kind>:<id>. |
+| REC-080 | <kind> MUST be one of exactly human or agent. |
+| REC-081 | An absent actor MUST be read as *unrecorded*. |
+| REC-082 | A record MAY carry a ## Governs section listing the artifacts the decision governs, one per list item, parsed per [REC…. |
+| REC-083 | Each item MUST be an artifact reference. |
+| REC-084 | An absent ## Governs section MUST be read as *scope not declared*. |
+| REC-085 | A declared scope MUST inherit the provenance of the record that declares it. |
+| REC-086 | An artifact reference that resolves to zero artifacts MUST be reported as a distinct, named state — neither silently d…. |
+| REC-087 | A record MAY carry a ## Relations section, one relation per list item, in the form <relation> <identifier>. |
+| REC-088 | <relation> MUST be one of exactly supersedes, refines, constrains, motivated_by, trade_off_against, or contradicts. |
+| REC-089 | <identifier> MUST be a record identifier ([REC-075]) or an ADR number. |
+| REC-090 | A relation whose target cannot be resolved MUST be dropped silently, per the same reasoning as [REC-044] — a corpus ma…. |
+| REC-091 | A relation whose target is ambiguous — resolving to more than one candidate record — MUST be dropped, and MUST NOT be …. |
+| REC-092 | A declared relation MUST carry the provenance of the record declaring it (§5.5). |
+| REC-093 | A record MAY carry an ## Evidence section, one entry per list item, in the form <method>: <qualifier>, where the quali…. |
+| REC-094 | <method> MUST be one of exactly grep, diff, executed, read, or traced. |
+| REC-095 | An entry MAY cite the deliberation that produced the decision, as a reference to where that deliberation occurred. |
+| REC-096 | A record with no ## Evidence section records nothing about method. |
+| REC-097 | An alternative item MAY carry a disposition and a rejection rationale, in the form <option> — <disposition>: <rational…. |
+| REC-098 | <disposition> MUST be one of exactly rejected, deferred, partially-adopted, or not-evaluated. |
+| REC-099 | An alternative carrying no disposition MUST yield the whole item as its option text, with disposition and rationale ab…. |
+| REC-100 | deferred MUST NOT be treated as equivalent to rejected. |
+| REC-101 | A status MUST be classified as settled or unsettled. |
+| REC-102 | Only a record with a settled status MUST yield ground-truth intent. |
+| REC-103 | A record with an unsettled status other than rejected MUST still be ingested, MUST be marked as unsettled on the resul…. |
+| REC-104 | A record whose status is rejected MUST NOT yield intent of any tier, per [REC-032], and this MUST hold at every layer …. |
+| REC-105 | A supersession reference that resolves to more than one candidate record MUST be dropped, exactly as [REC-044] drops a…. |
+| REC-106 | A filename MUST NOT be treated as carrying an ADR number when the four-digit run is part of a date. |
+| REC-107 | A parser MUST yield the Context body as a question field on the parsed record, and it MUST reach the intent node. |
 
 #### Provenance
 
@@ -1132,6 +1457,10 @@ Every normative rule, with its one-line statement.
 | PROV-010 | The golden (trusted) tiers MUST be exactly `{authored, captured, attested}`. |
 | PROV-011 | `reconstructed` intent MUST NOT count toward any trusted-evidence metric. |
 | PROV-012 | A blended trust metric MUST also report the per-tier breakdown. |
+| PROV-013 | An edge — any relationship between two intent nodes, or between an intent node and an artifact — MUST carry its own pr…. |
+| PROV-014 | A relation declared in a record (§4.16) MUST carry the provenance of the declaring record. |
+| PROV-015 | A binding between intent and an artifact MUST be reconstructed unless it was declared (§4.15). |
+| PROV-016 | Ordering and trust rules ([PROV-002], [PROV-004]) apply to edges exactly as they apply to nodes. |
 
 #### Envelope
 
