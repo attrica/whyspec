@@ -1,0 +1,12 @@
+{
+  "rule": "REC-066",
+  "statement": "An empty question matches only a recorded context of `(none recorded)`.",
+  "records_dir_files": {
+    "keep-the-window.md": "# Decision: Keep the window\n\n## Context\n\nShould the window change?\n\n## Decision\n\nThe window stays as it is.\n"
+  },
+  "chosen": "Keep the window",
+  "question": "",
+  "today": "2026-07-25",
+  "expected_filename": "2026-07-25-keep-the-window.md",
+  "note": "An EMPTY question against a legacy record recording a REAL question. They MUST NOT match: the legacy file is left alone and a fresh dated record is minted. An implementation that treats an empty question as a wildcard would overwrite an unrelated decision's record -- the exact data-loss class REC-056 and REC-065 exist to kill."
+}

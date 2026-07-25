@@ -1,0 +1,17 @@
+{
+  "rule": "REC-052",
+  "statement": "Alternatives MUST be emitted as a flat one-based `N. ` numbered list in supplied order.",
+  "inputs": {
+    "chosen": "Serve reads from a replica",
+    "question": "How do we shed read load?",
+    "options": [
+      "Serve reads from a replica",
+      "Shard the primary",
+      "Add a cache tier"
+    ],
+    "rationale": "A replica absorbs read load without a resharding project.",
+    "date": "2026-04-02"
+  },
+  "expected_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n3. Add a cache tier\n",
+  "note": "Three options render as `1. `, `2. `, `3. ` in SUPPLIED order -- one-based (not zero-based), flat (no nesting), and unsorted. Zero-based numbering or sorted output MUST be rejected."
+}

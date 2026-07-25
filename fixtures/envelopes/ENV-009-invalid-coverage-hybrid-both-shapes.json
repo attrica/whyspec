@@ -1,0 +1,42 @@
+{
+  "authored_anchored_files": 6,
+  "authored_anchored_symbols": 11,
+  "code_files": 40,
+  "code_symbols": 210,
+  "command": "coverage",
+  "dark_files": 12,
+  "explain": "src/search/cache.py",
+  "file_coverage_pct": 45,
+  "files_with_intent": 18,
+  "golden": {
+    "by_provenance": {
+      "attested": 2,
+      "authored": 9,
+      "captured": 5,
+      "reconstructed": 24
+    },
+    "golden_count": 16,
+    "golden_fraction_pct": 40,
+    "golden_tiers": [
+      "attested",
+      "authored",
+      "captured"
+    ],
+    "total_intent": 40
+  },
+  "intent_by_kind": {
+    "constraint": 7,
+    "decision": 21,
+    "mechanism": 12
+  },
+  "intent_debt": {
+    "dark_files": 12,
+    "orphaned_intent": 4,
+    "stale_decisions": null,
+    "unresolved_disputes": null
+  },
+  "status": "ok",
+  "symbol_coverage_pct": 22,
+  "symbols_with_intent": 47,
+  "trace_present": true
+}

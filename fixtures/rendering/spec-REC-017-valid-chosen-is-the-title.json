@@ -1,0 +1,16 @@
+{
+  "rule": "REC-017",
+  "statement": "For a decision record the title is the chosen option; emitters MUST write the chosen option as the title.",
+  "inputs": {
+    "chosen": "Serve reads from a replica",
+    "question": "How do we shed read load?",
+    "options": [
+      "Serve reads from a replica",
+      "Shard the primary"
+    ],
+    "rationale": "A replica absorbs read load without a resharding project.",
+    "date": "2026-04-02"
+  },
+  "expected_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+  "note": "The H1 is exactly `# Decision: <chosen>`. This is what makes REC-045's resolution_delta meaningful: the delta compares the recommendation against the TITLE, so a title that is not the chosen option silently corrupts every recorded override."
+}

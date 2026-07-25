@@ -1,0 +1,16 @@
+{
+  "rule": "FIL-009",
+  "spec_rule_ids": [
+    "REC-059",
+    "REC-061"
+  ],
+  "statement": "Counter-example: leaving a long single-word slug unbounded rather than hard-cutting it. The word-boundary rule MUST NOT be read as a licence to exceed the bound when no boundary exists.",
+  "scenario_dir": "dirs/FIL-009-slug-bound",
+  "existing_files": [],
+  "input": {
+    "question": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "expected_slug": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "expected_len": 75,
+  "note": "Non-conformant: 75 > 60. Rejecting this slug is the test."
+}

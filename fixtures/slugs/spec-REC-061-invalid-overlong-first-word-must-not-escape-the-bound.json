@@ -1,0 +1,9 @@
+{
+  "rule": "REC-061",
+  "statement": "A first word exceeding the bound MUST be hard-cut -- the only permitted mid-word cut.",
+  "input_text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa tail",
+  "max_len": 60,
+  "expected_slug": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "note": "The first word is 61 characters -- one over the bound -- so there is no earlier `-` to truncate at. The slug MUST be hard-cut to 60. An implementation that returns the whole first word because 'the word-boundary rule found no boundary' emits the 61-character non-conformant slug shown, leaving the slug unbounded exactly when the bound matters most.",
+  "non_conformant_slug": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+}

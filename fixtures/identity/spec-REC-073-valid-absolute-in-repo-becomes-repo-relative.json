@@ -1,0 +1,8 @@
+{
+  "repo_root_placeholder": "<REPO_ROOT>",
+  "input_path": "<REPO_ROOT>/docs/decisions/2026-04-02-shed-read-load.md",
+  "expected": "docs/decisions/2026-04-02-shed-read-load.md",
+  "rule": "REC-073",
+  "statement": "The canonical source path MUST be repository-relative and POSIX-separated.",
+  "note": "An ABSOLUTE path to a record inside a repository MUST canonicalize to its repository-relative POSIX spelling. Substitute a real repository root for `<REPO_ROOT>` when running this fixture. This is what makes an identity reproducible across clones: hashing the absolute spelling makes every node id machine-specific, so the same record ingested via an absolute path forks the node a relative re-ingest produces."
+}

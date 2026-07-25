@@ -1,0 +1,9 @@
+# Decision: Read me from the reserved root name
+
+## Context
+
+A file placed at the reserved bare root name.
+
+## Decision
+
+This file MUST NOT be read as a record by any implementation.

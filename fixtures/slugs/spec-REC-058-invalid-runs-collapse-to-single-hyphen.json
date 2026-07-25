@@ -1,0 +1,9 @@
+{
+  "rule": "REC-058",
+  "statement": "Slug derivation: lowercase, non-`[a-z0-9]` runs collapse to a single `-`, edges stripped.",
+  "input_text": "retry  budget --- per // caller?",
+  "max_len": 60,
+  "expected_slug": "retry-budget-per-caller",
+  "note": "Several multi-character non-alphanumeric runs ('  ', ' --- ', ' // '). Each MUST become exactly ONE hyphen. An implementation replacing character-by-character yields 'retry--budget-----per----caller' -- a different filename for the same question, which breaks REC-067 idempotent reuse.",
+  "non_conformant_slug": "retry--budget-----per----caller"
+}

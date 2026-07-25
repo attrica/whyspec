@@ -1,0 +1,10 @@
+{
+  "records_dir_files": {},
+  "chosen": "Keep the window",
+  "question": "",
+  "today": "2026-07-25",
+  "expected_filename": "2026-07-25-decision.md",
+  "rule": "REC-069",
+  "statement": "Otherwise the destination MUST be `<today>-<question-slug>.md`.",
+  "note": "An empty records directory and an EMPTY question. The question slug of an empty string is the literal `decision` (REC-062), so REC-069 requires `2026-07-25-decision.md`. DIVERGENCE: v0.8.3 substitutes the CHOSEN option for an empty question before slugging (`slugify(question.strip() or chosen)`) and emits `2026-07-25-keep-the-window.md` -- a chosen-derived filename, which is precisely the collision class REC-056 exists to kill. Two captures with no question that happen to choose the same words would land on the same file. The spec does not describe this fallback at all: either REC-069 must state it, or the implementation must drop it."
+}

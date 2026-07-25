@@ -1,0 +1,19 @@
+{
+  "rule": "FIL-010",
+  "spec_rule_ids": [
+    "REC-066",
+    "REC-064"
+  ],
+  "statement": "An empty question MUST be treated as matching a recorded `## Context` of `(none recorded)`, and ONLY that. `(none recorded)` is what an emitter writes when the question was genuinely unrecorded, so the two spellings of 'no question' have to agree -- otherwise a re-capture forks a twin record.",
+  "scenario_dir": "dirs/FIL-010-none-recorded",
+  "existing_files": [
+    "adopt-library-x.md"
+  ],
+  "input": {
+    "chosen": "Adopt library X",
+    "question": "",
+    "today": "2026-07-25"
+  },
+  "expected_output": "docs/decisions/adopt-library-x.md",
+  "note": "Verified by execution: the legacy file whose Context body is `(none recorded)` is reused. A legacy file recording a REAL question is NOT claimed by an empty question -- see the invalid pair."
+}

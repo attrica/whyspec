@@ -1,0 +1,37 @@
+{
+  "rule": "PROV-006",
+  "spec_rule_ids": [
+    "PROV-004",
+    "PROV-009"
+  ],
+  "statement": "When results are ordered by trust, provenance is the PRIMARY sort key and the numeric confidence only the secondary one. A high-confidence `reconstructed` node MUST NOT outrank a low-confidence `authored` one; confidence only breaks ties inside a tier.",
+  "input": [
+    {
+      "id": "intent_a",
+      "provenance": "reconstructed",
+      "confidence_score": 0.99
+    },
+    {
+      "id": "intent_b",
+      "provenance": "authored",
+      "confidence_score": 0.1
+    },
+    {
+      "id": "intent_c",
+      "provenance": "captured",
+      "confidence_score": 0.95
+    },
+    {
+      "id": "intent_d",
+      "provenance": "captured",
+      "confidence_score": 0.2
+    }
+  ],
+  "expected_order": [
+    "intent_b",
+    "intent_c",
+    "intent_d",
+    "intent_a"
+  ],
+  "note": "Verified by execution: sorting on (provenance_rank, -confidence_score) at v0.8.3 yields this order. intent_b (authored, 0.10) leads intent_a (reconstructed, 0.99); intent_c precedes intent_d on confidence within `captured`."
+}

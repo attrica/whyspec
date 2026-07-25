@@ -1,0 +1,5 @@
+{
+  "command": "why",
+  "message": "No intent layer found for this repository.",
+  "status": "no_intent_layer"
+}

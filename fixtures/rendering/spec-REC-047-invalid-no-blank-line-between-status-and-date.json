@@ -1,0 +1,17 @@
+{
+  "rule": "REC-047",
+  "statement": "`**Status:**` and `**Date:**` MUST be emitted on adjacent lines after the H1.",
+  "inputs": {
+    "chosen": "Serve reads from a replica",
+    "question": "How do we shed read load?",
+    "options": [
+      "Serve reads from a replica",
+      "Shard the primary"
+    ],
+    "rationale": "A replica absorbs read load without a resharding project.",
+    "date": "2026-04-02"
+  },
+  "expected_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+  "non_conformant_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n\n**Date:** 2026-04-02\n",
+  "note": "The two metadata lines MUST be ADJACENT -- line 2 and line 3, with no blank line between them. An emitter that separates them with a blank line (a natural markdown-prettifying instinct) produces the non-conformant output shown. Adjacency is what lets a reader treat the pair as one metadata block rather than two stray bold lines."
+}

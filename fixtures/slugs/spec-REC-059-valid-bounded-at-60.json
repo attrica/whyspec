@@ -1,0 +1,8 @@
+{
+  "rule": "REC-059",
+  "statement": "A slug MUST be bounded at 60 characters.",
+  "input_text": "Should the nightly reconciliation job run before or after the settlement export window closes each day",
+  "max_len": 60,
+  "expected_slug": "should-the-nightly-reconciliation-job-run-before-or-after",
+  "note": "The source text is far longer than 60 characters. The resulting slug MUST be at most 60 characters. Unbounded slugs produce filenames that trip path-length limits and are unusable in a directory humans scan."
+}

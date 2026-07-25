@@ -650,11 +650,17 @@ classifying the outcome.
 any other key is present without first dispatching on `command`.
 
 This is the single most important rule in §6, and it is easy to get wrong by inspection of one
-command. Field-verified top-level key sets:
+command. Field-verified top-level key sets.
+
+A variant's key set is **not** unconditional: a status value may add a key. `why` is the
+worked case — it carries an eighth key, `note`, exactly when `status` is `topically_weak`.
+A conforming consumer must therefore treat a variant's key set as *keyed on the status it
+carries*, and an implementation must not assert an exact key count for a variant without
+naming the status it holds for.
 
 | `command` | Top-level keys |
 |---|---|
-| `why` | `command`, `status`, `query`, `count`, `cutoff`, `score_stats`, `results` |
+| `why` | `command`, `status`, `query`, `count`, `cutoff`, `score_stats`, `results`, and `note` **when and only when** `status` is `topically_weak` |
 | `list-intent` | `command`, `status`, `count`, `filter`, `intent` |
 | `explain` (ok) | `command`, `status`, `query`, `resolved`, `intent`, `explains`, `relations` |
 | `explain` (ambiguous) | `command`, `status`, `query`, `candidates`, `message` |
@@ -994,9 +1000,30 @@ gap: implementers build on it, and it becomes real without ever having been deci
 
 ## 9. Conformance
 
-A conforming implementation satisfies every **MUST** and **MUST NOT** in §§3–7, for the surfaces it
-implements. An implementation that only reads records need not implement §6; an implementation that
-only answers queries need not implement §4.10 or §4.11.
+A conforming implementation satisfies every **MUST** and **MUST NOT** in §§3–7 **that constrains an
+implementation**, for the surfaces it implements. An implementation that only reads records need not
+implement §6; an implementation that only answers queries need not implement §4.10 or §4.11.
+
+Three classes of rule are **normative but outside conformance scope**, because no implementation can
+be measured against them. They are marked in the rule index and are excluded from the corpus's
+coverage obligation:
+
+- **Governance rules** constrain how *this specification* may change — §7's versioning rules are the
+  whole of this class. They bind the spec's editor, not an implementation, and there is no artifact
+  an implementer could get wrong.
+- **Consumer guidance** constrains how a *reader* of an envelope should behave — for example,
+  treating an unrecognized status as a failure. The violation lives in a consumer's logic, not in any
+  document a corpus can hold.
+- **Action prohibitions** forbid an operation rather than constrain an output — for example, the
+  prohibition on renaming an existing record. An implementation can produce every correct value and
+  still perform the forbidden act afterwards, so no fixture can detect compliance.
+
+The distinction matters because conflating these with implementation rules makes the corpus's own
+coverage target unsatisfiable by construction, which in turn makes a coverage table that *looks*
+complete only by quietly excusing the rules it cannot reach. Naming the class is honest; silently
+omitting the rule is not. An action prohibition in particular stays a **MUST NOT** — being
+unfixturable is not grounds for weakening it, and the rule against renaming exists to prevent an
+identity-forking defect that no amount of output checking would catch.
 
 Conformance is demonstrated against the **Whyfile conformance corpus** — a set of fixture records
 and expected parse results, each keyed to the rule ids in this document. The corpus is the

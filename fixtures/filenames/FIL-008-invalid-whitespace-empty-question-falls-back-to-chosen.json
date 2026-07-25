@@ -1,0 +1,18 @@
+{
+  "rule": "FIL-008",
+  "spec_rule_ids": [
+    "REC-056",
+    "REC-062"
+  ],
+  "statement": "Counter-example AND a flagged engine divergence. A question that is empty or whitespace-only MUST still name the record from the question path -- i.e. the literal `decision` under REC-062 -- not from the chosen option. Naming from `chosen` reintroduces exactly the collision class the question-derived scheme exists to kill: two unrecorded-question captures that chose the same words silently share one file.",
+  "scenario_dir": "dirs/FIL-008-empty-question",
+  "existing_files": [],
+  "input": {
+    "chosen": "Adopt library X",
+    "question": "",
+    "today": "2026-07-25"
+  },
+  "expected_output": "docs/decisions/2026-07-25-adopt-library-x.md",
+  "engine_divergence": "This IS what the reference implementation produces at v0.8.3 (`slugify(question.strip() or chosen)`), and it is NOT what the specification requires. The fixture records the observed behaviour as the counter-example so the divergence is executable rather than prose-only. A conformant implementation MUST produce `2026-07-25-decision.md`.",
+  "note": "Verified by execution. Divergence, not a conformance target."
+}

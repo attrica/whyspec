@@ -1,0 +1,21 @@
+{
+  "rule": "FIL-011",
+  "spec_rule_ids": [
+    "REC-064",
+    "REC-005",
+    "REC-020"
+  ],
+  "statement": "The `## Context` heading consulted when claiming a legacy record MUST be matched by the same rules as every other section heading: case-insensitively, and at any heading level. A legacy record written by a conformant emitter that chose `### Context` or `## context` still records the same question and MUST still be claimed.",
+  "scenario_dir": "dirs/FIL-011-lowercase-context",
+  "existing_files": [
+    "adopt-library-x.md"
+  ],
+  "input": {
+    "chosen": "Adopt library X",
+    "question": "How do we parse dates?",
+    "today": "2026-07-25"
+  },
+  "expected_output": "docs/decisions/adopt-library-x.md",
+  "engine_divergence": "The reference implementation at v0.8.3 matches this heading with a case-sensitive, level-2-only pattern, so it does NOT claim the legacy file and mints `2026-07-25-how-do-we-parse-dates.md` instead (verified by execution for both `## context` and `### Context`). The direction is safe -- it forks rather than overwrites -- but idempotency silently breaks for any record whose heading a case-insensitive parser accepted on the read path.",
+  "note": "Divergence, flagged. The conformance target is the reuse shown above."
+}

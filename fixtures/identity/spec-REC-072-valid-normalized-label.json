@@ -1,0 +1,17 @@
+{
+  "labels": [
+    "Use a Shared Cache!!",
+    "  serve reads from a replica  ",
+    "ADR-0042: Pin the digest",
+    "___leading and trailing___"
+  ],
+  "expected": [
+    "use_a_shared_cache",
+    "serve_reads_from_a_replica",
+    "adr_0042_pin_the_digest",
+    "leading_and_trailing"
+  ],
+  "rule": "REC-072",
+  "statement": "Normalized label: lowercase, non-`[a-z0-9]` runs replaced by `_`, edge `_` stripped.",
+  "note": "Four labels exercising case, punctuation runs, embedded digits and leading/trailing separator characters. Note the separator is `_` here, NOT the `-` used by the slug rule REC-058: an implementation that reuses the slug function for labels forks every node id in the graph."
+}

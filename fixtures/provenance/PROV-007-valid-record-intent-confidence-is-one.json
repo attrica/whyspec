@@ -1,0 +1,21 @@
+{
+  "rule": "PROV-007",
+  "spec_rule_ids": [
+    "PROV-008",
+    "PROV-009"
+  ],
+  "statement": "Intent ingested from a decision record MUST carry a numeric confidence of exactly 1.0. The record IS the evidence; there is nothing for an extractor to be uncertain about. Trust is then carried entirely by provenance, which is why the two axes never collapse into one number.",
+  "input": {
+    "record_kind": "adr",
+    "record_text_ref": "records/REC-001-valid-adr-h1.md"
+  },
+  "expected_node_fields": {
+    "confidence_score": 1.0,
+    "provenance": "authored"
+  },
+  "expected_decision_record_fields": {
+    "confidence_score": 1.0,
+    "provenance": "captured"
+  },
+  "note": "Verified by execution: record_to_node() at v0.8.3 sets confidence_score=1.0 for both record kinds, and the kind decides only the tier."
+}

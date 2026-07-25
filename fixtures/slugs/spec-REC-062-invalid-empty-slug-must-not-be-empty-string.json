@@ -1,0 +1,9 @@
+{
+  "rule": "REC-062",
+  "statement": "An empty slug MUST become the literal `decision`.",
+  "input_text": "   \t  ",
+  "max_len": 60,
+  "expected_slug": "decision",
+  "note": "The source text is whitespace only, so the derived slug reduces to the empty string and MUST become the literal `decision`. An implementation returning '' produces the filename '<date>-.md' -- and every question that slugs to nothing then collides on that one name, which is the REC-056 overwrite class returning through a different door.",
+  "non_conformant_slug": ""
+}

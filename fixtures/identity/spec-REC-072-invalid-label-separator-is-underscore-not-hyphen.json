@@ -1,0 +1,14 @@
+{
+  "labels": [
+    "Use a Shared Cache!!"
+  ],
+  "expected": [
+    "use_a_shared_cache"
+  ],
+  "non_conformant": [
+    "use-a-shared-cache"
+  ],
+  "rule": "REC-072",
+  "statement": "Normalized label: lowercase, non-`[a-z0-9]` runs replaced by `_`, edge `_` stripped.",
+  "note": "The normalized label uses `_` as its separator. An implementation that reuses the REC-058 slug derivation (which uses `-`) produces 'use-a-shared-cache' -- a different string, hence a different hash, hence a different node id for the same record."
+}

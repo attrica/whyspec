@@ -1,0 +1,148 @@
+{
+  "$note": "spec_rule_ids for the corpus's own REC-family numbering. The corpus REC-001..REC-011 namespace is INDEPENDENT of, and collides with, the spec's REC-001..REC-074. Reconciled by rule_statement. Apply to manifest.rules[] entries and to the pre-existing REC fixtures (matched on rule_id).",
+  "rules": {
+    "REC-001": [
+      "REC-008",
+      "REC-011",
+      "REC-014"
+    ],
+    "REC-002": [
+      "REC-008",
+      "REC-018"
+    ],
+    "REC-003": [
+      "REC-003"
+    ],
+    "REC-004": [
+      "REC-018"
+    ],
+    "REC-005": [
+      "REC-022",
+      "REC-026"
+    ],
+    "REC-006": [
+      "REC-027",
+      "REC-028",
+      "REC-030"
+    ],
+    "REC-007": [
+      "REC-032"
+    ],
+    "REC-008": [
+      "REC-034",
+      "REC-035",
+      "REC-036",
+      "REC-037"
+    ],
+    "REC-009": [
+      "REC-015"
+    ],
+    "REC-010": [
+      "REC-045",
+      "REC-046"
+    ],
+    "REC-011": [
+      "REC-040",
+      "REC-041"
+    ]
+  },
+  "fixtures": {
+    "REC-002-valid-has-decision-section": [
+      "REC-008",
+      "REC-018"
+    ],
+    "REC-005-valid-flat-numbered-list": [
+      "REC-022",
+      "REC-026"
+    ],
+    "REC-009-valid-adr-prefix-stripped": [
+      "REC-015"
+    ],
+    "REC-001-valid-adr-h1": [
+      "REC-008",
+      "REC-011",
+      "REC-014"
+    ],
+    "REC-001-valid-decision-h1": [
+      "REC-008",
+      "REC-011",
+      "REC-014"
+    ],
+    "REC-001-invalid-no-record-h1": [
+      "REC-008",
+      "REC-011",
+      "REC-014"
+    ],
+    "REC-002-invalid-missing-decision-section": [
+      "REC-008",
+      "REC-018"
+    ],
+    "REC-003-valid-leading-bom": [
+      "REC-003"
+    ],
+    "REC-003-invalid-non-leading-bom-breaks-heading": [
+      "REC-003"
+    ],
+    "REC-004-valid-no-alternatives-section": [
+      "REC-018"
+    ],
+    "REC-005-invalid-nested-bullets-flatten-unexpectedly": [
+      "REC-022",
+      "REC-026"
+    ],
+    "REC-006-valid-inline-status": [
+      "REC-027",
+      "REC-028",
+      "REC-030"
+    ],
+    "REC-006-valid-status-section-heading": [
+      "REC-027",
+      "REC-028",
+      "REC-030"
+    ],
+    "REC-006-valid-status-with-trailing-clause": [
+      "REC-027",
+      "REC-028",
+      "REC-030"
+    ],
+    "REC-006-invalid-inline-status-wins-over-section": [
+      "REC-027",
+      "REC-028",
+      "REC-030"
+    ],
+    "REC-007-valid-rejected-excluded": [
+      "REC-032"
+    ],
+    "REC-007-invalid-rejected-included": [
+      "REC-032"
+    ],
+    "REC-008-valid-assumptions-review-by-and-expiry": [
+      "REC-034",
+      "REC-035",
+      "REC-036",
+      "REC-037"
+    ],
+    "REC-008-invalid-malformed-review-by-date-not-extracted": [
+      "REC-034",
+      "REC-035",
+      "REC-036",
+      "REC-037"
+    ],
+    "REC-010-valid-recommendation-differs-resolution-delta": [
+      "REC-045",
+      "REC-046"
+    ],
+    "REC-010-invalid-recommendation-equals-chosen-no-delta": [
+      "REC-045",
+      "REC-046"
+    ],
+    "REC-011-valid-active-supersedes": [
+      "REC-040",
+      "REC-041"
+    ],
+    "REC-011-invalid-passive-superseded-by-is-not-active-supersession": [
+      "REC-040",
+      "REC-041"
+    ]
+  }
+}

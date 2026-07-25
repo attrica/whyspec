@@ -1,0 +1,1847 @@
+[
+  {
+    "id": "spec-REC-002-valid-utf8-non-ascii-body",
+    "family": "REC",
+    "rule_statement": "A record MUST be a UTF-8 markdown document; non-ASCII content parses unchanged.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-002-valid-utf8-non-ascii-body.md",
+    "notes": "UTF-8 content (em dash in the H1, accented letters in the body) parses with the title and alternatives intact. The em-dash H1 separator and non-ASCII body bytes are the substantive part: an implementation decoding as latin-1 or ASCII would mangle the separator and fail the ADR heading gate entirely.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "adr",
+      "title": "Route retries through one budget",
+      "status": null,
+      "alternatives": 2,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-002"
+    ]
+  },
+  {
+    "id": "spec-REC-004-valid-section-body-stops-at-next-heading-any-level",
+    "family": "REC",
+    "rule_statement": "A section body runs to the next heading of ANY level, not merely the next heading of the same or higher level.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-004-valid-section-body-stops-at-next-heading-any-level.md",
+    "notes": "The `## Decision` body MUST stop at the `### Follow-up` heading even though that heading is DEEPER, not shallower. A parser that ends a section only at a heading of the same-or-higher level would swallow 'Revisit if session volume exceeds the write budget.' into the rationale.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Store session state in the database",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0,
+      "rationale": "Sessions live in the primary database."
+    },
+    "spec_rule_ids": [
+      "REC-004"
+    ]
+  },
+  {
+    "id": "spec-REC-004-invalid-hash-without-space-is-not-a-heading",
+    "family": "REC",
+    "rule_statement": "A heading line MUST match `^(#{1,6})\\s+(.+)$`; `#` immediately followed by text (no whitespace) is not a heading.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-004-invalid-hash-without-space-is-not-a-heading.md",
+    "notes": "The would-be H1 is `#Decision: ...` with NO whitespace after the `#`, so it does not match the heading grammar and is not a heading at all. With no matching H1 the document is not a record and parse_adr() MUST return None -- even though a well-formed `## Decision` section is present.",
+    "verdict_kind": "parse_rejects",
+    "expect": {
+      "parses": false
+    },
+    "spec_rule_ids": [
+      "REC-004"
+    ]
+  },
+  {
+    "id": "spec-REC-005-valid-headings-matched-case-insensitively",
+    "family": "REC",
+    "rule_statement": "Section heading text MUST be matched case-insensitively.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-005-valid-headings-matched-case-insensitively.md",
+    "notes": "Every heading, including the `Decision:` H1 prefix, is upper-cased. A conformant parser matches all of them case-insensitively and yields title='Adopt structured logging' with 2 alternatives.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Adopt structured logging",
+      "status": null,
+      "alternatives": 2,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-005"
+    ]
+  },
+  {
+    "id": "spec-REC-005-invalid-mixed-case-headings-still-match",
+    "family": "REC",
+    "rule_statement": "Section heading text MUST be matched case-insensitively.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-005-invalid-mixed-case-headings-still-match.md",
+    "notes": "Headings are in alternating case. An implementation that lower-cases only the first character, or compares headings with `==` against a canonical spelling, returns None (no Decision section found) or 0 alternatives. Both outputs MUST be rejected: the conformant parse is title='Adopt structured logging' with 2 alternatives.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Adopt structured logging",
+      "status": null,
+      "alternatives": 2,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-005"
+    ]
+  },
+  {
+    "id": "spec-REC-006-valid-front-matter-not-interpreted",
+    "family": "REC",
+    "rule_statement": "YAML front matter MUST NOT be interpreted; a record's meaning is fully determined by its markdown body.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-006-valid-front-matter-not-interpreted.md",
+    "notes": "Front matter carries a `title:` key that DIFFERS from the H1 title. The parsed title MUST come from the H1 ('Keep the write-ahead log on local disk'), never from front matter.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Keep the write-ahead log on local disk",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-006"
+    ]
+  },
+  {
+    "id": "spec-REC-006-invalid-front-matter-status-must-not-take-effect",
+    "family": "REC",
+    "rule_statement": "YAML front matter MUST NOT be interpreted; a record's meaning is fully determined by its markdown body.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-006-invalid-front-matter-status-must-not-take-effect.md",
+    "notes": "Adversarial front matter declares `status: rejected` and a conflicting `title:`. A parser that interprets front matter yields status='rejected' -- which would EXCLUDE this accepted record from ingest entirely -- and/or the wrong title. The conformant parse has status ABSENT (no inline `**Status:**` line and no `## Status` section) and the H1 title.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Keep the write-ahead log on local disk",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-006"
+    ]
+  },
+  {
+    "id": "spec-REC-007-valid-unrecognized-sections-ignored",
+    "family": "REC",
+    "rule_statement": "Unrecognized sections MUST be ignored without error.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-007-valid-unrecognized-sections-ignored.md",
+    "notes": "Three sections outside the recognized vocabulary (`Consequences`, `References`, `Open questions`). The record MUST parse without error and without surfacing any of them.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "adr",
+      "title": "Pin the base image digest",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-007"
+    ]
+  },
+  {
+    "id": "spec-REC-007-invalid-unrecognized-list-section-must-not-become-alternatives",
+    "family": "REC",
+    "rule_statement": "Unrecognized sections MUST be ignored without error.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-007-invalid-unrecognized-list-section-must-not-become-alternatives.md",
+    "notes": "`## Options we discarded` is NOT a recognized heading, but it contains a well-formed numbered list. A parser that fuzzy-matches heading names (or scans any list in the document) would yield 3 alternatives. The conformant parse yields alternatives == [] -- the section is ignored entirely, not error, not partially read.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "adr",
+      "title": "Pin the base image digest",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-007"
+    ]
+  },
+  {
+    "id": "spec-REC-010-valid-non-matching-h1-does-not-disqualify",
+    "family": "REC",
+    "rule_statement": "The first MATCHING H1 wins; a non-matching H1 MUST NOT disqualify the document.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-010-valid-non-matching-h1-does-not-disqualify.md",
+    "notes": "The FIRST H1 (`# Engineering notes, week 14`) matches neither record form. A parser that checks only the first H1 and gives up returns None. The conformant parser keeps looking and finds `# Decision: Serve reads from a replica`.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Serve reads from a replica",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-010"
+    ]
+  },
+  {
+    "id": "spec-REC-010-invalid-first-matching-h1-wins-not-last",
+    "family": "REC",
+    "rule_statement": "The first MATCHING H1 wins; a non-matching H1 MUST NOT disqualify the document.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-010-invalid-first-matching-h1-wins-not-last.md",
+    "notes": "TWO matching H1s. The conformant title is the FIRST ('Serve reads from a replica'). An implementation that scans to the last H1, or that overwrites the title on each match, yields 'Shard the primary instead' -- the opposite decision. That output MUST be rejected.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Serve reads from a replica",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-010"
+    ]
+  },
+  {
+    "id": "spec-REC-012-valid-adr-separator-present",
+    "family": "REC",
+    "rule_statement": "The ADR heading separator is REQUIRED.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-012-valid-adr-separator-present.md",
+    "notes": "Hyphen-minus separator present. Parses as kind='adr' with the prefix and separator stripped from the title.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "adr",
+      "title": "Adopt a single retry budget",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-012"
+    ]
+  },
+  {
+    "id": "spec-REC-012-invalid-adr-without-separator-is-not-a-record",
+    "family": "REC",
+    "rule_statement": "The ADR heading separator is REQUIRED.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-012-invalid-adr-without-separator-is-not-a-record.md",
+    "notes": "`# ADR-0031 Adopt a single retry budget` -- digits followed by whitespace and a title, with NO separator. This is not an ADR heading, so the document is not a record and parse_adr() MUST return None. An implementation treating whitespace as an implicit separator would wrongly ingest it.",
+    "verdict_kind": "parse_rejects",
+    "expect": {
+      "parses": false
+    },
+    "spec_rule_ids": [
+      "REC-012"
+    ]
+  },
+  {
+    "id": "spec-REC-013-valid-unpadded-adr-number",
+    "family": "REC",
+    "rule_statement": "Heading recognition MUST NOT require a zero-padded or fixed-width digit run.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-013-valid-unpadded-adr-number.md",
+    "notes": "A single-digit, unpadded ADR number. An implementation hard-coding `ADR-\\d{4}` returns None for this valid record. Note the deliberate asymmetry with supersession target resolution, which DOES require four digits in the FILENAME (see REC-043).",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "adr",
+      "title": "Cache DNS answers for their TTL",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-013"
+    ]
+  },
+  {
+    "id": "spec-REC-013-invalid-overlong-adr-number-still-recognized",
+    "family": "REC",
+    "rule_statement": "Heading recognition MUST NOT require a zero-padded or fixed-width digit run.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-013-invalid-overlong-adr-number-still-recognized.md",
+    "notes": "An eight-digit ADR number. An implementation that anchors the digit run at exactly four (`ADR-\\d{4}[^0-9]`) fails to match, or strips only the first four digits and leaves '5678: ' in the title. The conformant parse strips the whole digit run and separator, yielding title='Cache DNS answers for their TTL'.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "adr",
+      "title": "Cache DNS answers for their TTL",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-013"
+    ]
+  },
+  {
+    "id": "spec-REC-016-valid-title-non-empty",
+    "family": "REC",
+    "rule_statement": "The record title MUST be non-empty.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-016-valid-title-non-empty.md",
+    "notes": "Ordinary non-empty title, the positive control for REC-016.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Retain audit logs for one year",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-016"
+    ]
+  },
+  {
+    "id": "spec-REC-016-invalid-empty-title-is-not-a-record",
+    "family": "REC",
+    "rule_statement": "The record title MUST be non-empty.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-016-invalid-empty-title-is-not-a-record.md",
+    "notes": "The H1 matches the Decision grammar but its title reduces to the empty string. The document MUST NOT be treated as a record: parse_adr() returns None. An implementation that accepts an empty title mints a node whose label and identity are empty.",
+    "verdict_kind": "parse_rejects",
+    "expect": {
+      "parses": false
+    },
+    "spec_rule_ids": [
+      "REC-016"
+    ]
+  },
+  {
+    "id": "spec-REC-019-valid-duplicate-decision-first-wins",
+    "family": "REC",
+    "rule_statement": "When a heading appears more than once the FIRST occurrence wins.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-019-valid-duplicate-decision-first-wins.md",
+    "notes": "Two `## Decision` sections with CONTRADICTORY bodies. The rationale MUST be the FIRST ('One pool per process, sized to the CPU count.'). An implementation taking the last yields the opposite decision.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Use one connection pool per process",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0,
+      "rationale": "One pool per process, sized to the CPU count."
+    },
+    "spec_rule_ids": [
+      "REC-019"
+    ]
+  },
+  {
+    "id": "spec-REC-019-invalid-duplicate-alternatives-first-wins",
+    "family": "REC",
+    "rule_statement": "When a heading appears more than once the FIRST occurrence wins -- for EVERY heading in the recognized-section table, not only `Decision`.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-019-invalid-duplicate-alternatives-first-wins.md",
+    "notes": "Two `## Alternatives considered` sections. Per REC-019 the FIRST wins, so alternatives MUST be the 3-item list. DIVERGENCE: the v0.8.3 reference implementation applies first-wins ONLY to `Decision` (guarded by `rationale is None`); for `Alternatives`, `Recommendation`, `Assumptions` and `Status` the loop overwrites, so the LAST occurrence wins and the reference yields 1 alternative here. The `expect` below states the SPEC-required outcome.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Use one connection pool per process",
+      "status": null,
+      "alternatives": 3,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0,
+      "engine_diverges": true,
+      "engine_parses": true,
+      "engine_kind": "decision",
+      "engine_title": "Use one connection pool per process",
+      "engine_status": null,
+      "engine_alternatives": 1,
+      "engine_recommendation": null,
+      "engine_supersedes": [],
+      "engine_assumptions": 0,
+      "divergence": "REC-019 first-wins is implemented for `Decision` only; Alternatives, Recommendation, Assumptions and Status are last-wins in v0.8.3. Reference actual for this fixture: alternatives == ['One pool per thread.'] (1 item). `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed at v0.8.3. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
+    },
+    "spec_rule_ids": [
+      "REC-019"
+    ]
+  },
+  {
+    "id": "spec-REC-023-valid-alternative-text-normalized",
+    "family": "REC",
+    "rule_statement": "Alternative text MUST be whitespace-collapsed, trimmed, and stripped of `**`; empty items dropped.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-023-valid-alternative-text-normalized.md",
+    "notes": "Item 1 carries `**bold**` markers and runs of multiple spaces; item 2 wraps across three source lines. Both MUST normalize to single-spaced, trimmed text with every `**` removed.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Batch the nightly export",
+      "status": null,
+      "alternatives": 2,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0,
+      "alternatives_list": [
+        "Streaming export \u2014 continuous, higher operational cost.",
+        "Batch export, split across several lines."
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-023"
+    ]
+  },
+  {
+    "id": "spec-REC-023-invalid-empty-list-items-dropped",
+    "family": "REC",
+    "rule_statement": "Alternative text MUST be whitespace-collapsed, trimmed, and stripped of `**`; empty items dropped.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-023-invalid-empty-list-items-dropped.md",
+    "notes": "Items 2 and 4 are whitespace-only once normalized. Both MUST be DROPPED, yielding exactly 2 alternatives. An implementation that keeps empty strings yields 4 items, two of which are '' -- padding the alternatives count with entries that say nothing.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Batch the nightly export",
+      "status": null,
+      "alternatives": 2,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0,
+      "alternatives_list": [
+        "Streaming export.",
+        "Batch export."
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-023"
+    ]
+  },
+  {
+    "id": "spec-REC-024-valid-alternatives-in-document-order",
+    "family": "REC",
+    "rule_statement": "Alternatives MUST be yielded in document order.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-024-valid-alternatives-in-document-order.md",
+    "notes": "Document order is Zebra, Blue/green, All-at-once -- deliberately NOT alphabetical (which would be All-at-once, Blue/green, Zebra). An implementation that sorts alternatives is detectable here.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Zebra deployment for the search tier",
+      "status": null,
+      "alternatives": 3,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0,
+      "alternatives_list": [
+        "Zebra (interleaved) deployment.",
+        "Blue/green deployment.",
+        "All-at-once deployment."
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-024"
+    ]
+  },
+  {
+    "id": "spec-REC-024-invalid-document-order-beats-written-numbering",
+    "family": "REC",
+    "rule_statement": "Alternatives MUST be yielded in document order.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-024-invalid-document-order-beats-written-numbering.md",
+    "notes": "The written list markers are out of sequence (3., 1., 2.). Order is DOCUMENT order, not the integer written in the marker: the conformant result is Zebra, Blue/green, All-at-once. An implementation that sorts by the parsed marker number yields Blue/green, All-at-once, Zebra -- and would report the wrong option as first-considered.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Zebra deployment for the search tier",
+      "status": null,
+      "alternatives": 3,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0,
+      "alternatives_list": [
+        "Zebra (interleaved) deployment.",
+        "Blue/green deployment.",
+        "All-at-once deployment."
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-024"
+    ]
+  },
+  {
+    "id": "spec-REC-025-valid-prose-alternatives-yield-empty-list",
+    "family": "REC",
+    "rule_statement": "A prose alternatives section MUST yield an empty list, not an error.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-025-valid-prose-alternatives-yield-empty-list.md",
+    "notes": "The Alternatives section is free prose with no list markers. The result MUST be an empty list -- not an error, and not the prose captured as a single alternative.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Keep the scheduler single-threaded",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0,
+      "alternatives_list": []
+    },
+    "spec_rule_ids": [
+      "REC-025"
+    ]
+  },
+  {
+    "id": "spec-REC-025-invalid-prose-must-not-become-one-alternative",
+    "family": "REC",
+    "rule_statement": "A prose alternatives section MUST yield an empty list, not an error.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-025-invalid-prose-must-not-become-one-alternative.md",
+    "notes": "Two prose lines, one containing an em dash and one a hyphenated clause -- neither is a list marker (a marker requires `\\d+.` or `-`/`*` at line start followed by whitespace). An implementation that falls back to splitting prose on lines or dashes yields 1-2 bogus alternatives. The conformant result is [].",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Keep the scheduler single-threaded",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0,
+      "alternatives_list": []
+    },
+    "spec_rule_ids": [
+      "REC-025"
+    ]
+  },
+  {
+    "id": "spec-REC-029-valid-inline-status-found-anywhere-in-document",
+    "family": "REC",
+    "rule_statement": "The inline status search spans the whole document; the first line-anchored match wins.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-029-valid-inline-status-found-anywhere-in-document.md",
+    "notes": "The only `**Status:**` line sits near the END of the document, inside an unrecognized `## Notes` section. The search is NOT scoped to a section or to the document head: status MUST be 'accepted'. An implementation scanning only the pre-first-H2 region returns absent.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Expire idle sessions after 30 minutes",
+      "status": "accepted",
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-029"
+    ]
+  },
+  {
+    "id": "spec-REC-029-invalid-first-inline-status-wins",
+    "family": "REC",
+    "rule_statement": "The inline status search spans the whole document; the first line-anchored match wins.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-029-invalid-first-inline-status-wins.md",
+    "notes": "TWO inline status lines with different values. The FIRST line-anchored match wins, so status MUST be 'accepted'. An implementation taking the last match yields 'superseded'. Note this first-match-wins behaviour is also what MASKS known gap G1: a real status line before a fenced block hides a `**Status:** Rejected` line inside the fence.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Expire idle sessions after 30 minutes",
+      "status": "accepted",
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-029"
+    ]
+  },
+  {
+    "id": "spec-REC-031-valid-absent-status-omits-the-key",
+    "family": "REC",
+    "rule_statement": "An undeterminable status MUST be absent -- no default, no explicit null.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-031-valid-absent-status-omits-the-key.md",
+    "notes": "No inline `**Status:**` line and no `## Status` section. The parsed status is absent, and the resulting intent node MUST OMIT the `status` key entirely -- not `status: null`, and not a substituted default such as 'proposed' or 'accepted'.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Compress cold objects with zstd",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0,
+      "node_status_key_present": false
+    },
+    "spec_rule_ids": [
+      "REC-031"
+    ]
+  },
+  {
+    "id": "spec-REC-031-invalid-non-alphabetic-status-normalizes-to-absent",
+    "family": "REC",
+    "rule_statement": "An undeterminable status MUST be absent -- no default, no explicit null.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-031-invalid-non-alphabetic-status-normalizes-to-absent.md",
+    "notes": "An inline status line IS present but its value contains no alphabetic characters, so it normalizes to absent (REC-030). The node MUST omit `status` entirely. An implementation that stores the raw '2026-01-14', or falls back to a default because normalization emptied the value, is non-conformant.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Compress cold objects with zstd",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 0,
+      "node_status_key_present": false
+    },
+    "spec_rule_ids": [
+      "REC-031"
+    ]
+  },
+  {
+    "id": "spec-REC-038-valid-claim-whitespace-collapsed-and-trimmed",
+    "family": "REC",
+    "rule_statement": "Claim text MUST be whitespace-collapsed and trimmed of spaces and periods.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-038-valid-claim-whitespace-collapsed-and-trimmed.md",
+    "notes": "Claim 1 has leading/inner/trailing whitespace runs and wraps a line; both claims end in a period. Whitespace MUST collapse to single spaces and BOTH spaces and periods MUST be trimmed from each end.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Keep the export window at 24 hours",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 2,
+      "assumption_claims": [
+        "Nightly volume stays under the batch window",
+        "Downstream consumers tolerate a 24-hour lag"
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-038"
+    ]
+  },
+  {
+    "id": "spec-REC-038-invalid-leading-period-also-trimmed",
+    "family": "REC",
+    "rule_statement": "Claim text MUST be whitespace-collapsed and trimmed of spaces and periods.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-038-invalid-leading-period-also-trimmed.md",
+    "notes": "Claim 1 has a LEADING period as well as a trailing one; claim 2 ends in an ellipsis. Trimming is of spaces AND periods from BOTH ends, so all of them go. An implementation that only `.strip()`s whitespace, or only strips a single trailing '.', leaves '. Nightly volume stays under the batch window .' and 'Retention policy stays at 30 days..' -- claims that will never compare equal to their re-recorded form.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Keep the export window at 24 hours",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 2,
+      "assumption_claims": [
+        "Nightly volume stays under the batch window",
+        "Retention policy stays at 30 days"
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-038"
+    ]
+  },
+  {
+    "id": "spec-REC-039-valid-absent-assumption-fields-omitted",
+    "family": "REC",
+    "rule_statement": "`review_by` / `expiry` MUST be omitted when absent, not null.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-039-valid-absent-assumption-fields-omitted.md",
+    "notes": "Assumption 1 carries a review date; assumption 2 carries neither optional field. Assumption 2's dict MUST contain ONLY `claim`. Placing both assumptions in one record isolates the rule: the parser demonstrably CAN emit `review_by`, so its absence on item 2 is an omission decision, not a missing feature. An implementation emitting `review_by: null` / `expiry: null` on item 2 is non-conformant.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Keep the export window at 24 hours",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 2,
+      "assumption_keys": [
+        [
+          "claim",
+          "review_by"
+        ],
+        [
+          "claim"
+        ]
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-039"
+    ]
+  },
+  {
+    "id": "spec-REC-039-invalid-expiry-omitted-when-only-review-by-present",
+    "family": "REC",
+    "rule_statement": "`review_by` / `expiry` MUST be omitted when absent, not null.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-039-invalid-expiry-omitted-when-only-review-by-present.md",
+    "notes": "Each assumption carries exactly ONE of the two optional fields. Item 1 MUST have `expiry` and NO `review_by` key; item 2 MUST have `review_by` and NO `expiry` key. An implementation that emits a fixed three-key shape with nulls in the gaps is non-conformant -- a consumer cannot then distinguish 'no expiry condition' from 'expiry condition recorded as null'.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "decision",
+      "title": "Keep the export window at 24 hours",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [],
+      "assumptions": 2,
+      "assumption_keys": [
+        [
+          "claim",
+          "expiry"
+        ],
+        [
+          "claim",
+          "review_by"
+        ]
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-039"
+    ]
+  },
+  {
+    "id": "spec-REC-042-valid-supersedes-uppercased-deduped-first-seen",
+    "family": "REC",
+    "rule_statement": "Supersession refs MUST be uppercased, de-duplicated, and yielded in first-seen order.",
+    "valid": true,
+    "kind": "record",
+    "path": "records/spec-REC-042-valid-supersedes-uppercased-deduped-first-seen.md",
+    "notes": "Three matches in document order: ADR-0022, adr-0011 (lower-case), ADR-0022 (repeat). The result MUST be ['ADR-0022', 'ADR-0011'] -- upper-cased, de-duplicated, FIRST-SEEN order. Note first-seen order is deliberately NOT ascending numeric order here, so an implementation that sorts is detectable.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "adr",
+      "title": "Replace the polling ingest",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [
+        "ADR-0022",
+        "ADR-0011"
+      ],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-042"
+    ]
+  },
+  {
+    "id": "spec-REC-042-invalid-supersedes-order-is-not-sorted",
+    "family": "REC",
+    "rule_statement": "Supersession refs MUST be uppercased, de-duplicated, and yielded in first-seen order.",
+    "valid": false,
+    "kind": "record",
+    "path": "records/spec-REC-042-invalid-supersedes-order-is-not-sorted.md",
+    "notes": "Document order (0090, 0007, 0055) differs from both ascending and descending numeric order. An implementation that sorts, or that de-duplicates via an unordered set, yields a different sequence. Any output other than ['ADR-0090','ADR-0007','ADR-0055'] MUST be rejected.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "parses": true,
+      "kind": "adr",
+      "title": "Replace the polling ingest",
+      "status": null,
+      "alternatives": 0,
+      "recommendation": null,
+      "supersedes": [
+        "ADR-0090",
+        "ADR-0007",
+        "ADR-0055"
+      ],
+      "assumptions": 0
+    },
+    "spec_rule_ids": [
+      "REC-042"
+    ]
+  },
+  {
+    "id": "spec-REC-017-valid-chosen-is-the-title",
+    "family": "REC",
+    "rule_statement": "For a decision record the title is the chosen option; emitters MUST write the chosen option as the title.",
+    "valid": true,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-017-valid-chosen-is-the-title.json",
+    "notes": "The H1 is exactly `# Decision: <chosen>`. This is what makes REC-045's resolution_delta meaningful: the delta compares the recommendation against the TITLE, so a title that is not the chosen option silently corrupts every recorded override.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+      "first_line": "# Decision: Serve reads from a replica"
+    },
+    "spec_rule_ids": [
+      "REC-017"
+    ]
+  },
+  {
+    "id": "spec-REC-017-invalid-recommendation-must-not-become-the-title",
+    "family": "REC",
+    "rule_statement": "For a decision record the title is the chosen option; emitters MUST write the chosen option as the title.",
+    "valid": false,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-017-invalid-recommendation-must-not-become-the-title.json",
+    "notes": "The recommendation ('Shard the primary') DIFFERS from the chosen option. The title MUST still be the CHOSEN option. An emitter that titles the record with the recommendation inverts the record's meaning and makes resolution_delta compare a value against itself.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n\n## Recommendation\n\nShard the primary\n",
+      "first_line": "# Decision: Serve reads from a replica",
+      "output_must_not_equal": "# Decision: Shard the primary"
+    },
+    "spec_rule_ids": [
+      "REC-017"
+    ]
+  },
+  {
+    "id": "spec-REC-021-valid-context-always-rendered",
+    "family": "REC",
+    "rule_statement": "The `Context` section carries the question; emitters MUST render it.",
+    "valid": true,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-021-valid-context-always-rendered.json",
+    "notes": "`## Context` is present and carries the question text. The question reaches no parsed field (known gap G3), so the rendered Context section is the ONLY durable home for it -- and it is the field REC-056 derives the filename from and REC-064 matches legacy records on.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+      "contains_context_heading": true
+    },
+    "spec_rule_ids": [
+      "REC-021"
+    ]
+  },
+  {
+    "id": "spec-REC-021-invalid-context-rendered-even-when-question-empty",
+    "family": "REC",
+    "rule_statement": "The `Context` section carries the question; emitters MUST render it.",
+    "valid": false,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-021-invalid-context-rendered-even-when-question-empty.json",
+    "notes": "The question is EMPTY. The `## Context` section MUST still be emitted (with the `(none recorded)` placeholder, REC-050). An emitter that omits the section when it has no question destroys REC-064's legacy-matching signal: a record with no Context section can never be claimed as the record of THIS question.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\n(none recorded)\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+      "contains_context_heading": true
+    },
+    "spec_rule_ids": [
+      "REC-021"
+    ]
+  },
+  {
+    "id": "spec-REC-047-valid-status-and-date-adjacent-after-h1",
+    "family": "REC",
+    "rule_statement": "`**Status:**` and `**Date:**` MUST be emitted on adjacent lines after the H1.",
+    "valid": true,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-047-valid-status-and-date-adjacent-after-h1.json",
+    "notes": "Lines 0-3 are exactly: the H1, one blank line, `**Status:** ...`, `**Date:** ...` -- with NO blank line between Status and Date. The adjacency matters because REC-029 searches the whole document for the first line-anchored status: a blank line between them is harmless, but reordering or separating them changes which line the status scan hits first.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+      "line_0": "# Decision: Serve reads from a replica",
+      "line_1": "",
+      "line_2": "**Status:** Accepted",
+      "line_3": "**Date:** 2026-04-02"
+    },
+    "spec_rule_ids": [
+      "REC-047"
+    ]
+  },
+  {
+    "id": "spec-REC-048-valid-section-order",
+    "family": "REC",
+    "rule_statement": "Emitted section order MUST be Context, Decision, Alternatives considered, Recommendation.",
+    "valid": true,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-048-valid-section-order.json",
+    "notes": "All four sections present. The emitted heading order MUST be exactly Context, Decision, Alternatives considered, Recommendation.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n\n## Recommendation\n\nShard the primary\n",
+      "heading_order": [
+        "## Context",
+        "## Decision",
+        "## Alternatives considered",
+        "## Recommendation"
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-048"
+    ]
+  },
+  {
+    "id": "spec-REC-048-invalid-order-is-fixed-not-input-order",
+    "family": "REC",
+    "rule_statement": "Emitted section order MUST be Context, Decision, Alternatives considered, Recommendation.",
+    "valid": false,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-048-invalid-order-is-fixed-not-input-order.json",
+    "notes": "The section order is FIXED by the format, not by argument order or alphabetical order (alphabetical would be Alternatives, Context, Decision, Recommendation). An emitter that sorts headings, or that emits Decision before Context because the decision is the important part, produces a record that no longer round-trips through the canonical shape.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n\n## Recommendation\n\nShard the primary\n",
+      "heading_order": [
+        "## Context",
+        "## Decision",
+        "## Alternatives considered",
+        "## Recommendation"
+      ],
+      "output_must_not_equal": "## Alternatives considered / ## Context / ## Decision / ## Recommendation (alphabetical -- non-conformant)"
+    },
+    "spec_rule_ids": [
+      "REC-048"
+    ]
+  },
+  {
+    "id": "spec-REC-049-valid-recommendation-emitted-when-supplied",
+    "family": "REC",
+    "rule_statement": "`Recommendation` MUST be emitted only when a non-empty recommendation was supplied.",
+    "valid": true,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-049-valid-recommendation-emitted-when-supplied.json",
+    "notes": "A non-empty recommendation is supplied, so the `## Recommendation` section IS emitted.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n\n## Recommendation\n\nShard the primary\n",
+      "contains_recommendation_heading": true
+    },
+    "spec_rule_ids": [
+      "REC-049"
+    ]
+  },
+  {
+    "id": "spec-REC-049-invalid-recommendation-omitted-when-blank",
+    "family": "REC",
+    "rule_statement": "`Recommendation` MUST be emitted only when a non-empty recommendation was supplied.",
+    "valid": false,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-049-invalid-recommendation-omitted-when-blank.json",
+    "notes": "The recommendation is whitespace-only. The section MUST be OMITTED ENTIRELY -- not emitted empty, and not emitted with a `(none recorded)` placeholder. Per REC-054 a placeholder here would state a false claim: an absent recommendation means nobody recommended anything, not 'we looked and there was none'. An emitter that writes an empty section also creates known gap G12's ambiguity.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+      "contains_recommendation_heading": false,
+      "output_must_not_equal": "## Recommendation\n\n(none recorded)"
+    },
+    "spec_rule_ids": [
+      "REC-049"
+    ]
+  },
+  {
+    "id": "spec-REC-050-valid-none-recorded-placeholders",
+    "family": "REC",
+    "rule_statement": "Empty Context and empty Alternatives MUST render the literal `(none recorded)`.",
+    "valid": true,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-050-valid-none-recorded-placeholders.json",
+    "notes": "Neither a question nor any options were supplied. BOTH the Context body and the Alternatives considered body MUST be the literal string `(none recorded)`. This is REC-054's permitted case: the absence is itself an answer ('we considered the question and there was nothing to list').",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Keep the current scheduler\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\n(none recorded)\n\n## Decision\n\nNo change is warranted this quarter.\n\n## Alternatives considered\n\n(none recorded)\n",
+      "context_body": "(none recorded)",
+      "alternatives_body": "(none recorded)"
+    },
+    "spec_rule_ids": [
+      "REC-050"
+    ]
+  },
+  {
+    "id": "spec-REC-051-valid-empty-rationale-renders-chosen",
+    "family": "REC",
+    "rule_statement": "An empty rationale MUST render the chosen option as the Decision body.",
+    "valid": true,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-051-valid-empty-rationale-renders-chosen.json",
+    "notes": "The rationale is empty, so the `## Decision` body is the CHOSEN option. A record must never be emitted without a Decision body: parse_adr() returns None when the Decision section is empty, so an emitter that leaves it blank writes a file that is not a record (REC-008) and the write path and read path stop agreeing.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Keep the current scheduler\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nShould the scheduler change?\n\n## Decision\n\nKeep the current scheduler\n\n## Alternatives considered\n\n1. Keep the current scheduler\n2. Rewrite it\n",
+      "decision_body": "Keep the current scheduler"
+    },
+    "spec_rule_ids": [
+      "REC-051"
+    ]
+  },
+  {
+    "id": "spec-REC-052-valid-alternatives-flat-one-based-numbered",
+    "family": "REC",
+    "rule_statement": "Alternatives MUST be emitted as a flat one-based `N. ` numbered list in supplied order.",
+    "valid": true,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-052-valid-alternatives-flat-one-based-numbered.json",
+    "notes": "Three options render as `1. `, `2. `, `3. ` in SUPPLIED order -- one-based (not zero-based), flat (no nesting), and unsorted. Zero-based numbering or sorted output MUST be rejected.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n3. Add a cache tier\n",
+      "alternatives_body": "1. Serve reads from a replica\n2. Shard the primary\n3. Add a cache tier"
+    },
+    "spec_rule_ids": [
+      "REC-052"
+    ]
+  },
+  {
+    "id": "spec-REC-053-valid-single-trailing-newline",
+    "family": "REC",
+    "rule_statement": "An emitted record MUST end with a single trailing newline.",
+    "valid": true,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-053-valid-single-trailing-newline.json",
+    "notes": "The document ends with exactly one `\\n`. Neither zero (no terminator) nor two (a trailing blank line) is conformant: the rendered bytes are compared for idempotency when a decision is re-captured, so a drifting terminator makes every re-capture look like a change.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+      "ends_with_single_newline": true
+    },
+    "spec_rule_ids": [
+      "REC-053"
+    ]
+  },
+  {
+    "id": "spec-REC-058-valid-lowercase-collapse-strip",
+    "family": "REC",
+    "rule_statement": "Slug derivation: lowercase, non-`[a-z0-9]` runs collapse to a single `-`, edges stripped.",
+    "valid": true,
+    "kind": "slug_scenario",
+    "path": "slugs/spec-REC-058-valid-lowercase-collapse-strip.json",
+    "notes": "Mixed case, a colon, a double question mark and leading/trailing spaces. Every run of characters outside [a-z0-9] collapses to ONE hyphen (not one per character), and leading and trailing hyphens are stripped.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "slug": "should-we-adopt-a-shared-cache",
+      "slug_length": 30,
+      "slug_must_not_equal": "--should-we-adopt--a-shared-cache--"
+    },
+    "spec_rule_ids": [
+      "REC-058"
+    ]
+  },
+  {
+    "id": "spec-REC-058-invalid-runs-collapse-to-single-hyphen",
+    "family": "REC",
+    "rule_statement": "Slug derivation: lowercase, non-`[a-z0-9]` runs collapse to a single `-`, edges stripped.",
+    "valid": false,
+    "kind": "slug_scenario",
+    "path": "slugs/spec-REC-058-invalid-runs-collapse-to-single-hyphen.json",
+    "notes": "Several multi-character non-alphanumeric runs ('  ', ' --- ', ' // '). Each MUST become exactly ONE hyphen. An implementation replacing character-by-character yields 'retry--budget-----per----caller' -- a different filename for the same question, which breaks REC-067 idempotent reuse.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "slug": "retry-budget-per-caller",
+      "slug_length": 23,
+      "slug_must_not_equal": "retry--budget-----per----caller"
+    },
+    "spec_rule_ids": [
+      "REC-058"
+    ]
+  },
+  {
+    "id": "spec-REC-059-valid-bounded-at-60",
+    "family": "REC",
+    "rule_statement": "A slug MUST be bounded at 60 characters.",
+    "valid": true,
+    "kind": "slug_scenario",
+    "path": "slugs/spec-REC-059-valid-bounded-at-60.json",
+    "notes": "The source text is far longer than 60 characters. The resulting slug MUST be at most 60 characters. Unbounded slugs produce filenames that trip path-length limits and are unusable in a directory humans scan.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "slug": "should-the-nightly-reconciliation-job-run-before-or-after",
+      "slug_length": 57
+    },
+    "spec_rule_ids": [
+      "REC-059"
+    ]
+  },
+  {
+    "id": "spec-REC-060-invalid-truncation-lands-on-word-boundary",
+    "family": "REC",
+    "rule_statement": "Truncation MUST land on a word boundary.",
+    "valid": false,
+    "kind": "slug_scenario",
+    "path": "slugs/spec-REC-060-invalid-truncation-lands-on-word-boundary.json",
+    "notes": "The full slug exceeds 60 characters. Truncation MUST drop everything from the last `-` onward rather than cutting mid-word. A hard cut at exactly 60 would end the filename in a word fragment, which reads as a permanent typo in a directory humans scan by eye.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "slug": "should-the-nightly-reconciliation-job-run-before-the",
+      "slug_length": 52,
+      "slug_must_not_equal": "should-the-nightly-reconciliation-job-run-before-the-settleme"
+    },
+    "spec_rule_ids": [
+      "REC-060"
+    ]
+  },
+  {
+    "id": "spec-REC-061-valid-first-word-over-bound-is-hard-cut",
+    "family": "REC",
+    "rule_statement": "A first word exceeding the bound MUST be hard-cut -- the only permitted mid-word cut.",
+    "valid": true,
+    "kind": "slug_scenario",
+    "path": "slugs/spec-REC-061-valid-first-word-over-bound-is-hard-cut.json",
+    "notes": "The FIRST word alone is longer than 60 characters, so the word-boundary rule of REC-060 has no boundary to land on. This is the one case where a mid-word cut is permitted: a slug must be bounded. An implementation that returns the un-truncated first word, or falls back to the empty string, is non-conformant.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "slug": "supercalifragilisticexpialidociousreconciliationwindowdeterm",
+      "slug_length": 60
+    },
+    "spec_rule_ids": [
+      "REC-061"
+    ]
+  },
+  {
+    "id": "spec-REC-062-valid-empty-slug-becomes-decision",
+    "family": "REC",
+    "rule_statement": "An empty slug MUST become the literal `decision`.",
+    "valid": true,
+    "kind": "slug_scenario",
+    "path": "slugs/spec-REC-062-valid-empty-slug-becomes-decision.json",
+    "notes": "The source text contains NO characters in [a-z0-9], so the derived slug reduces to the empty string and MUST become the literal `decision`. An implementation returning '' produces the filename '<date>-.md'; one returning the raw text reintroduces unsafe characters.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "slug": "decision",
+      "slug_length": 8
+    },
+    "spec_rule_ids": [
+      "REC-062"
+    ]
+  },
+  {
+    "id": "spec-REC-063-invalid-glob-metacharacters-cannot-survive",
+    "family": "REC",
+    "rule_statement": "A slug MUST NOT be able to contain a glob metacharacter.",
+    "valid": false,
+    "kind": "slug_scenario",
+    "path": "slugs/spec-REC-063-invalid-glob-metacharacters-cannot-survive.json",
+    "notes": "The question text contains `*`, `.`, `[`, `]` and `?` -- every metacharacter the REC-067 lookup glob is built from. Because REC-058 restricts output to [a-z0-9-], NONE of them can survive into the slug. This is the property REC-068's pattern construction relies on: if a slug could smuggle a `*` into the glob, the anchored digit-class pattern would be defeated from the other end.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "slug": "which-md-files-should-the-0-9-matcher-pick-up",
+      "slug_length": 45,
+      "slug_must_not_equal": "which-*.md-files-should-the-[0-9]-matcher-pick-up"
+    },
+    "spec_rule_ids": [
+      "REC-063"
+    ]
+  },
+  {
+    "id": "spec-REC-066-valid-empty-question-matches-none-recorded",
+    "family": "REC",
+    "rule_statement": "An empty question matches only a recorded context of `(none recorded)`.",
+    "valid": true,
+    "kind": "filename_scenario",
+    "path": "filenames/spec-REC-066-valid-empty-question-matches-none-recorded.json",
+    "notes": "An EMPTY question and a legacy record whose recorded `## Context` is the literal `(none recorded)`. These match, so the legacy file MUST be reused rather than a fresh dated record minted.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "filename": "keep-the-window.md"
+    },
+    "spec_rule_ids": [
+      "REC-066"
+    ]
+  },
+  {
+    "id": "spec-REC-066-invalid-empty-question-does-not-match-a-real-context",
+    "family": "REC",
+    "rule_statement": "An empty question matches only a recorded context of `(none recorded)`.",
+    "valid": false,
+    "kind": "filename_scenario",
+    "path": "filenames/spec-REC-066-invalid-empty-question-does-not-match-a-real-context.json",
+    "notes": "An EMPTY question against a legacy record recording a REAL question. They MUST NOT match: the legacy file is left alone and a fresh dated record is minted. An implementation that treats an empty question as a wildcard would overwrite an unrelated decision's record -- the exact data-loss class REC-056 and REC-065 exist to kill.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "filename": "2026-07-25-keep-the-window.md"
+    },
+    "spec_rule_ids": [
+      "REC-066"
+    ]
+  },
+  {
+    "id": "spec-REC-066-invalid-empty-question-must-not-match-an-empty-context",
+    "family": "REC",
+    "rule_statement": "An empty question matches only a recorded context of `(none recorded)`.",
+    "valid": false,
+    "kind": "filename_scenario",
+    "path": "filenames/spec-REC-066-invalid-empty-question-must-not-match-an-empty-context.json",
+    "notes": "An EMPTY question against a legacy record whose `## Context` section exists but is EMPTY. REC-066 says an empty question matches a recorded context of `(none recorded)` AND ONLY THAT, so this MUST NOT match and a fresh dated record MUST be minted. DIVERGENCE: v0.8.3 compares whitespace-normalized strings first, so empty == empty matches and the legacy file IS claimed. The `expect` below states the SPEC-required outcome.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "filename": "2026-07-25-keep-the-window.md",
+      "engine_diverges": true,
+      "engine_filename": "keep-the-window.md",
+      "divergence": "REC-066's 'and only that' is not enforced: an empty recorded Context also matches an empty question, because the equality test runs before the `(none recorded)` special case. `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed at v0.8.3. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
+    },
+    "spec_rule_ids": [
+      "REC-066"
+    ]
+  },
+  {
+    "id": "spec-REC-001-valid-reserved-name-unread",
+    "family": "REC",
+    "rule_statement": "The bare root filename `Whyfile` is RESERVED and explicitly unclaimed; implementations MUST NOT assign it a meaning.",
+    "valid": true,
+    "kind": "record_dir",
+    "path": "dirs/spec-REC-001-reserved-whyfile-name/",
+    "notes": "See expected.json. Exactly 1 decision node -- the reserved `Whyfile` contributes nothing.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "decision_node_count": 1,
+      "decision_titles": [
+        "Use a shared cache layer"
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-001"
+    ]
+  },
+  {
+    "id": "spec-REC-001-invalid-reserved-name-must-not-be-read",
+    "family": "REC",
+    "rule_statement": "The bare root filename `Whyfile` is RESERVED and explicitly unclaimed; implementations MUST NOT assign it a meaning.",
+    "valid": false,
+    "kind": "record_dir",
+    "path": "dirs/spec-REC-001-reserved-whyfile-name/",
+    "notes": "See expected.json. An implementation that assigns the reserved bare root filename a meaning returns 2 decision nodes. That output MUST be rejected: the name is reserved so a future repository-level contract can take the classic root position, and it is only available if nothing has quietly claimed it first.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "decision_node_count": 1,
+      "decision_titles": [
+        "Use a shared cache layer"
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-001"
+    ]
+  },
+  {
+    "id": "spec-REC-033-valid-non-rejected-statuses-all-ingested",
+    "family": "REC",
+    "rule_statement": "No status value other than `rejected` is normative; implementations MUST NOT attach behaviour to any other value.",
+    "valid": true,
+    "kind": "record_dir",
+    "path": "dirs/spec-REC-033-only-rejected-is-normative/",
+    "notes": "See expected.json. 4 of 5 records survive; only the `rejected` one is excluded.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "decision_node_count": 4,
+      "decision_titles": [
+        "Option 1",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-033"
+    ]
+  },
+  {
+    "id": "spec-REC-033-invalid-superseded-and-open-must-not-be-filtered",
+    "family": "REC",
+    "rule_statement": "No status value other than `rejected` is normative; implementations MUST NOT attach behaviour to any other value.",
+    "valid": false,
+    "kind": "record_dir",
+    "path": "dirs/spec-REC-033-only-rejected-is-normative/",
+    "notes": "See expected.json. An implementation that also filters `superseded` (2 nodes) or that filters anything it does not recognize, such as `open` (1-2 nodes), is non-conformant. Only `rejected` carries behaviour. Any decision count other than 4 MUST be rejected.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "decision_node_count": 4,
+      "decision_titles": [
+        "Option 1",
+        "Option 2",
+        "Option 3",
+        "Option 4"
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-033"
+    ]
+  },
+  {
+    "id": "spec-REC-043-valid-four-digit-filename-resolves",
+    "family": "REC",
+    "rule_statement": "A supersession target resolves by the first four-digit run in the target's filename.",
+    "valid": true,
+    "kind": "record_dir",
+    "path": "dirs/spec-REC-043-supersession-target-resolution/",
+    "notes": "See expected.json. `supersedes ADR-0009` resolves to 0009-old-approach.md by the four-digit run in its FILENAME, not by its heading. Exactly 1 edge.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "supersedes_edge_count": 1,
+      "supersedes_edges": [
+        [
+          "Subscribe to the upstream feed",
+          "Poll the upstream feed"
+        ]
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-043"
+    ]
+  },
+  {
+    "id": "spec-REC-043-invalid-heading-number-must-not-resolve-target",
+    "family": "REC",
+    "rule_statement": "A supersession target resolves by the first four-digit run in the target's filename.",
+    "valid": false,
+    "kind": "record_dir",
+    "path": "dirs/spec-REC-043-supersession-target-resolution/",
+    "notes": "See expected.json. `supersedes ADR-7` names a record that EXISTS and whose H1 is `# ADR-7 - ...`, but whose filename (no-number-here.md) carries no four-digit run. Resolution reads the FILENAME, never the heading, so this MUST NOT resolve. An implementation matching on the heading number yields 2 edges.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "supersedes_edge_count": 1,
+      "supersedes_edges": [
+        [
+          "Subscribe to the upstream feed",
+          "Poll the upstream feed"
+        ]
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-043"
+    ]
+  },
+  {
+    "id": "spec-REC-044-valid-unresolvable-reference-dropped-silently",
+    "family": "REC",
+    "rule_statement": "An unresolvable supersession reference MUST be dropped silently.",
+    "valid": true,
+    "kind": "record_dir",
+    "path": "dirs/spec-REC-043-supersession-target-resolution/",
+    "notes": "See expected.json. `supersedes ADR-0777` names no record in the directory. It MUST be dropped SILENTLY -- no edge, no error, no diagnostic. Records are ingested from a directory that may be partial, so a dangling reference is expected, not a violation.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "supersedes_edge_count": 1,
+      "errors_raised": 0
+    },
+    "spec_rule_ids": [
+      "REC-044"
+    ]
+  },
+  {
+    "id": "spec-REC-044-invalid-unresolvable-reference-must-not-error",
+    "family": "REC",
+    "rule_statement": "An unresolvable supersession reference MUST be dropped silently.",
+    "valid": false,
+    "kind": "record_dir",
+    "path": "dirs/spec-REC-043-supersession-target-resolution/",
+    "notes": "See expected.json. An implementation that raises, warns, or emits a placeholder/dangling edge for `supersedes ADR-0777` is non-conformant. Any edge count other than 1, or any raised error, MUST be rejected.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "supersedes_edge_count": 1,
+      "errors_raised": 0
+    },
+    "spec_rule_ids": [
+      "REC-044"
+    ]
+  },
+  {
+    "id": "spec-REC-057-valid-kind-comes-from-h1-not-directory",
+    "family": "REC",
+    "rule_statement": "Directory location is conventional, never normative; kind MUST NOT be inferred from it.",
+    "valid": true,
+    "kind": "identity_scenario",
+    "path": "identity/spec-REC-057-valid-kind-comes-from-h1-not-directory.json",
+    "notes": "The SAME ADR record text is parsed from three different directories, including `docs/decisions/` (the conventional home of `decision`-kind records). The kind MUST be 'adr' in all three, because kind comes from the H1 and nothing else.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "kind_for_each_path": [
+        "adr",
+        "adr",
+        "adr"
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-057"
+    ]
+  },
+  {
+    "id": "spec-REC-057-invalid-decision-h1-in-adr-directory-is-still-a-decision",
+    "family": "REC",
+    "rule_statement": "Directory location is conventional, never normative; kind MUST NOT be inferred from it.",
+    "valid": false,
+    "kind": "identity_scenario",
+    "path": "identity/spec-REC-057-invalid-decision-h1-in-adr-directory-is-still-a-decision.json",
+    "notes": "A `# Decision:` record placed in `docs/adr/` MUST still parse as kind='decision'. An implementation inferring kind from the directory returns 'adr' for the first path -- and since kind selects the provenance tier (authored vs captured), that silently PROMOTES a captured record to the authored tier.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "kind_for_each_path": [
+        "decision",
+        "decision",
+        "decision"
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-057"
+    ]
+  },
+  {
+    "id": "spec-REC-072-valid-normalized-label",
+    "family": "REC",
+    "rule_statement": "Normalized label: lowercase, non-`[a-z0-9]` runs replaced by `_`, edge `_` stripped.",
+    "valid": true,
+    "kind": "identity_scenario",
+    "path": "identity/spec-REC-072-valid-normalized-label.json",
+    "notes": "Four labels exercising case, punctuation runs, embedded digits and leading/trailing separator characters. Note the separator is `_` here, NOT the `-` used by the slug rule REC-058: an implementation that reuses the slug function for labels forks every node id in the graph.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "normalized_labels": [
+        "use_a_shared_cache",
+        "serve_reads_from_a_replica",
+        "adr_0042_pin_the_digest",
+        "leading_and_trailing"
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-072"
+    ]
+  },
+  {
+    "id": "spec-REC-072-invalid-label-separator-is-underscore-not-hyphen",
+    "family": "REC",
+    "rule_statement": "Normalized label: lowercase, non-`[a-z0-9]` runs replaced by `_`, edge `_` stripped.",
+    "valid": false,
+    "kind": "identity_scenario",
+    "path": "identity/spec-REC-072-invalid-label-separator-is-underscore-not-hyphen.json",
+    "notes": "The normalized label uses `_` as its separator. An implementation that reuses the REC-058 slug derivation (which uses `-`) produces 'use-a-shared-cache' -- a different string, hence a different hash, hence a different node id for the same record.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "normalized_labels": [
+        "use_a_shared_cache"
+      ],
+      "normalized_labels_must_not_equal": [
+        "use-a-shared-cache"
+      ]
+    },
+    "spec_rule_ids": [
+      "REC-072"
+    ]
+  },
+  {
+    "id": "spec-REC-071-valid-identity-from-exactly-four-inputs",
+    "family": "REC",
+    "rule_statement": "Node identity MUST hash `path :: location :: kind :: normalized-label`.",
+    "valid": true,
+    "kind": "identity_scenario",
+    "path": "identity/spec-REC-071-valid-identity-from-exactly-four-inputs.json",
+    "notes": "Six identity tuples: a baseline plus one variant changing each of the four inputs in turn. All six ids MUST be distinct, and the baseline MUST be reproducible. An implementation that drops any one input (a common 'simplification' -- hashing only path plus label) collapses at least one variant onto the baseline.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "ids": {
+        "baseline": "intent_b3428e397834",
+        "different_path": "intent_24d88aa977c9",
+        "different_location": "intent_e61bee38b132",
+        "different_kind": "intent_f718458802e2",
+        "different_label": "intent_030ad8fa5542",
+        "label_differs_only_by_punctuation": "intent_3c4fde32bc13"
+      },
+      "all_distinct": true,
+      "distinct_count": 6
+    },
+    "spec_rule_ids": [
+      "REC-071"
+    ]
+  },
+  {
+    "id": "spec-REC-071-invalid-dropping-any-input-collapses-identity",
+    "family": "REC",
+    "rule_statement": "Node identity MUST hash `path :: location :: kind :: normalized-label`.",
+    "valid": false,
+    "kind": "identity_scenario",
+    "path": "identity/spec-REC-071-invalid-dropping-any-input-collapses-identity.json",
+    "notes": "The `different_kind` variant differs from the baseline ONLY in intent kind (decision vs assumption) -- same path, same location, same label. An implementation that omits intent kind from the hash returns the SAME id for both, merging a decision node with the assumption it stated. Any output where distinct_count < 6 MUST be rejected.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "ids": {
+        "baseline": "intent_b3428e397834",
+        "different_path": "intent_24d88aa977c9",
+        "different_location": "intent_e61bee38b132",
+        "different_kind": "intent_f718458802e2",
+        "different_label": "intent_030ad8fa5542",
+        "label_differs_only_by_punctuation": "intent_3c4fde32bc13"
+      },
+      "all_distinct": true,
+      "distinct_count": 6
+    },
+    "spec_rule_ids": [
+      "REC-071"
+    ]
+  },
+  {
+    "id": "spec-REC-073-valid-absolute-in-repo-becomes-repo-relative",
+    "family": "REC",
+    "rule_statement": "The canonical source path MUST be repository-relative and POSIX-separated.",
+    "valid": true,
+    "kind": "identity_scenario",
+    "path": "identity/spec-REC-073-valid-absolute-in-repo-becomes-repo-relative.json",
+    "notes": "An ABSOLUTE path to a record inside a repository MUST canonicalize to its repository-relative POSIX spelling. Substitute a real repository root for `<REPO_ROOT>` when running this fixture. This is what makes an identity reproducible across clones: hashing the absolute spelling makes every node id machine-specific, so the same record ingested via an absolute path forks the node a relative re-ingest produces.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "canonical_path": "docs/decisions/2026-04-02-shed-read-load.md"
+    },
+    "spec_rule_ids": [
+      "REC-073"
+    ]
+  },
+  {
+    "id": "spec-REC-073-invalid-relative-path-left-alone",
+    "family": "REC",
+    "rule_statement": "The canonical source path MUST be repository-relative and POSIX-separated.",
+    "valid": false,
+    "kind": "identity_scenario",
+    "path": "identity/spec-REC-073-invalid-relative-path-left-alone.json",
+    "notes": "An ALREADY-relative path MUST come through unchanged apart from separator normalization. An implementation that resolves every input to an absolute path first (then back to relative) forks the ids of every existing relative-built graph. Any output other than the input string MUST be rejected.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "canonical_path": "docs/decisions/2026-04-02-shed-read-load.md"
+    },
+    "spec_rule_ids": [
+      "REC-073"
+    ]
+  },
+  {
+    "id": "spec-REC-074-valid-outside-repo-falls-back-to-posix-absolute",
+    "family": "REC",
+    "rule_statement": "A path outside a repository falls back to POSIX absolute; canonicalization MUST NOT raise.",
+    "valid": true,
+    "kind": "identity_scenario",
+    "path": "identity/spec-REC-074-valid-outside-repo-falls-back-to-posix-absolute.json",
+    "notes": "An absolute path belonging to no repository MUST fall back to a POSIX-normalized absolute spelling rather than raising or returning empty.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "canonical_path": "/nonexistent-root/records/x.md",
+      "raised": false
+    },
+    "spec_rule_ids": [
+      "REC-074"
+    ]
+  },
+  {
+    "id": "spec-REC-074-invalid-canonicalization-must-not-raise",
+    "family": "REC",
+    "rule_statement": "A path outside a repository falls back to POSIX absolute; canonicalization MUST NOT raise.",
+    "valid": false,
+    "kind": "identity_scenario",
+    "path": "identity/spec-REC-074-invalid-canonicalization-must-not-raise.json",
+    "notes": "A path containing a NUL byte. REC-074 states canonicalization MUST NOT raise, so a conformant implementation returns SOME string (or declines the path through its normal absent-value channel) rather than propagating an exception. DIVERGENCE: v0.8.3 propagates ValueError('embedded null byte') from the underlying path resolution. Path spellings arrive from tool-call arguments and configuration, so this is a reachable trust boundary, not a theoretical one. The `expect` below states the SPEC-required outcome.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "raised": false,
+      "engine_diverges": true,
+      "engine_raised": true,
+      "engine_exception": "ValueError",
+      "divergence": "REC-074's 'MUST NOT raise' is not honoured: a NUL byte in an absolute path propagates ValueError out of canonical_source_path(). `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed at v0.8.3. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
+    },
+    "spec_rule_ids": [
+      "REC-074"
+    ]
+  },
+  {
+    "id": "spec-REC-002-invalid-not-utf8",
+    "family": "REC",
+    "rule_statement": "A record MUST be a UTF-8 markdown document.",
+    "valid": false,
+    "kind": "record_bytes",
+    "path": "records/spec-REC-002-invalid-not-utf8.md",
+    "notes": "The file contains the bytes 0xFF 0xFE, which begin no valid UTF-8 sequence, so it is not a UTF-8 document and therefore not a conformant record. Read this fixture as RAW BYTES, not as text. DIVERGENCE: the v0.8.3 reference reads record files with `encoding='utf-8-sig', errors='replace'`, so the undecodable bytes become U+FFFD and the file is ingested as a record whose rationale silently differs from the bytes on disk. The `expect` below states the SPEC-required outcome.",
+    "verdict_kind": "parse_rejects",
+    "expect": {
+      "is_valid_utf8": false,
+      "conformant_record": false,
+      "engine_diverges": true,
+      "engine_is_valid_utf8": false,
+      "engine_conformant_record": true,
+      "engine_note": "ingest_dir() ingests the file with replacement characters in the rationale",
+      "divergence": "REC-002 has no reject branch in v0.8.3: undecodable bytes are replaced with U+FFFD rather than the file being rejected as a non-conformant record. `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed at v0.8.3. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
+    },
+    "spec_rule_ids": [
+      "REC-002"
+    ]
+  },
+  {
+    "id": "spec-REC-047-invalid-no-blank-line-between-status-and-date",
+    "family": "REC",
+    "rule_statement": "`**Status:**` and `**Date:**` MUST be emitted on adjacent lines after the H1.",
+    "valid": false,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-047-invalid-no-blank-line-between-status-and-date.json",
+    "notes": "The two metadata lines MUST be ADJACENT -- line 2 and line 3, with no blank line between them. An emitter that separates them with a blank line (a natural markdown-prettifying instinct) produces the non-conformant output shown. Adjacency is what lets a reader treat the pair as one metadata block rather than two stray bold lines.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+      "output_must_not_equal": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n\n**Date:** 2026-04-02\n",
+      "line_2": "**Status:** Accepted",
+      "line_3": "**Date:** 2026-04-02"
+    },
+    "spec_rule_ids": [
+      "REC-047"
+    ]
+  },
+  {
+    "id": "spec-REC-050-invalid-placeholder-is-per-section-not-global",
+    "family": "REC",
+    "rule_statement": "Empty Context and empty Alternatives MUST render the literal `(none recorded)`.",
+    "valid": false,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-050-invalid-placeholder-is-per-section-not-global.json",
+    "notes": "The question is empty but TWO options were supplied. The placeholder is decided PER SECTION: Context gets `(none recorded)`, Alternatives considered gets the real numbered list. An emitter that treats the placeholder as a whole-record mode -- or that suppresses the Alternatives list because some other field was empty -- produces the non-conformant output shown, which falsely claims no alternatives were considered.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\n(none recorded)\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+      "output_must_not_equal": "## Context\n\n(none recorded)\n\n## Alternatives considered\n\n(none recorded)",
+      "context_body": "(none recorded)",
+      "alternatives_body": "1. Serve reads from a replica\n2. Shard the primary"
+    },
+    "spec_rule_ids": [
+      "REC-050"
+    ]
+  },
+  {
+    "id": "spec-REC-051-invalid-whitespace-only-rationale-renders-chosen",
+    "family": "REC",
+    "rule_statement": "An empty rationale MUST render the chosen option as the Decision body.",
+    "valid": false,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-051-invalid-whitespace-only-rationale-renders-chosen.json",
+    "notes": "The rationale is WHITESPACE-ONLY, not the empty string. It MUST still render the chosen option as the Decision body. An emitter that tests `rationale == ''` rather than testing the TRIMMED value writes a blank Decision body -- and a record with an empty Decision section does not parse as a record at all (REC-008), so the emitter produces a file its own parser rejects.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nServe reads from a replica\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+      "output_must_not_equal": "## Decision\n\n\n\n## Alternatives considered",
+      "decision_body": "Serve reads from a replica"
+    },
+    "spec_rule_ids": [
+      "REC-051"
+    ]
+  },
+  {
+    "id": "spec-REC-052-invalid-numbering-is-one-based",
+    "family": "REC",
+    "rule_statement": "Alternatives MUST be emitted as a flat one-based `N. ` numbered list in supplied order.",
+    "valid": false,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-052-invalid-numbering-is-one-based.json",
+    "notes": "A single option renders as `1. `, never `0. `. Zero-based numbering is the natural bug when the list index is used directly; it also breaks round-tripping, because a reader comparing the emitted list against a re-captured one sees every item renumbered.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n",
+      "output_must_not_equal": "## Alternatives considered\n\n0. Serve reads from a replica",
+      "alternatives_body": "1. Serve reads from a replica"
+    },
+    "spec_rule_ids": [
+      "REC-052"
+    ]
+  },
+  {
+    "id": "spec-REC-053-invalid-no-trailing-blank-line",
+    "family": "REC",
+    "rule_statement": "An emitted record MUST end with a single trailing newline.",
+    "valid": false,
+    "kind": "render_scenario",
+    "path": "rendering/spec-REC-053-invalid-no-trailing-blank-line.json",
+    "notes": "The supplied rationale ENDS IN BLANK LINES. The rendered document MUST still end with exactly one `\\n` -- the trailing whitespace is trimmed, not carried through. An emitter that concatenates the rationale verbatim emits trailing blank lines, so re-capturing an unchanged decision produces different bytes and every re-capture looks like a change.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+      "output_must_not_equal": "...replica absorbs read load.\n\n\n\n## Alternatives considered\n\n1. ...\n\n",
+      "ends_with_single_newline": true
+    },
+    "spec_rule_ids": [
+      "REC-053"
+    ]
+  },
+  {
+    "id": "spec-REC-059-invalid-unbounded-slug-rejected",
+    "family": "REC",
+    "rule_statement": "A slug MUST be bounded at 60 characters.",
+    "valid": false,
+    "kind": "slug_scenario",
+    "path": "slugs/spec-REC-059-invalid-unbounded-slug-rejected.json",
+    "notes": "The source question is well over 60 characters. The slug MUST be at most 60. An implementation that omits the bound produces the non-conformant slug shown -- a filename long enough to trip path-length limits on some filesystems, and unreadable in a directory listing.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "slug": "should-the-reconciliation-service-retry-failed-settlement",
+      "slug_length": 57,
+      "slug_must_not_equal": "should-the-reconciliation-service-retry-failed-settlement-batches-automatically-or-escalate-them-to-an-operator-queue"
+    },
+    "spec_rule_ids": [
+      "REC-059"
+    ]
+  },
+  {
+    "id": "spec-REC-061-invalid-overlong-first-word-must-not-escape-the-bound",
+    "family": "REC",
+    "rule_statement": "A first word exceeding the bound MUST be hard-cut -- the only permitted mid-word cut.",
+    "valid": false,
+    "kind": "slug_scenario",
+    "path": "slugs/spec-REC-061-invalid-overlong-first-word-must-not-escape-the-bound.json",
+    "notes": "The first word is 61 characters -- one over the bound -- so there is no earlier `-` to truncate at. The slug MUST be hard-cut to 60. An implementation that returns the whole first word because 'the word-boundary rule found no boundary' emits the 61-character non-conformant slug shown, leaving the slug unbounded exactly when the bound matters most.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "slug": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "slug_length": 60,
+      "slug_must_not_equal": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "spec_rule_ids": [
+      "REC-061"
+    ]
+  },
+  {
+    "id": "spec-REC-062-invalid-empty-slug-must-not-be-empty-string",
+    "family": "REC",
+    "rule_statement": "An empty slug MUST become the literal `decision`.",
+    "valid": false,
+    "kind": "slug_scenario",
+    "path": "slugs/spec-REC-062-invalid-empty-slug-must-not-be-empty-string.json",
+    "notes": "The source text is whitespace only, so the derived slug reduces to the empty string and MUST become the literal `decision`. An implementation returning '' produces the filename '<date>-.md' -- and every question that slugs to nothing then collides on that one name, which is the REC-056 overwrite class returning through a different door.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "slug": "decision",
+      "slug_length": 8,
+      "slug_must_not_equal": ""
+    },
+    "spec_rule_ids": [
+      "REC-062"
+    ]
+  },
+  {
+    "id": "spec-REC-063-valid-ordinary-question-slug-is-glob-safe",
+    "family": "REC",
+    "rule_statement": "A slug MUST NOT be able to contain a glob metacharacter.",
+    "valid": true,
+    "kind": "slug_scenario",
+    "path": "slugs/spec-REC-063-valid-ordinary-question-slug-is-glob-safe.json",
+    "notes": "The positive control for REC-063: an ordinary question produces a slug drawn only from [a-z0-9-]. This is the property REC-068's lookup pattern is built on -- the slug is interpolated directly into a glob, so it must never be able to contribute a metacharacter.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "slug": "should-the-reconciliation-service-retry-failed-batches",
+      "slug_length": 54
+    },
+    "spec_rule_ids": [
+      "REC-063"
+    ]
+  },
+  {
+    "id": "spec-REC-069-valid-fresh-name-from-today-and-question-slug",
+    "spec_rule_ids": [
+      "REC-069"
+    ],
+    "family": "REC",
+    "rule_statement": "Otherwise the destination MUST be `<today>-<question-slug>.md`.",
+    "valid": true,
+    "kind": "filename_scenario",
+    "path": "filenames/spec-REC-069-valid-fresh-name-from-today-and-question-slug.json",
+    "notes": "An empty records directory: no legacy name and no existing dated record, so neither REC-064 nor REC-067 applies and the destination is minted fresh. It MUST be `<today>-` followed by the slug of the QUESTION -- note the filename carries nothing from the chosen option ('Shard the primary'), which is REC-056's whole point.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "filename": "2026-07-25-how-do-we-shed-read-load.md"
+    }
+  },
+  {
+    "id": "spec-REC-069-invalid-empty-question-must-not-fall-back-to-the-chosen-slug",
+    "spec_rule_ids": [
+      "REC-069"
+    ],
+    "family": "REC",
+    "rule_statement": "Otherwise the destination MUST be `<today>-<question-slug>.md`.",
+    "valid": false,
+    "kind": "filename_scenario",
+    "path": "filenames/spec-REC-069-invalid-empty-question-must-not-fall-back-to-the-chosen-slug.json",
+    "notes": "An empty records directory and an EMPTY question. The question slug of an empty string is the literal `decision` (REC-062), so REC-069 requires `2026-07-25-decision.md`. DIVERGENCE: v0.8.3 substitutes the CHOSEN option for an empty question before slugging (`slugify(question.strip() or chosen)`) and emits `2026-07-25-keep-the-window.md` -- a chosen-derived filename, which is precisely the collision class REC-056 exists to kill. Two captures with no question that happen to choose the same words would land on the same file. The spec does not describe this fallback at all: either REC-069 must state it, or the implementation must drop it.",
+    "verdict_kind": "field_expectation",
+    "expect": {
+      "filename": "2026-07-25-decision.md",
+      "engine_diverges": true,
+      "engine_filename": "2026-07-25-keep-the-window.md",
+      "divergence": "REC-069 has an undocumented empty-question fallback: the destination slug is derived from the CHOSEN option, not the question, whenever the question is empty. `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed at v0.8.3. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match."
+    }
+  }
+]

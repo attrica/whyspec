@@ -1,0 +1,24 @@
+{
+  "candidates": [
+    {
+      "id": "intent_cccccccccccc",
+      "label": "Adopt a shared cache layer",
+      "score": 78
+    },
+    {
+      "id": "intent_eeeeeeeeeeee",
+      "label": "Adopt a shared queue layer",
+      "score": 76
+    }
+  ],
+  "command": "explain",
+  "message": "Several intent nodes match 'shared layer'; picked the top one.",
+  "query": "shared layer",
+  "resolved": {
+    "id": "intent_cccccccccccc",
+    "label": "Adopt a shared cache layer",
+    "matched_by": "fuzzy",
+    "score": 78
+  },
+  "status": "ambiguous"
+}

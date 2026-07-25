@@ -1,0 +1,17 @@
+{
+  "rule": "FIL-008",
+  "spec_rule_ids": [
+    "REC-062",
+    "REC-058"
+  ],
+  "statement": "A question that survives slugification as the empty string MUST become the literal slug `decision`. Slugification strips every character outside [a-z0-9], so a question made only of punctuation reduces to nothing, and a record still needs a bounded, non-empty name.",
+  "scenario_dir": "dirs/FIL-008-empty-slug",
+  "existing_files": [],
+  "input": {
+    "chosen": "Adopt library X",
+    "question": "???",
+    "today": "2026-07-25"
+  },
+  "expected_output": "docs/decisions/2026-07-25-decision.md",
+  "note": "Verified by execution: record_filename() at v0.8.3 with a punctuation-only question yields `2026-07-25-decision.md`."
+}

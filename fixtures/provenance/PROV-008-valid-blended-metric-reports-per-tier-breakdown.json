@@ -1,0 +1,44 @@
+{
+  "rule": "PROV-008",
+  "spec_rule_ids": [
+    "PROV-012",
+    "PROV-010",
+    "PROV-011"
+  ],
+  "statement": "A trust metric that blends tiers into a single scalar MUST also report the per-tier breakdown and the tier set it treated as trusted. A bare percentage is the one output that makes a corpus of inferences look like a corpus of decisions.",
+  "input": [
+    {
+      "provenance": "authored"
+    },
+    {
+      "provenance": "captured"
+    },
+    {
+      "provenance": "attested"
+    },
+    {
+      "provenance": "reconstructed"
+    },
+    {
+      "provenance": "reconstructed"
+    },
+    {}
+  ],
+  "expected_output": {
+    "golden_count": 3,
+    "total_intent": 6,
+    "golden_fraction_pct": 50,
+    "golden_tiers": [
+      "attested",
+      "authored",
+      "captured"
+    ],
+    "by_provenance": {
+      "authored": 1,
+      "captured": 1,
+      "attested": 1,
+      "reconstructed": 3
+    }
+  },
+  "note": "Verified by execution against golden_fraction() at v0.8.3. Note the absent-provenance node is counted under `reconstructed`, never promoted."
+}

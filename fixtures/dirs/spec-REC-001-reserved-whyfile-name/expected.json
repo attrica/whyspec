@@ -1,0 +1,13 @@
+{
+  "rule": "REC-001",
+  "statement": "The bare root filename `Whyfile` is RESERVED and explicitly unclaimed; implementations MUST NOT assign it a meaning.",
+  "files": [
+    "2026-04-02-should-the-cache-be-shared.md",
+    "Whyfile"
+  ],
+  "expected_decision_count": 1,
+  "expected_surviving_titles": [
+    "Use a shared cache layer"
+  ],
+  "note": "The directory holds a bare, extensionless `Whyfile` containing a syntactically perfect decision record, plus one ordinary dated record. A conformant implementation assigns the reserved name NO meaning: exactly 1 decision node, from the .md file only. An implementation that reads `Whyfile` yields 2 and has quietly claimed the reserved root position."
+}

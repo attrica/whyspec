@@ -1,0 +1,17 @@
+{
+  "rule": "PROV-005",
+  "spec_rule_ids": [
+    "PROV-003",
+    "PROV-001"
+  ],
+  "statement": "Counter-example: an implementation that case-folds or otherwise coerces an unrecognised value onto a trusted tier. `AUTHORED` MUST NOT be read as `authored`, and a fifth invented tier MUST NOT be given a rank above `reconstructed`.",
+  "input": [
+    "verified",
+    "AUTHORED"
+  ],
+  "expected_rank": [
+    2,
+    0
+  ],
+  "note": "This ranking is what a non-conformant implementation produces. The conformant answer is the reconstructed rank for both. Rejecting this vector is the test."
+}

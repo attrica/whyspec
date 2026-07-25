@@ -1,0 +1,9 @@
+{
+  "rule": "REC-059",
+  "statement": "A slug MUST be bounded at 60 characters.",
+  "input_text": "Should the reconciliation service retry failed settlement batches automatically or escalate them to an operator queue",
+  "max_len": 60,
+  "expected_slug": "should-the-reconciliation-service-retry-failed-settlement",
+  "note": "The source question is well over 60 characters. The slug MUST be at most 60. An implementation that omits the bound produces the non-conformant slug shown -- a filename long enough to trip path-length limits on some filesystems, and unreadable in a directory listing.",
+  "non_conformant_slug": "should-the-reconciliation-service-retry-failed-settlement-batches-automatically-or-escalate-them-to-an-operator-queue"
+}

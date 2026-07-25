@@ -1,0 +1,22 @@
+{
+  "rule": "VER-001",
+  "spec_rule_ids": [
+    "VER-005",
+    "VER-006",
+    "REC-031"
+  ],
+  "statement": "Counter-example: filling the gap. Defaulting the missing status to `accepted` turns 'nobody recorded this' into 'somebody accepted this' -- a wrong inference dressed as data, which is worse than the gap because the gap is visible and the inference is not. Writing an explicit null instead is a different but equally wrong claim: it asserts the field was applicable.",
+  "input": {
+    "record_text_ref": "versioning/VER-001-no-status-no-recommendation.md"
+  },
+  "expect": {
+    "parses": true,
+    "node_keys_present": [
+      "status",
+      "resolution_delta"
+    ],
+    "status": "accepted",
+    "resolution_delta": null
+  },
+  "note": "Non-conformant on both counts. Rejecting this node is the test."
+}

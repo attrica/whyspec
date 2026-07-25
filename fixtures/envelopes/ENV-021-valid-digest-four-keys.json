@@ -1,0 +1,13 @@
+{
+  "added": [
+    {
+      "id": "intent_cccccccccccc",
+      "label": "Adopt a shared cache layer"
+    }
+  ],
+  "command": "digest",
+  "removed": [],
+  "since": "2026-06-01",
+  "status": "ok",
+  "superseded": []
+}

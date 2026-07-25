@@ -1,0 +1,16 @@
+{
+  "rule": "REC-043 / REC-044",
+  "statement": "A supersession target resolves by the first four-digit run in the TARGET'S FILENAME (REC-043); an unresolvable reference is dropped silently (REC-044).",
+  "files": [
+    "0009-old-approach.md",
+    "0044-new-approach.md",
+    "no-number-here.md"
+  ],
+  "expected_supersedes_edges": [
+    [
+      "Subscribe to the upstream feed",
+      "Poll the upstream feed"
+    ]
+  ],
+  "note": "0044-new-approach.md declares THREE supersession references. Only ADR-0009 resolves: its target filename carries a four-digit run. ADR-7's record exists and is a valid record, but its FILENAME (no-number-here.md) carries no four-digit run, so it is not addressable as a target -- the deliberate asymmetry with REC-013. ADR-0777 names no record in the directory. Both unresolvable references are dropped SILENTLY: exactly 1 edge, and no error."
+}

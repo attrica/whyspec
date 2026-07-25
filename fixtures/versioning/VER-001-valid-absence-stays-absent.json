@@ -1,0 +1,24 @@
+{
+  "rule": "VER-001",
+  "spec_rule_ids": [
+    "VER-005",
+    "VER-006",
+    "REC-031",
+    "REC-046"
+  ],
+  "statement": "Absence means 'this was not recorded', and MUST keep meaning that. An implementation MUST NOT retroactively infer a value for a field a record does not carry: an undeterminable status is simply absent from the node -- not defaulted to `accepted`, and not written as an explicit null, which would claim the field was applicable and merely unavailable.",
+  "input": {
+    "record_text_ref": "versioning/VER-001-no-status-no-recommendation.md"
+  },
+  "expect": {
+    "parses": true,
+    "kind": "decision",
+    "title": "Adopt the standard library date parser",
+    "absent_node_keys": [
+      "status",
+      "resolution_delta"
+    ],
+    "alternatives": []
+  },
+  "note": "Verified by execution: parse_adr() + record_to_node() at v0.8.3 emit a node with neither a `status` nor a `resolution_delta` key."
+}

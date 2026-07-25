@@ -1,0 +1,29 @@
+{
+  "rule": "PROV-008",
+  "spec_rule_ids": [
+    "PROV-012"
+  ],
+  "statement": "Counter-example: the same corpus reported as a lone headline percentage, with no per-tier counts and no statement of which tiers were treated as trusted. A consumer cannot tell 50% authored from 50% attested, and cannot audit the numerator at all.",
+  "input": [
+    {
+      "provenance": "authored"
+    },
+    {
+      "provenance": "captured"
+    },
+    {
+      "provenance": "attested"
+    },
+    {
+      "provenance": "reconstructed"
+    },
+    {
+      "provenance": "reconstructed"
+    },
+    {}
+  ],
+  "expected_output": {
+    "golden_fraction_pct": 50
+  },
+  "note": "Non-conformant: `by_provenance`, `golden_tiers`, `golden_count` and `total_intent` are all absent. Rejecting this output is the test."
+}

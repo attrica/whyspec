@@ -1,0 +1,10 @@
+{
+  "records_dir_files": {},
+  "chosen": "Shard the primary",
+  "question": "How do we shed read load?",
+  "today": "2026-07-25",
+  "expected_filename": "2026-07-25-how-do-we-shed-read-load.md",
+  "rule": "REC-069",
+  "statement": "Otherwise the destination MUST be `<today>-<question-slug>.md`.",
+  "note": "An empty records directory: no legacy name and no existing dated record, so neither REC-064 nor REC-067 applies and the destination is minted fresh. It MUST be `<today>-` followed by the slug of the QUESTION -- note the filename carries nothing from the chosen option ('Shard the primary'), which is REC-056's whole point."
+}

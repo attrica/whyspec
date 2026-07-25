@@ -1,0 +1,27 @@
+{
+  "base": "origin/main",
+  "changed_files": [
+    "src/search/cache.py"
+  ],
+  "command": "changed",
+  "files_with_intent": 1,
+  "results": [
+    {
+      "ambiguous": true,
+      "file": "cache.py",
+      "governed_by": [
+        {
+          "id": "intent_cccccccccccc",
+          "intent_kind": "decision",
+          "label": "Adopt a shared cache layer for the search path"
+        }
+      ],
+      "matched_by": "basename",
+      "resolved_paths": [
+        "src/search/cache.py",
+        "src/api/cache.py"
+      ]
+    }
+  ],
+  "status": "ok"
+}

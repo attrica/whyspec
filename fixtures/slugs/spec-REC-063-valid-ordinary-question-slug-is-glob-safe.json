@@ -1,0 +1,8 @@
+{
+  "rule": "REC-063",
+  "statement": "A slug MUST NOT be able to contain a glob metacharacter.",
+  "input_text": "Should the reconciliation service retry failed batches?",
+  "max_len": 60,
+  "expected_slug": "should-the-reconciliation-service-retry-failed-batches",
+  "note": "The positive control for REC-063: an ordinary question produces a slug drawn only from [a-z0-9-]. This is the property REC-068's lookup pattern is built on -- the slug is interpolated directly into a glob, so it must never be able to contribute a metacharacter."
+}

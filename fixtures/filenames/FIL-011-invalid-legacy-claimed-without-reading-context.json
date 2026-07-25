@@ -1,0 +1,20 @@
+{
+  "rule": "FIL-011",
+  "spec_rule_ids": [
+    "REC-065",
+    "REC-064"
+  ],
+  "statement": "Counter-example: relaxing the heading match so far that the legacy file is claimed on filename alone. Case- and level-insensitivity MUST NOT become 'claim anything named `<chosen-slug>.md`'. The recorded question still has to be read and still has to match.",
+  "scenario_dir": "dirs/FIL-011-no-context-heading",
+  "existing_files": [
+    "adopt-library-x.md"
+  ],
+  "input": {
+    "chosen": "Adopt library X",
+    "question": "How do we parse dates?",
+    "today": "2026-07-25"
+  },
+  "expected_output": "docs/decisions/adopt-library-x.md",
+  "conformant_output": "docs/decisions/2026-07-25-how-do-we-parse-dates.md",
+  "note": "The legacy file in this scenario has NO Context heading at all, so it MUST NOT be claimed. `expected_output` is the non-conformant answer; rejecting it is the test."
+}

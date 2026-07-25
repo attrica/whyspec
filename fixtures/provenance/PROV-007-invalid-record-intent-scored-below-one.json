@@ -1,0 +1,17 @@
+{
+  "rule": "PROV-007",
+  "spec_rule_ids": [
+    "PROV-008",
+    "PROV-009"
+  ],
+  "statement": "Counter-example: an implementation that runs record-ingested intent through an extraction scorer and lands it below 1.0. A sub-1.0 score on a verbatim human record makes provenance and confidence look like the same axis, and lets a confidence filter silently drop ground truth.",
+  "input": {
+    "record_kind": "adr",
+    "record_text_ref": "records/REC-001-valid-adr-h1.md"
+  },
+  "expected_node_fields": {
+    "confidence_score": 0.82,
+    "provenance": "authored"
+  },
+  "note": "Non-conformant. Rejecting this node is the test."
+}

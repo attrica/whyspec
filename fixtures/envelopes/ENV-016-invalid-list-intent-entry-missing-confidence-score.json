@@ -1,0 +1,22 @@
+{
+  "command": "list-intent",
+  "count": 1,
+  "filter": {
+    "kind": null,
+    "min_confidence": null,
+    "provenance": null
+  },
+  "intent": [
+    {
+      "claim": "Retry budgets are capped at three attempts",
+      "id": "intent_dddddddddddd",
+      "intent_kind": "constraint",
+      "label": "Retry budgets are capped at three attempts",
+      "provenance": "authored",
+      "rationale": "An unbounded retry loop turns a slow dependency into an outage.",
+      "source_file": "docs/adr/0031-retry-budgets.md",
+      "source_location": "Retry budgets are capped at three attempts"
+    }
+  ],
+  "status": "ok"
+}

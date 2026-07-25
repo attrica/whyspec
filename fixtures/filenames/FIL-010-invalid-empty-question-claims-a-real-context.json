@@ -1,0 +1,20 @@
+{
+  "rule": "FIL-010",
+  "spec_rule_ids": [
+    "REC-066",
+    "REC-065"
+  ],
+  "statement": "Counter-example: treating an empty question as a wildcard that matches any recorded context. That would let an unrecorded-question capture overwrite a record of a completely different, properly recorded decision.",
+  "scenario_dir": "dirs/FIL-010-real-context",
+  "existing_files": [
+    "adopt-library-x.md"
+  ],
+  "input": {
+    "chosen": "Adopt library X",
+    "question": "",
+    "today": "2026-07-25"
+  },
+  "expected_output": "docs/decisions/adopt-library-x.md",
+  "conformant_output": "docs/decisions/2026-07-25-adopt-library-x.md",
+  "note": "Verified by execution: the engine correctly REFUSES to claim the legacy file here. `expected_output` above is the non-conformant answer; rejecting it is the test."
+}

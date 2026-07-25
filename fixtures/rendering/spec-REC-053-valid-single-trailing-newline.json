@@ -1,0 +1,16 @@
+{
+  "rule": "REC-053",
+  "statement": "An emitted record MUST end with a single trailing newline.",
+  "inputs": {
+    "chosen": "Serve reads from a replica",
+    "question": "How do we shed read load?",
+    "options": [
+      "Serve reads from a replica",
+      "Shard the primary"
+    ],
+    "rationale": "A replica absorbs read load without a resharding project.",
+    "date": "2026-04-02"
+  },
+  "expected_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+  "note": "The document ends with exactly one `\\n`. Neither zero (no terminator) nor two (a trailing blank line) is conformant: the rendered bytes are compared for idempotency when a decision is re-captured, so a drifting terminator makes every re-capture look like a change."
+}

@@ -1,0 +1,57 @@
+{
+  "inputs_order": [
+    "canonical source path",
+    "source location",
+    "intent kind",
+    "normalized label"
+  ],
+  "variants": {
+    "baseline": [
+      "docs/decisions/2026-04-02-shed-read-load.md",
+      "Serve reads from a replica",
+      "decision",
+      "Serve reads from a replica"
+    ],
+    "different_path": [
+      "docs/decisions/other.md",
+      "Serve reads from a replica",
+      "decision",
+      "Serve reads from a replica"
+    ],
+    "different_location": [
+      "docs/decisions/2026-04-02-shed-read-load.md",
+      "Other location",
+      "decision",
+      "Serve reads from a replica"
+    ],
+    "different_kind": [
+      "docs/decisions/2026-04-02-shed-read-load.md",
+      "Serve reads from a replica",
+      "assumption",
+      "Serve reads from a replica"
+    ],
+    "different_label": [
+      "docs/decisions/2026-04-02-shed-read-load.md",
+      "Serve reads from a replica",
+      "decision",
+      "Shard the primary"
+    ],
+    "label_differs_only_by_punctuation": [
+      "docs/decisions/2026-04-02-shed-read-load.md",
+      "Serve reads from a replica",
+      "decision",
+      "serve  a  replica"
+    ]
+  },
+  "expected_ids": {
+    "baseline": "intent_b3428e397834",
+    "different_path": "intent_24d88aa977c9",
+    "different_location": "intent_e61bee38b132",
+    "different_kind": "intent_f718458802e2",
+    "different_label": "intent_030ad8fa5542",
+    "label_differs_only_by_punctuation": "intent_3c4fde32bc13"
+  },
+  "rule": "REC-071",
+  "statement": "Node identity MUST hash `path :: location :: kind :: normalized-label`.",
+  "note": "Six identity tuples: a baseline plus one variant changing each of the four inputs in turn. All six ids MUST be distinct, and the baseline MUST be reproducible. An implementation that drops any one input (a common 'simplification' -- hashing only path plus label) collapses at least one variant onto the baseline."
+}

@@ -1,0 +1,9 @@
+{
+  "rule": "REC-063",
+  "statement": "A slug MUST NOT be able to contain a glob metacharacter.",
+  "input_text": "Which *.md files should the [0-9] matcher pick up?",
+  "max_len": 60,
+  "expected_slug": "which-md-files-should-the-0-9-matcher-pick-up",
+  "note": "The question text contains `*`, `.`, `[`, `]` and `?` -- every metacharacter the REC-067 lookup glob is built from. Because REC-058 restricts output to [a-z0-9-], NONE of them can survive into the slug. This is the property REC-068's pattern construction relies on: if a slug could smuggle a `*` into the glob, the anchored digit-class pattern would be defeated from the other end.",
+  "non_conformant_slug": "which-*.md-files-should-the-[0-9]-matcher-pick-up"
+}

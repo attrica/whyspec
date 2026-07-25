@@ -1,0 +1,42 @@
+{
+  "base": null,
+  "command": "why",
+  "count": 1,
+  "cutoff": 60,
+  "filter": null,
+  "intent": null,
+  "query": "why a shared cache",
+  "results": [
+    {
+      "alternatives": [
+        "Keep the flat file cache.",
+        "Adopt a shared cache layer."
+      ],
+      "claim": "Adopt a shared cache layer for the search path",
+      "distinctive_matches": [
+        "cache"
+      ],
+      "id": "intent_cccccccccccc",
+      "intent_kind": "decision",
+      "label": "Adopt a shared cache layer for the search path",
+      "matched_coverage": 1.0,
+      "matched_terms": [
+        "cache",
+        "search"
+      ],
+      "provenance": "captured",
+      "rationale": "One warm store beats re-computing the same page on every request.",
+      "score": 88,
+      "source_file": "docs/decisions/2026-02-11-adopt-a-shared-cache-layer.md",
+      "source_location": "Adopt a shared cache layer for the search path"
+    }
+  ],
+  "rules": null,
+  "score_stats": {
+    "median": 44,
+    "runner_up": 31,
+    "top": 88
+  },
+  "status": "ok",
+  "violations": null
+}

@@ -1,0 +1,7 @@
+{
+  "input_path": "/nonexistent-root/records/x.md",
+  "expected": "/nonexistent-root/records/x.md",
+  "rule": "REC-074",
+  "statement": "A path outside a repository falls back to POSIX absolute; canonicalization MUST NOT raise.",
+  "note": "An absolute path belonging to no repository MUST fall back to a POSIX-normalized absolute spelling rather than raising or returning empty."
+}

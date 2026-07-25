@@ -1,0 +1,8 @@
+{
+  "input_path_description": "an absolute path containing a NUL (U+0000) byte",
+  "input_path_escaped": "/records/\\u0000bad.md",
+  "expected": "MUST NOT raise",
+  "rule": "REC-074",
+  "statement": "A path outside a repository falls back to POSIX absolute; canonicalization MUST NOT raise.",
+  "note": "A path containing a NUL byte. REC-074 states canonicalization MUST NOT raise, so a conformant implementation returns SOME string (or declines the path through its normal absent-value channel) rather than propagating an exception. DIVERGENCE: v0.8.3 propagates ValueError('embedded null byte') from the underlying path resolution. Path spellings arrive from tool-call arguments and configuration, so this is a reachable trust boundary, not a theoretical one. The `expect` below states the SPEC-required outcome."
+}

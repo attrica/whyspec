@@ -1,0 +1,13 @@
+{
+  "command": "why",
+  "count": 0,
+  "cutoff": 60,
+  "query": "why a shared cache",
+  "results": [],
+  "score_stats": {
+    "median": 0,
+    "runner_up": 0,
+    "top": 12
+  },
+  "status": "no_strong_match"
+}

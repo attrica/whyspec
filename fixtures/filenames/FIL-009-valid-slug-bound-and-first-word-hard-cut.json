@@ -1,0 +1,30 @@
+{
+  "rule": "FIL-009",
+  "spec_rule_ids": [
+    "REC-059",
+    "REC-060",
+    "REC-061"
+  ],
+  "statement": "A slug MUST be bounded at 60 characters. Truncation lands on a word boundary: cut to the bound, then drop everything from the last `-` onward. The single exception is a FIRST word that alone exceeds the bound -- there is no boundary to fall back to, so it is hard-cut, because a slug must be bounded.",
+  "scenario_dir": "dirs/FIL-009-slug-bound",
+  "existing_files": [],
+  "cases": [
+    {
+      "input": {
+        "question": "how should the team decide whether to adopt a shared caching layer for the search path"
+      },
+      "expected_slug": "how-should-the-team-decide-whether-to-adopt-a-shared",
+      "expected_len": 52,
+      "why": "word-boundary truncation; the trailing partial word is dropped"
+    },
+    {
+      "input": {
+        "question": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "expected_slug": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "expected_len": 60,
+      "why": "single word longer than the bound; the only permitted mid-word cut"
+    }
+  ],
+  "note": "Verified by execution against slugify() at v0.8.3."
+}

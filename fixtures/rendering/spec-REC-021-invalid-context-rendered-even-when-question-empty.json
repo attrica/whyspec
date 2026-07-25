@@ -1,0 +1,16 @@
+{
+  "rule": "REC-021",
+  "statement": "The `Context` section carries the question; emitters MUST render it.",
+  "inputs": {
+    "chosen": "Serve reads from a replica",
+    "question": "",
+    "options": [
+      "Serve reads from a replica",
+      "Shard the primary"
+    ],
+    "rationale": "A replica absorbs read load without a resharding project.",
+    "date": "2026-04-02"
+  },
+  "expected_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\n(none recorded)\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+  "note": "The question is EMPTY. The `## Context` section MUST still be emitted (with the `(none recorded)` placeholder, REC-050). An emitter that omits the section when it has no question destroys REC-064's legacy-matching signal: a record with no Context section can never be claimed as the record of THIS question."
+}

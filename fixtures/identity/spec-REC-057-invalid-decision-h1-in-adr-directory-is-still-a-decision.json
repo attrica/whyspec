@@ -1,0 +1,12 @@
+{
+  "record_text": "# Decision: Rotate credentials quarterly\n\n## Decision\n\nCredentials rotate every 90 days.\n",
+  "source_paths": [
+    "docs/adr/0055-rotate.md",
+    "docs/decisions/0055-rotate.md",
+    "notes/misc/0055-rotate.md"
+  ],
+  "expected_kind_for_each": "decision",
+  "rule": "REC-057",
+  "statement": "Directory location is conventional, never normative; kind MUST NOT be inferred from it.",
+  "note": "A `# Decision:` record placed in `docs/adr/` MUST still parse as kind='decision'. An implementation inferring kind from the directory returns 'adr' for the first path -- and since kind selects the provenance tier (authored vs captured), that silently PROMOTES a captured record to the authored tier."
+}

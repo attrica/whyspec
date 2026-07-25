@@ -1,0 +1,16 @@
+{
+  "rule": "REC-051",
+  "statement": "An empty rationale MUST render the chosen option as the Decision body.",
+  "inputs": {
+    "chosen": "Keep the current scheduler",
+    "question": "Should the scheduler change?",
+    "options": [
+      "Keep the current scheduler",
+      "Rewrite it"
+    ],
+    "rationale": "",
+    "date": "2026-04-02"
+  },
+  "expected_output": "# Decision: Keep the current scheduler\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nShould the scheduler change?\n\n## Decision\n\nKeep the current scheduler\n\n## Alternatives considered\n\n1. Keep the current scheduler\n2. Rewrite it\n",
+  "note": "The rationale is empty, so the `## Decision` body is the CHOSEN option. A record must never be emitted without a Decision body: parse_adr() returns None when the Decision section is empty, so an emitter that leaves it blank writes a file that is not a record (REC-008) and the write path and read path stop agreeing."
+}

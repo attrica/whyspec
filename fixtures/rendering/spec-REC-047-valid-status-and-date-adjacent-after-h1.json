@@ -1,0 +1,16 @@
+{
+  "rule": "REC-047",
+  "statement": "`**Status:**` and `**Date:**` MUST be emitted on adjacent lines after the H1.",
+  "inputs": {
+    "chosen": "Serve reads from a replica",
+    "question": "How do we shed read load?",
+    "options": [
+      "Serve reads from a replica",
+      "Shard the primary"
+    ],
+    "rationale": "A replica absorbs read load without a resharding project.",
+    "date": "2026-04-02"
+  },
+  "expected_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+  "note": "Lines 0-3 are exactly: the H1, one blank line, `**Status:** ...`, `**Date:** ...` -- with NO blank line between Status and Date. The adjacency matters because REC-029 searches the whole document for the first line-anchored status: a blank line between them is harmless, but reordering or separating them changes which line the status scan hits first."
+}

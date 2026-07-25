@@ -1,0 +1,18 @@
+{
+  "command": "coverage",
+  "counts": {
+    "decision": 2,
+    "mechanism": 1
+  },
+  "explain": "src/search/cache.py",
+  "referencing_intent": [
+    {
+      "id": "intent_cccccccccccc",
+      "intent_kind": "decision",
+      "label": "Adopt a shared cache layer for the search path",
+      "provenance": "captured"
+    }
+  ],
+  "status": "ok",
+  "trace_present": true
+}

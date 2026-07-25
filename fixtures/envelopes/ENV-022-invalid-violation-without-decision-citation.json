@@ -1,0 +1,13 @@
+{
+  "command": "check",
+  "files_checked": 12,
+  "rules": 3,
+  "status": "conformance_failed",
+  "violations": [
+    {
+      "file": "src/api/client.py",
+      "message": "Retry loop has no attempt cap.",
+      "rule": "no-unbounded-retry"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "rule": "REC-061",
+  "statement": "A first word exceeding the bound MUST be hard-cut -- the only permitted mid-word cut.",
+  "input_text": "Supercalifragilisticexpialidociousreconciliationwindowdeterminationprocedure step",
+  "max_len": 60,
+  "expected_slug": "supercalifragilisticexpialidociousreconciliationwindowdeterm",
+  "note": "The FIRST word alone is longer than 60 characters, so the word-boundary rule of REC-060 has no boundary to land on. This is the one case where a mid-word cut is permitted: a slug must be bounded. An implementation that returns the un-truncated first word, or falls back to the empty string, is non-conformant."
+}

@@ -1,0 +1,25 @@
+{
+  "rule": "PROV-005",
+  "spec_rule_ids": [
+    "PROV-003",
+    "PROV-001"
+  ],
+  "statement": "An UNRECOGNISED provenance value -- not merely an absent one -- MUST rank identically to `reconstructed`, the weakest tier. The tier set is closed, so anything outside it is unknown data, and unknown data is never promoted. Matching is exact and case-sensitive: `AUTHORED` is not `authored`.",
+  "input": [
+    "verified",
+    "AUTHORED",
+    "Captured",
+    "",
+    null,
+    "reconstructed"
+  ],
+  "expected_rank": [
+    3,
+    3,
+    3,
+    3,
+    3,
+    3
+  ],
+  "note": "Verified by execution against provenance_rank() at v0.8.3. Every listed value returns the reconstructed rank."
+}

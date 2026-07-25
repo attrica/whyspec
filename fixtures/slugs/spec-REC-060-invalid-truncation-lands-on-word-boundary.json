@@ -1,0 +1,9 @@
+{
+  "rule": "REC-060",
+  "statement": "Truncation MUST land on a word boundary.",
+  "input_text": "Should the nightly reconciliation job run before the settlement window closes",
+  "max_len": 60,
+  "expected_slug": "should-the-nightly-reconciliation-job-run-before-the",
+  "note": "The full slug exceeds 60 characters. Truncation MUST drop everything from the last `-` onward rather than cutting mid-word. A hard cut at exactly 60 would end the filename in a word fragment, which reads as a permanent typo in a directory humans scan by eye.",
+  "non_conformant_slug": "should-the-nightly-reconciliation-job-run-before-the-settleme"
+}

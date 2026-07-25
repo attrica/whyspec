@@ -1,0 +1,19 @@
+{
+  "rule": "REC-033",
+  "statement": "No status value other than `rejected` is normative; implementations MUST NOT attach behaviour to any other value.",
+  "files": [
+    "0001-status-accepted.md",
+    "0002-status-proposed.md",
+    "0003-status-superseded.md",
+    "0004-status-open.md",
+    "0005-status-rejected.md"
+  ],
+  "expected_decision_count": 4,
+  "expected_surviving_titles": [
+    "Option 1",
+    "Option 2",
+    "Option 3",
+    "Option 4"
+  ],
+  "note": "Five records with statuses accepted / proposed / superseded / open / rejected. EXACTLY ONE (rejected) is excluded. `superseded` and `open` in particular look like they should be filtered and MUST NOT be: superseded intent is still real intent that was once acted on, and filtering it silently deletes history."
+}

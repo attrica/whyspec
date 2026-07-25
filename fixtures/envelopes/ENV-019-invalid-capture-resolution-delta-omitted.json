@@ -1,0 +1,10 @@
+{
+  "command": "capture",
+  "merged": true,
+  "node_id": "intent_ffffffffffff",
+  "provenance": "captured",
+  "record": "docs/decisions/2026-07-25-how-do-we-parse-dates.md",
+  "record_abs": "/srv/example-repo/docs/decisions/2026-07-25-how-do-we-parse-dates.md",
+  "status": "ok",
+  "title": "Adopt the standard library date parser"
+}

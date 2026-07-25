@@ -1,0 +1,9 @@
+{
+  "rule": "REC-058",
+  "statement": "Slug derivation: lowercase, non-`[a-z0-9]` runs collapse to a single `-`, edges stripped.",
+  "input_text": "  Should We Adopt: A Shared Cache?? ",
+  "max_len": 60,
+  "expected_slug": "should-we-adopt-a-shared-cache",
+  "note": "Mixed case, a colon, a double question mark and leading/trailing spaces. Every run of characters outside [a-z0-9] collapses to ONE hyphen (not one per character), and leading and trailing hyphens are stripped.",
+  "non_conformant_slug": "--should-we-adopt--a-shared-cache--"
+}
