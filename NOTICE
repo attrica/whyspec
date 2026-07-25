@@ -1,0 +1,20 @@
+The Whyfile specification
+Copyright 2026 Four Birds Limited
+
+This product includes software and specification text developed by
+Four Birds Limited (New Zealand company number 8153775, NZBN 9429048932363).
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+these files except in compliance with the License. You may obtain a copy of the
+License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software and text
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License
+for the specific language governing permissions and limitations under the License.
+
+The names "WhyDB" and "whyfile", and the phrase "whyfile-compatible", are
+trademarks of Four Birds Limited and are not licensed under the Apache License
+(see section 6 of the License). See TRADEMARKS.md.
