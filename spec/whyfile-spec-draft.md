@@ -362,14 +362,25 @@ Status carries **two independent properties**, and collapsing them onto one axis
 **[REC-101]** A status **MUST** determine a **deliberation state** — `open` or `resolved` — and,
 when resolved, a **disposition** — `adopted` or `declined`:
 
-| Status | Deliberation | Disposition | Yields |
-|---|---|---|---|
-| `draft` | open | — | provisional intent, marked open |
-| `proposed` | open | — | provisional intent, marked open |
-| `accepted` | resolved | adopted | ground-truth intent |
-| `rejected` | resolved | **declined** | **foreclosure intent** |
+| Status | Deliberation | Offered | Disposition | Yields |
+|---|---|---|---|---|
+| `draft` | open | **no** | — | provisional intent, marked open and unoffered |
+| `proposed` | open | **yes** | — | provisional intent, marked open |
+| `accepted` | resolved | yes | adopted | ground-truth intent |
+| `rejected` | resolved | yes | **declined** | **foreclosure intent** |
 
-A status outside this set **MUST** be treated as `open` with no disposition.
+A status outside this set **MUST** be treated as `open`, unoffered, with no disposition.
+
+**[REC-109]** `draft` and `proposed` **MUST NOT** be treated as equivalent. A `draft` record has
+not been offered for deliberation; a `proposed` record has been offered and awaits resolution.
+
+**[REC-110]** A review surface **SHOULD NOT** present a `draft` record, and **SHOULD** present a
+`proposed` one. Both remain queryable on request.
+
+The distinction is the same one a pull request draws between a draft and an open proposal, and it
+exists for the same reason: an author needs somewhere to think without broadcasting. Without it,
+the only way to avoid publishing an unfinished thought is not to write it down — which loses
+precisely the reasoning that is most worth keeping, at the moment it is most recoverable.
 
 **[REC-102]** Only a status that is **resolved** *and* **adopted** **MUST** yield ground-truth
 intent.
@@ -823,6 +834,36 @@ durable, cite it; where it occurred somewhere ephemeral, **do not cite it at all
 reasoning into the record's rationale.** A citation that resolves to nothing is worse than no
 citation, because it presents as evidence and yields none.
 
+### 4.18 Currency, derived by reachability
+
+**[REC-111]** A record's **currency** — whether the decision it carries is still live —
+**MUST** be derived from the relation graph. It **MUST NOT** be authored on the record.
+
+**[REC-112]** A record is **historical** when at least one other record declares a `supersedes`
+relation naming it, and **current** otherwise. Currency is defined only for records whose
+disposition is `adopted`; an open or declined record has no currency.
+
+**[REC-113]** Supersession **MUST** be applied transitively. Where A supersedes B and B
+supersedes C, both B and C are historical.
+
+**[REC-114]** A record participating in a supersession **cycle** **MUST** be reported as having
+**indeterminate** currency. An implementation **MUST NOT** resolve a cycle by ingest order,
+recency, or any other tiebreak, and **MUST NOT** traverse one without termination.
+
+Currency is computed the way version control computes whether a change is still in effect: not
+by reading a flag on the change, but by walking the graph from what is current. A reverted commit
+carries no marking; it is referenced by the commit that reverts it, and its status follows from
+the history rather than from an assertion inside it.
+
+The practical gain is that currency cannot go stale. An authored `superseded` flag records what
+was true when someone last remembered to edit that file; a derived one records what is true now,
+and updates itself the moment a superseding record is written.
+
+[REC-114] applies the ambiguity principle of [REC-091] and [REC-105] to a third case. A cycle is
+a corpus that contradicts itself about what replaced what, and there is no defensible way to pick
+a winner. Reporting indeterminacy tells a reader something true; picking one tells them something
+that may be false and looks identical to something known.
+
 ---
 
 ## 5. Provenance vocabulary
@@ -895,6 +936,38 @@ exactly `{authored, captured, attested}`.
 **[PROV-012]** A trust metric **MUST NOT** blend tiers into a single scalar without also reporting
 the per-tier breakdown. A blended number is the one output that makes a corpus of inferences look
 like a corpus of decisions.
+
+### 5.4.1 Disposition is not a trust tier
+
+**[PROV-017]** Disposition (§4.6.1) and provenance **MUST** be treated as independent axes. A
+declined record retains the provenance tier its source earns; being declined **MUST NOT** lower
+it, and carrying a strong tier **MUST NOT** make a foreclosure read as a commitment.
+
+**[PROV-018]** Foreclosure intent **MUST NOT** be counted toward any trusted-evidence metric
+([PROV-010]), regardless of its provenance tier.
+
+**[PROV-019]** A result containing intent **MUST** expose disposition, so a consumer can
+partition commitments from foreclosures without inspecting record text.
+
+**[PROV-020]** A consumer **MUST NOT** present foreclosure intent as an answer to what the
+authoring team *does*. It **MAY** present it as an answer to what the team **considered and
+declined**.
+
+These are different questions and the format must not let them blur. *What do we do about
+authentication?* is answered by commitments. *Have we considered OAuth before?* is answered
+largely by foreclosures, and answering it is the mechanism by which a team stops relitigating
+settled ground.
+
+The interaction needs stating because the two axes genuinely compose. A rejection written in a
+reviewed record is `authored` — the strongest tier the format has — and a naive ranking would let
+it outrank an adopted decision recorded at a weaker tier, producing a result that reads as *this
+is what we do* for something explicitly refused. Provenance says how much to believe that the
+record says what it says; disposition says what it says. A high-confidence account of a refusal
+is still a refusal.
+
+This specification does not prescribe ranking (§1.4). [PROV-019] is what makes a conforming
+implementation *able* to rank correctly, and [PROV-020] is the constraint on presentation that
+holds however it ranks.
 
 ### 5.5 Provenance of relationships
 
@@ -1468,6 +1541,12 @@ Every normative rule, with its one-line statement.
 | REC-106 | A filename MUST NOT be treated as carrying an ADR number when the four-digit run is part of a date. |
 | REC-107 | A parser MUST yield the Context body as a question field on the parsed record, and it MUST reach the intent node. |
 | REC-108 | `superseded` MUST NOT be a status; currency is derived from an incoming `supersedes` relation. |
+| REC-109 | `draft` and `proposed` MUST NOT be treated as equivalent; draft is not offered for deliberation. |
+| REC-110 | A review surface SHOULD NOT present a `draft` record and SHOULD present a `proposed` one. |
+| REC-111 | Currency MUST be derived from the relation graph, never authored on the record. |
+| REC-112 | A record is historical when a `supersedes` relation names it, and current otherwise. |
+| REC-113 | Supersession MUST be applied transitively along a chain. |
+| REC-114 | A record in a supersession cycle MUST be reported as indeterminate, never resolved by tiebreak. |
 
 #### Provenance
 
@@ -1489,6 +1568,10 @@ Every normative rule, with its one-line statement.
 | PROV-014 | A relation declared in a record (§4.16) MUST carry the provenance of the declaring record. |
 | PROV-015 | A binding between intent and an artifact MUST be reconstructed unless it was declared (§4.15). |
 | PROV-016 | Ordering and trust rules ([PROV-002], [PROV-004]) apply to edges exactly as they apply to nodes. |
+| PROV-017 | Disposition and provenance are independent axes; neither may override the other. |
+| PROV-018 | Foreclosure intent MUST NOT count toward a trusted-evidence metric at any tier. |
+| PROV-019 | A result containing intent MUST expose disposition so consumers can partition it. |
+| PROV-020 | A consumer MUST NOT present foreclosure intent as what the team does. |
 
 #### Envelope
 
