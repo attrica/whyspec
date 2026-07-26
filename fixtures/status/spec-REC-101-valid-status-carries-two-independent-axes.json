@@ -1,0 +1,37 @@
+{
+  "rule": "REC-101",
+  "statement": "A status determines a deliberation state (open/resolved) and, when resolved, a disposition (adopted/declined). The two are independent properties of one field.",
+  "input_statuses": [
+    "draft",
+    "proposed",
+    "accepted",
+    "rejected"
+  ],
+  "expected_axes": {
+    "draft": {
+      "deliberation": "open",
+      "offered": false,
+      "disposition": null,
+      "yields": "provisional_intent"
+    },
+    "proposed": {
+      "deliberation": "open",
+      "offered": true,
+      "disposition": null,
+      "yields": "provisional_intent"
+    },
+    "accepted": {
+      "deliberation": "resolved",
+      "offered": true,
+      "disposition": "adopted",
+      "yields": "ground_truth_intent"
+    },
+    "rejected": {
+      "deliberation": "resolved",
+      "offered": true,
+      "disposition": "declined",
+      "yields": "foreclosure_intent"
+    }
+  },
+  "note": "Neutral invented vocabulary check: no record text is involved, only the normalized status token and the two axes the specification's table assigns to it."
+}

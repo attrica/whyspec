@@ -1,0 +1,24 @@
+{
+  "rule": "REC-126",
+  "statement": "An implementation MUST NOT derive the slug from the chosen option when the question reduces to an empty slug.",
+  "scenario": "Two unrelated decisions captured on the same day, both with an empty question, whose chosen options differ. A conforming implementation sends both to the same literal destination; a chosen-derived implementation invents two plausible-looking but wrong names.",
+  "today": "2026-05-14",
+  "cases": [
+    {
+      "name": "first capture",
+      "question": "",
+      "chosen": "Adopt the queue library",
+      "conformant_filename": "2026-05-14-decision.md",
+      "non_conformant_filename_must_not_equal": "2026-05-14-adopt-the-queue-library.md"
+    },
+    {
+      "name": "second capture, unrelated decision, same day",
+      "question": "",
+      "chosen": "Drop the legacy exporter",
+      "conformant_filename": "2026-05-14-decision.md",
+      "non_conformant_filename_must_not_equal": "2026-05-14-drop-the-legacy-exporter.md"
+    }
+  ],
+  "why_the_non_conformant_answer_is_worse": "The chosen-derived names look correct and are individually plausible, which is what makes the fallback tempting. It reintroduces exactly the collision the dated scheme exists to prevent: chosen text repeats constantly across unrelated decisions ('keep it', 'document only', 'adopt the library'), so two unrelated decisions eventually land on one destination and the second silently overwrites the first. The literal `decision` collides too — but visibly and identically, so the existing-record lookup of REC-064 finds and updates the earlier file rather than clobbering it, because both records genuinely share an empty question.",
+  "note": "Both cases resolving to the same conformant filename is the intended outcome, not a defect in the fixture. Idempotent reuse under REC-064 is what makes the degenerate name safe."
+}

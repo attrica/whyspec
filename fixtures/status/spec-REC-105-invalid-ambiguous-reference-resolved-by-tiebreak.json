@@ -1,0 +1,24 @@
+{
+  "rule": "REC-105",
+  "statement": "Counter-example: a supersession reference resolving to MORE THAN ONE candidate. It MUST be dropped, exactly as an unresolvable one is. An implementation MUST NOT select among the candidates by ingest order, filesystem order, recency, or any other tiebreak.",
+  "records_dir_files": {
+    "0012-connection-pooling.md": "# ADR-0012: Pool connections per process\n\n**Status:** Accepted\n\n## Context\n\nHow do we pool connections?\n\n## Decision\n\nA per-process pool bounds the connection count by process count.\n",
+    "0012-cache-eviction.md": "# ADR-0012: Evict cache entries by age\n\n**Status:** Accepted\n\n## Context\n\nHow do we evict cache entries?\n\n## Decision\n\nAge-based eviction needs no access bookkeeping.\n",
+    "0044-pooling-revisited.md": "# ADR-0044: Pool connections per host\n\n**Status:** Accepted\n\n## Context\n\nHow do we pool connections?\n\n## Decision\n\nThis supersedes ADR-12: a per-host pool bounds the connection count by host count instead.\n"
+  },
+  "expected": {
+    "supersedes_edge_count": 0,
+    "supersedes_edges": [],
+    "errors_raised": []
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "supersedes_edge_count": 1,
+    "supersedes_edges": [
+      {
+        "from": "0044-pooling-revisited.md",
+        "to": "0012-cache-eviction.md"
+      }
+    ]
+  },
+  "reason": "Two files carry the four-digit run 0012. Either resolution produces an edge that is indistinguishable from a correct one and carries the declaring record's full authority; picking the first in filesystem order happens to attach a decision about connection pooling to a decision about cache eviction. The reference is dropped silently, not reported as a violation: a corpus may be partial."
+}

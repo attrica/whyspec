@@ -1,0 +1,25 @@
+{
+  "command": "intent-diff",
+  "status": "conformance_required",
+  "base": "main",
+  "summary": {
+    "decisions_touched": 2
+  },
+  "introduces": [],
+  "supersedes": [],
+  "governed": [
+    {
+      "file": "src/queue/handler.py",
+      "decision_id": "intent_9f2c41ab77de",
+      "decision_label": "Ship logs over the platform collector",
+      "governed_by": "decision"
+    },
+    {
+      "file": "src/auth/tokens.py",
+      "decision_id": "intent_4b1e0c8a55fd",
+      "decision_label": "Authenticate service calls with short-lived tokens",
+      "governed_by": "decision",
+      "proven_violation": true
+    }
+  ]
+}

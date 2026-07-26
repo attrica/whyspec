@@ -1,0 +1,37 @@
+{
+  "command": "why",
+  "status": "ok",
+  "query": "how do we ship logs",
+  "count": 1,
+  "cutoff": 60,
+  "score_stats": {
+    "top": 88,
+    "runner_up": 31,
+    "median": 12
+  },
+  "results": [
+    {
+      "score": 88,
+      "id": "intent_9f2c41ab77de",
+      "label": "Ship logs over the platform collector",
+      "intent_kind": "decision",
+      "claim": "Ship logs over the platform collector",
+      "rationale": "The platform collector removes a process from every pod.",
+      "alternatives": [
+        "Ship logs over the platform collector",
+        "Ship logs over the agent sidecar"
+      ],
+      "source_file": "docs/decisions/2026-06-05-how-do-we-ship-logs.md",
+      "source_location": "docs/decisions/2026-06-05-how-do-we-ship-logs.md:1",
+      "provenance": "captured",
+      "matched_terms": [
+        "ship",
+        "logs"
+      ],
+      "distinctive_matches": [
+        "logs"
+      ],
+      "matched_coverage": 0.67
+    }
+  ]
+}

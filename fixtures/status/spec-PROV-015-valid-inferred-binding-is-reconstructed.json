@@ -1,0 +1,33 @@
+{
+  "rule": "PROV-015",
+  "statement": "A binding between intent and an artifact is `reconstructed` unless it was declared. An inferred binding MUST NOT be presented at any stronger tier.",
+  "input_nodes": [
+    {
+      "id": "intent_a",
+      "provenance": "authored"
+    }
+  ],
+  "input_bindings": [
+    {
+      "id": "bind_1",
+      "intent": "intent_a",
+      "artifact": "src/queue/*.py",
+      "origin": "declared_in_governs_section",
+      "declaring_record_provenance": "authored"
+    },
+    {
+      "id": "bind_2",
+      "intent": "intent_a",
+      "artifact": "src/cache/store.py",
+      "origin": "inferred_by_similarity",
+      "similarity_score": 0.91
+    }
+  ],
+  "expected": {
+    "binding_provenance": {
+      "bind_1": "authored",
+      "bind_2": "reconstructed"
+    }
+  },
+  "note": "The inferred binding's similarity score is high and irrelevant: confidence and provenance are orthogonal axes (PROV-009), and no score promotes a tier."
+}

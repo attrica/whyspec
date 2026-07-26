@@ -1,0 +1,50 @@
+{
+  "rule": "PROV-018",
+  "statement": "Foreclosure intent is not counted toward any trusted-evidence metric, regardless of its provenance tier.",
+  "input_nodes": [
+    {
+      "id": "intent_a",
+      "provenance": "authored",
+      "disposition": "adopted"
+    },
+    {
+      "id": "intent_b",
+      "provenance": "captured",
+      "disposition": "adopted"
+    },
+    {
+      "id": "intent_c",
+      "provenance": "authored",
+      "disposition": "declined"
+    },
+    {
+      "id": "intent_d",
+      "provenance": "attested",
+      "disposition": "declined"
+    },
+    {
+      "id": "intent_e",
+      "provenance": "reconstructed",
+      "disposition": "adopted"
+    }
+  ],
+  "expected": {
+    "trusted_evidence_count": 2,
+    "trusted_evidence_ids": [
+      "intent_a",
+      "intent_b"
+    ],
+    "total_intent": 5,
+    "by_provenance": {
+      "authored": 2,
+      "captured": 1,
+      "attested": 1,
+      "reconstructed": 1
+    },
+    "by_disposition": {
+      "adopted": 3,
+      "declined": 2
+    }
+  },
+  "note": "The declined nodes are still counted in `total_intent` and still appear in the per-tier breakdown. They are excluded from the trusted numerator only."
+}

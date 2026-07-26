@@ -1,0 +1,12 @@
+{
+  "record_path": "docs/decisions/2026-05-02-where-should-cache-keys-be-built.md",
+  "record_text": "# Decision: Keep cache keys in one module\n\n**Status:** Accepted\n\n## Context\n\nWhere should cache keys be built?\n\n## Decision\n\nEvery cache key is built by one module.\n\n## Governs\n\n- src/cache/**/*.py\n- src/legacy/**/*.py\n",
+  "corpus_files": [
+    "src/cache/client.py",
+    "src/cache/keys.py",
+    "src/api/handler.py"
+  ],
+  "rule": "REC-086",
+  "statement": "An artifact reference that resolves to zero artifacts MUST be reported as a distinct, named state -- neither silently dropped nor treated as an error.",
+  "note": "`src/legacy/**/*.py` matches nothing in this corpus: the code it named has moved. Both references MUST appear in the resolution report, and the zero-match one MUST carry a state distinguishable from the resolved one. The specification requires the state to be 'distinct' and 'named' but fixes no name for it, so this fixture requires distinctness and a zero match count rather than a particular spelling."
+}

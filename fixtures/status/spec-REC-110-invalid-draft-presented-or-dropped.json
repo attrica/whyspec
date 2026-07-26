@@ -1,0 +1,43 @@
+{
+  "rule": "REC-110",
+  "statement": "Counter-example: a review surface that presents the draft, and the mirror-image error of dropping the draft from the queryable set entirely.",
+  "records_dir_files": {
+    "2026-03-02-how-do-we-shard-the-queue.md": "# Decision: Shard the queue by tenant\n\n**Id:** rec-queue\n**Status:** Draft\n\n## Context\n\nHow do we shard the queue?\n\n## Decision\n\nTenant sharding keeps a noisy tenant inside its own partition.\n",
+    "2026-03-03-how-do-we-expire-idle-sessions.md": "# Decision: Expire idle sessions after one hour\n\n**Id:** rec-session\n**Status:** Proposed\n\n## Context\n\nHow do we expire idle sessions?\n\n## Decision\n\nAn hour is long enough for a working session and short enough to bound exposure.\n",
+    "2026-03-04-how-do-we-store-uploads.md": "# Decision: Store uploads in object storage\n\n**Id:** rec-uploads\n**Status:** Accepted\n\n## Context\n\nHow do we store uploads?\n\n## Decision\n\nObject storage removes upload size from the database's growth curve.\n"
+  },
+  "expected": {
+    "review_surface_ids": [
+      "rec-session",
+      "rec-uploads"
+    ],
+    "queryable_ids": [
+      "rec-queue",
+      "rec-session",
+      "rec-uploads"
+    ]
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "review_surface_ids": [
+      "rec-queue",
+      "rec-session",
+      "rec-uploads"
+    ],
+    "queryable_ids": [
+      "rec-queue",
+      "rec-session",
+      "rec-uploads"
+    ]
+  },
+  "wrong_output_of_the_opposite_error": {
+    "review_surface_ids": [
+      "rec-session",
+      "rec-uploads"
+    ],
+    "queryable_ids": [
+      "rec-session",
+      "rec-uploads"
+    ]
+  },
+  "reason": "Two failures sit either side of this rule. Presenting the draft broadcasts an unfinished thought, which is the reason authors stop writing them down. Dropping it from the queryable set loses it, which is the same deletion error REC-104 forbids for declined records."
+}

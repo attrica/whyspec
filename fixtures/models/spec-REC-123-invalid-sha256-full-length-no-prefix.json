@@ -1,0 +1,26 @@
+{
+  "inputs_order": [
+    "canonical source path",
+    "source location",
+    "intent kind",
+    "normalized label"
+  ],
+  "inputs": [
+    "docs/decisions/2026-04-02-shed-read-load.md",
+    "Serve reads from a replica",
+    "decision",
+    "serve_reads_from_a_replica"
+  ],
+  "joined_string": "docs/decisions/2026-04-02-shed-read-load.md::Serve reads from a replica::decision::serve_reads_from_a_replica",
+  "expected_identity": "intent_b3428e397834",
+  "non_conformant_identities": {
+    "sha256_full_no_prefix": "e3ea3c4c20def600e00b38212eacd0f31bab4ab4007d1f4d00ea4fa2d490e084",
+    "sha256_first_12_with_prefix": "intent_e3ea3c4c20de",
+    "sha1_full_with_prefix": "intent_b3428e3978343e35e05d0f3af049c2cb3c06993c",
+    "sha1_first_12_uppercase": "intent_B3428E397834",
+    "md5_first_12_with_prefix": "intent_a4ae88afd446"
+  },
+  "rule": "REC-123",
+  "statement": "The identity MUST be `intent_` + first 12 characters of the lowercase hexadecimal SHA-1 digest; no other algorithm, length, case or prefix conforms.",
+  "note": "Five plausible readings of an under-specified digest rule, each of which an implementation might reach honestly. `sha256_full_no_prefix` is the one an independent implementer actually chose from the earlier draft, which named the four inputs and the joiner and said nothing about hash function, encoding, length or prefix. `sha1_first_12_uppercase` is the near-miss worth calling out: the right algorithm and the right truncation, in the wrong case, forks every id all the same."
+}

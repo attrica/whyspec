@@ -1,0 +1,27 @@
+{
+  "rule": "REC-055",
+  "statement": "Counter-example: applying REC-050's placeholder convention uniformly to every new optional section. Each such section then asserts something the record does not know about itself.",
+  "inputs": {
+    "chosen": "Keep the nightly export window",
+    "question": null,
+    "options": [],
+    "rationale": "The nightly window is the only period with spare IO on the reporting replica.",
+    "recommendation": null,
+    "date": "2026-05-19",
+    "evidence": null,
+    "attribution": null,
+    "governs": null
+  },
+  "expected_output": "# Decision: Keep the nightly export window\n\n**Status:** Accepted\n**Date:** 2026-05-19\n\n## Context\n\n(none recorded)\n\n## Decision\n\nThe nightly window is the only period with spare IO on the reporting replica.\n\n## Alternatives considered\n\n(none recorded)\n",
+  "wrong_output_a_non_conformant_implementation_might_return": "# Decision: Keep the nightly export window\n\n**Status:** Accepted\n**Date:** 2026-05-19\n\n## Context\n\n(none recorded)\n\n## Decision\n\nThe nightly window is the only period with spare IO on the reporting replica.\n\n## Alternatives considered\n\n(none recorded)\n\n## Attribution\n\n(none recorded)\n\n## Governs\n\n(none recorded)\n",
+  "expected_sections_present": [
+    "Context",
+    "Decision",
+    "Alternatives considered"
+  ],
+  "sections_that_must_not_be_present": [
+    "Attribution",
+    "Governs"
+  ],
+  "reason": "REC-081 reads an absent attribution as UNRECORDED and forbids defaulting it; REC-084 reads an absent Governs as SCOPE NOT DECLARED and forbids reading it as governs-nothing. A `(none recorded)` placeholder under either heading writes the forbidden reading into the record itself, where it survives every later parse."
+}

@@ -823,9 +823,9 @@ provenance, and **MUST NOT** be discarded.
 actor accepted it and was entitled to. An implementation unable to corroborate **MUST** mark the
 ratification *uncorroborated*, **MUST NOT** promote, and **MUST** leave the record at `captured`.
 
-**[REC-120]** Neither a self-ratification nor an uncorroborated ratification **MUST** be
-discarded. Each records that someone asserted acceptance, which is information about the record
-even when it is not evidence for its tier.
+**[REC-120]** A self-ratification and an uncorroborated ratification **MUST NOT** be discarded.
+Each records that someone asserted acceptance, which is information about the record even when it
+is not evidence for its tier.
 
 This specification does not define what corroboration consists of; that depends on where a corpus
 lives. A review approval recorded by a hosting platform, a signature, or an attestation from a
@@ -1728,7 +1728,7 @@ Every normative rule, with its one-line statement.
 | REC-117 | Each attribution MUST carry its own provenance (§5.5) and MAY carry a date. Where a date is present it MUST be a full ISO-8601 calendar date. |
 | REC-118 | A ratification is self-ratification when the same actor also carries the role drafted or decided on that record. |
 | REC-119 | A ratification alone MUST NOT promote a record to authored. |
-| REC-120 | Neither a self-ratification nor an uncorroborated ratification MUST be discarded. |
+| REC-120 | A self-ratification and an uncorroborated ratification MUST NOT be discarded. |
 | REC-121 | The four inputs MUST be joined by exactly :: with no surrounding whitespace. |
 | REC-122 | The intent kind component is the kind of the node, and MUST be exactly decision or assumption. |
 | REC-123 | The identity MUST be intent_ followed by the first 12 characters of the lowercase hexadecimal SHA-1 digest of the joined string encoded as UTF-8. |

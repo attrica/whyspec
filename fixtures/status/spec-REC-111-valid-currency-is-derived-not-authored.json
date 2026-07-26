@@ -1,0 +1,16 @@
+{
+  "rule": "REC-111",
+  "statement": "Currency MUST be derived from the relation graph and MUST NOT be authored on the record.",
+  "records_dir_files": {
+    "2025-11-01-how-do-we-authenticate-service-calls.md": "# Decision: Authenticate service calls with shared secrets\n\n**Id:** rec-auth-1\n**Status:** Accepted\n\n## Context\n\nHow do we authenticate service calls?\n\n## Decision\n\nShared secrets need no new infrastructure.\n",
+    "2026-06-20-how-do-we-authenticate-service-calls.md": "# Decision: Authenticate service calls with short-lived tokens\n\n**Id:** rec-auth-2\n**Status:** Accepted\n\n## Context\n\nHow do we authenticate service calls?\n\n## Decision\n\nShort-lived tokens bound the damage of a leaked credential.\n\n## Relations\n\n- supersedes rec-auth-1\n"
+  },
+  "expected": {
+    "currency": {
+      "rec-auth-1": "historical",
+      "rec-auth-2": "current"
+    },
+    "currency_field_present_in_record_text": false
+  },
+  "note": "Adding the superseding record is the only edit made; the superseded record is untouched and still says nothing about its own currency."
+}

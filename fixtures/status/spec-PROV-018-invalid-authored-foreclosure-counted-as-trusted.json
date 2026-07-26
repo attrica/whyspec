@@ -1,0 +1,48 @@
+{
+  "rule": "PROV-018",
+  "statement": "Counter-example: filtering the trusted-evidence metric on provenance alone. The `authored` foreclosure passes that filter and inflates the count.",
+  "input_nodes": [
+    {
+      "id": "intent_a",
+      "provenance": "authored",
+      "disposition": "adopted"
+    },
+    {
+      "id": "intent_b",
+      "provenance": "captured",
+      "disposition": "adopted"
+    },
+    {
+      "id": "intent_c",
+      "provenance": "authored",
+      "disposition": "declined"
+    },
+    {
+      "id": "intent_d",
+      "provenance": "attested",
+      "disposition": "declined"
+    },
+    {
+      "id": "intent_e",
+      "provenance": "reconstructed",
+      "disposition": "adopted"
+    }
+  ],
+  "expected": {
+    "trusted_evidence_count": 2,
+    "trusted_evidence_ids": [
+      "intent_a",
+      "intent_b"
+    ]
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "trusted_evidence_count": 4,
+    "trusted_evidence_ids": [
+      "intent_a",
+      "intent_b",
+      "intent_c",
+      "intent_d"
+    ]
+  },
+  "reason": "The golden tiers are {authored, captured, attested}, and both declined nodes are in them. A metric that reports four counts two refusals as evidence of what the team has decided to do."
+}

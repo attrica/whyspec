@@ -1,0 +1,29 @@
+{
+  "rule": "REC-114",
+  "statement": "Counter-example: breaking the cycle with a tiebreak. Picking the more recent record as current reports something that may be false and looks identical to something known. Non-termination is the second failure this rule forbids.",
+  "records_dir_files": {
+    "2026-04-01-where-does-rate-limiting-live.md": "# Decision: Rate-limit at the gateway\n\n**Id:** rec-rate-1\n**Status:** Accepted\n\n## Context\n\nWhere does rate limiting live?\n\n## Decision\n\nThe gateway sees every request exactly once.\n\n## Relations\n\n- supersedes rec-rate-2\n",
+    "2026-04-08-where-does-rate-limiting-live.md": "# Decision: Rate-limit in each service\n\n**Id:** rec-rate-2\n**Status:** Accepted\n\n## Context\n\nWhere does rate limiting live?\n\n## Decision\n\nEach service knows the cost of its own endpoints.\n\n## Relations\n\n- supersedes rec-rate-1\n",
+    "2026-04-09-how-do-we-page-on-call.md": "# Decision: Page on-call from the alert pipeline\n\n**Id:** rec-page\n**Status:** Accepted\n\n## Context\n\nHow do we page on-call?\n\n## Decision\n\nOne pipeline keeps the paging policy in a single place.\n"
+  },
+  "expected": {
+    "currency": {
+      "rec-rate-1": "indeterminate",
+      "rec-rate-2": "indeterminate",
+      "rec-page": "current"
+    },
+    "traversal_terminates": true
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "currency": {
+      "rec-rate-1": "historical",
+      "rec-rate-2": "current",
+      "rec-page": "current"
+    },
+    "traversal_terminates": true
+  },
+  "wrong_output_of_the_opposite_error": {
+    "traversal_terminates": false
+  },
+  "reason": "A cycle is a corpus contradicting itself about what replaced what, and there is no defensible way to pick a winner. A naive depth-first walk over the same edges does not terminate at all."
+}

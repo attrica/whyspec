@@ -1,0 +1,29 @@
+{
+  "rule": "REC-109",
+  "statement": "Counter-example: folding `draft` into `proposed` because both are open. That erases the only signal an author has for thinking somewhere without broadcasting.",
+  "input_statuses": [
+    "draft",
+    "proposed"
+  ],
+  "expected_axes": {
+    "draft": {
+      "deliberation": "open",
+      "offered": false
+    },
+    "proposed": {
+      "deliberation": "open",
+      "offered": true
+    }
+  },
+  "wrong_axes_a_non_conformant_implementation_might_return": {
+    "draft": {
+      "deliberation": "open",
+      "offered": true
+    },
+    "proposed": {
+      "deliberation": "open",
+      "offered": true
+    }
+  },
+  "reason": "Both statuses share a deliberation state, so an implementation keying only on deliberation cannot tell them apart and reports the draft as offered."
+}

@@ -1,0 +1,26 @@
+{
+  "record_title": "Cache: read-through, write-behind",
+  "inputs_order": [
+    "canonical source path",
+    "source location",
+    "intent kind",
+    "normalized label"
+  ],
+  "inputs": [
+    "docs/decisions/2026-05-19-how-should-the-cache-be-written.md",
+    "Cache: read-through, write-behind",
+    "decision",
+    "cache_read_through_write_behind"
+  ],
+  "component_treatment": {
+    "canonical source path": "canonicalized per REC-073/REC-074, not normalized",
+    "source location": "hashed exactly as it appears, no normalization",
+    "intent kind": "the literal node kind",
+    "normalized label": "normalized per REC-072"
+  },
+  "joined_string": "docs/decisions/2026-05-19-how-should-the-cache-be-written.md::Cache: read-through, write-behind::decision::cache_read_through_write_behind",
+  "expected_identity": "intent_d058178ae5b5",
+  "rule": "REC-124",
+  "statement": "Only the label component is normalized; the source location MUST be hashed as it appears.",
+  "note": "For a decision node the source location and the label are both the record title, which makes this rule easy to miss: the same string enters the digest twice, once raw and once normalized. The title here carries a colon, a comma and hyphens, so the raw and normalized spellings differ visibly."
+}

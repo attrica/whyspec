@@ -1,0 +1,26 @@
+{
+  "rule": "REC-104",
+  "statement": "Counter-example: dropping a declined record at ingest. A declined record MUST be retained and queryable as foreclosure intent; only its counting and its presentation are constrained.",
+  "records_dir_files": {
+    "2026-04-02-how-do-we-shed-read-load.md": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n",
+    "2026-04-21-should-we-run-a-second-message-broker.md": "# Decision: Adopt a second message broker\n\n**Status:** Rejected\n\n## Context\n\nShould we run a second message broker alongside the existing one?\n\n## Decision\n\nThe operational cost of a second broker exceeds the routing flexibility it buys.\n"
+  },
+  "expected": {
+    "intent_node_count": 2,
+    "dispositions": [
+      "adopted",
+      "declined"
+    ],
+    "queryable_ids_include_declined": true,
+    "trusted_evidence_count": 1
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "intent_node_count": 1,
+    "dispositions": [
+      "adopted"
+    ],
+    "queryable_ids_include_declined": false,
+    "trusted_evidence_count": 1
+  },
+  "reason": "An earlier draft excluded declined records entirely, and an implementation that reads the exclusion rule carelessly deletes them. Deletion makes the question that most reliably prevents wasted work -- have we already considered and declined this? -- unanswerable for exactly the decisions where someone wrote the refusal down."
+}

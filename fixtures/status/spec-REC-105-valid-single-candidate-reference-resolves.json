@@ -1,0 +1,19 @@
+{
+  "rule": "REC-105",
+  "statement": "Positive control for the ambiguity rule: a supersession reference resolving to exactly ONE candidate record still resolves normally.",
+  "records_dir_files": {
+    "0012-connection-pooling.md": "# ADR-0012: Pool connections per process\n\n**Status:** Accepted\n\n## Context\n\nHow do we pool connections?\n\n## Decision\n\nA per-process pool bounds the connection count by process count.\n",
+    "0031-log-shipping.md": "# ADR-0031: Ship logs over the agent sidecar\n\n**Status:** Accepted\n\n## Context\n\nHow do we ship logs?\n\n## Decision\n\nThe sidecar decouples shipping from the application process.\n",
+    "0044-pooling-revisited.md": "# ADR-0044: Pool connections per host\n\n**Status:** Accepted\n\n## Context\n\nHow do we pool connections?\n\n## Decision\n\nThis supersedes ADR-12: a per-host pool bounds the connection count by host count instead.\n"
+  },
+  "expected": {
+    "supersedes_edge_count": 1,
+    "supersedes_edges": [
+      {
+        "from": "0044-pooling-revisited.md",
+        "to": "0012-connection-pooling.md"
+      }
+    ]
+  },
+  "note": "Exactly one file in the directory carries the four-digit run 0012, so the reference is unambiguous and the edge is created."
+}

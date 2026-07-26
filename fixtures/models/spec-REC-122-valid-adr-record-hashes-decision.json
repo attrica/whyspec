@@ -1,0 +1,22 @@
+{
+  "record_text": "# ADR-0031 - Pin the cache image digest\n\n**Status:** Accepted\n\n## Context\n\nHow should the build reference its base image?\n\n## Decision\n\nThe build references the base image by digest, not by tag.\n",
+  "record_kind": "adr",
+  "node_kind": "decision",
+  "inputs_order": [
+    "canonical source path",
+    "source location",
+    "intent kind",
+    "normalized label"
+  ],
+  "inputs": [
+    "docs/adr/0031-pin-the-cache-image-digest.md",
+    "Pin the cache image digest",
+    "decision",
+    "pin_the_cache_image_digest"
+  ],
+  "joined_string": "docs/adr/0031-pin-the-cache-image-digest.md::Pin the cache image digest::decision::pin_the_cache_image_digest",
+  "expected_identity": "intent_a1e61222b2c1",
+  "rule": "REC-122",
+  "statement": "The intent-kind component is the kind of the NODE and MUST be exactly `decision` or `assumption`; an ADR-headed record still produces a decision node.",
+  "note": "The record's H1 is an ADR form, so its RECORD kind (REC-009) is `adr`. The NODE it produces is a decision node, so the third identity input is the literal `decision`. Record kind and node kind are different things that happen to share one of their spellings."
+}

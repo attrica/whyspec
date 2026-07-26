@@ -1,0 +1,28 @@
+{
+  "rule": "PROV-020",
+  "statement": "Foreclosure intent is not presented as an answer to what the authoring team does. It may be presented as an answer to what the team considered and declined.",
+  "input_nodes": [
+    {
+      "id": "intent_broker_single",
+      "disposition": "adopted",
+      "provenance": "captured",
+      "claim": "Keep the single message broker and add routing keys"
+    },
+    {
+      "id": "intent_broker_second",
+      "disposition": "declined",
+      "provenance": "authored",
+      "claim": "Adopt a second message broker"
+    }
+  ],
+  "expected": {
+    "presented_as_team_practice": [
+      "intent_broker_single"
+    ],
+    "presented_as_considered_and_declined": [
+      "intent_broker_second"
+    ],
+    "both_remain_queryable": true
+  },
+  "note": "The declined node carries the STRONGER tier of the two and is still absent from the practice answer. Ranking is out of scope; the presentation partition is not."
+}

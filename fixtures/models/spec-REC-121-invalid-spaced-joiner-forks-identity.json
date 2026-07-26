@@ -1,0 +1,21 @@
+{
+  "inputs_order": [
+    "canonical source path",
+    "source location",
+    "intent kind",
+    "normalized label"
+  ],
+  "inputs": [
+    "docs/decisions/2026-03-04-how-should-requests-be-retried.md",
+    "Route retries through one budget",
+    "decision",
+    "route_retries_through_one_budget"
+  ],
+  "joined_string": "docs/decisions/2026-03-04-how-should-requests-be-retried.md::Route retries through one budget::decision::route_retries_through_one_budget",
+  "non_conformant_joined_string": "docs/decisions/2026-03-04-how-should-requests-be-retried.md :: Route retries through one budget :: decision :: route_retries_through_one_budget",
+  "non_conformant_identity": "intent_d5aa72e8ee87",
+  "expected_identity": "intent_d485c022918f",
+  "rule": "REC-121",
+  "statement": "The four identity inputs MUST be joined by exactly `::`, with no surrounding whitespace.",
+  "note": "Section 4.12 displays the four inputs in a code block spaced out for readability (`<path> :: <location> :: ...`). An implementer who copies that display spelling joins with ` :: ` and produces intent_d5aa72e8ee87 for the same record -- a different node id, from a difference invisible in the rendered spec. Every identity in such a corpus is forked from every identity in a conformant one."
+}

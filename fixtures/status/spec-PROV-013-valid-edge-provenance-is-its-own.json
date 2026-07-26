@@ -1,0 +1,39 @@
+{
+  "rule": "PROV-013",
+  "statement": "An edge carries its own provenance and MUST NOT inherit provenance from either node it connects.",
+  "input_nodes": [
+    {
+      "id": "intent_a",
+      "provenance": "authored"
+    },
+    {
+      "id": "intent_b",
+      "provenance": "authored"
+    }
+  ],
+  "input_edges": [
+    {
+      "id": "edge_1",
+      "from": "intent_a",
+      "to": "intent_b",
+      "relation": "refines",
+      "origin": "declared_in_record",
+      "declaring_record_provenance": "captured"
+    },
+    {
+      "id": "edge_2",
+      "from": "intent_a",
+      "to": "intent_b",
+      "relation": "trade_off_against",
+      "origin": "inferred"
+    }
+  ],
+  "expected": {
+    "edge_provenance": {
+      "edge_1": "captured",
+      "edge_2": "reconstructed"
+    },
+    "edge_provenance_key_present_on_every_edge": true
+  },
+  "note": "Both edges connect the same pair of `authored` nodes and neither edge is `authored`. Two edges over one node pair carrying two different tiers is the property this rule asserts: provenance is a fact about the claim the edge makes, not about its endpoints."
+}

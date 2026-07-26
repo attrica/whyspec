@@ -1,0 +1,37 @@
+{
+  "rule": "PROV-017",
+  "statement": "Disposition and provenance are independent axes. A declined record retains the provenance tier its source earns; being declined does not lower it, and a strong tier does not make a foreclosure read as a commitment.",
+  "input_nodes": [
+    {
+      "id": "intent_a",
+      "source_kind": "adr",
+      "attribution": null,
+      "status": "accepted"
+    },
+    {
+      "id": "intent_b",
+      "source_kind": "adr",
+      "attribution": null,
+      "status": "rejected"
+    },
+    {
+      "id": "intent_c",
+      "source_kind": "decision",
+      "attribution": null,
+      "status": "rejected"
+    }
+  ],
+  "expected": {
+    "provenance": {
+      "intent_a": "authored",
+      "intent_b": "authored",
+      "intent_c": "captured"
+    },
+    "disposition": {
+      "intent_a": "adopted",
+      "intent_b": "declined",
+      "intent_c": "declined"
+    }
+  },
+  "note": "intent_a and intent_b come from identically-shaped sources and differ only in disposition; their provenance is identical. That is the independence."
+}

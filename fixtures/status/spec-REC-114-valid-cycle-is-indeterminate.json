@@ -1,0 +1,22 @@
+{
+  "rule": "REC-114",
+  "statement": "A record participating in a supersession cycle MUST be reported as having indeterminate currency, and traversal MUST terminate.",
+  "records_dir_files": {
+    "2026-04-01-where-does-rate-limiting-live.md": "# Decision: Rate-limit at the gateway\n\n**Id:** rec-rate-1\n**Status:** Accepted\n\n## Context\n\nWhere does rate limiting live?\n\n## Decision\n\nThe gateway sees every request exactly once.\n\n## Relations\n\n- supersedes rec-rate-2\n",
+    "2026-04-08-where-does-rate-limiting-live.md": "# Decision: Rate-limit in each service\n\n**Id:** rec-rate-2\n**Status:** Accepted\n\n## Context\n\nWhere does rate limiting live?\n\n## Decision\n\nEach service knows the cost of its own endpoints.\n\n## Relations\n\n- supersedes rec-rate-1\n",
+    "2026-04-09-how-do-we-page-on-call.md": "# Decision: Page on-call from the alert pipeline\n\n**Id:** rec-page\n**Status:** Accepted\n\n## Context\n\nHow do we page on-call?\n\n## Decision\n\nOne pipeline keeps the paging policy in a single place.\n"
+  },
+  "expected": {
+    "currency": {
+      "rec-rate-1": "indeterminate",
+      "rec-rate-2": "indeterminate",
+      "rec-page": "current"
+    },
+    "traversal_terminates": true,
+    "cycle_member_ids": [
+      "rec-rate-1",
+      "rec-rate-2"
+    ]
+  },
+  "note": "The third record is outside the cycle and is unaffected: indeterminacy is reported per participant, not corpus-wide."
+}

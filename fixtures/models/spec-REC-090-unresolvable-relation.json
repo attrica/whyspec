@@ -1,0 +1,10 @@
+{
+  "record_path": "docs/decisions/2026-04-08-how-should-retries-be-bounded.md",
+  "record_text": "# Decision: Bound the retry budget per call path\n\n**Status:** Accepted\n\n## Context\n\nHow should retries interact with earlier decisions?\n\n## Decision\n\nEach call path carries its own retry budget.\n\n## Relations\n\n- supersedes ADR-0007\n- refines ADR-0099\n",
+  "corpus_files": [
+    "docs/adr/0007-bound-retry-budget.md"
+  ],
+  "rule": "REC-090",
+  "statement": "A relation whose target cannot be resolved MUST be dropped silently.",
+  "note": "`ADR-0007` is present in the corpus; `ADR-0099` is not. The second relation MUST produce no edge, and MUST produce no diagnostic either: a corpus may legitimately be partial, so an unresolvable reference is not a defect to report."
+}

@@ -1,0 +1,31 @@
+{
+  "rule": "REC-113",
+  "statement": "Counter-example: resurrecting the tail of a chain. An implementation that treats a record as historical only when a CURRENT record supersedes it reports the oldest record as live again, because the record that superseded it is itself historical.",
+  "records_dir_files": {
+    "2025-05-01-how-do-we-run-migrations.md": "# Decision: Run migrations by hand at deploy time\n\n**Id:** rec-mig-c\n**Status:** Accepted\n\n## Context\n\nHow do we run migrations?\n\n## Decision\n\nA human at the console can stop a bad migration.\n",
+    "2025-09-01-how-do-we-run-migrations.md": "# Decision: Run migrations from a release job\n\n**Id:** rec-mig-b\n**Status:** Accepted\n\n## Context\n\nHow do we run migrations?\n\n## Decision\n\nA release job makes the migration reproducible.\n\n## Relations\n\n- supersedes rec-mig-c\n",
+    "2026-02-01-how-do-we-run-migrations.md": "# Decision: Run migrations from the application on boot\n\n**Id:** rec-mig-a\n**Status:** Accepted\n\n## Context\n\nHow do we run migrations?\n\n## Decision\n\nBoot-time migration removes the separate job to schedule.\n\n## Relations\n\n- supersedes rec-mig-b\n"
+  },
+  "expected": {
+    "currency": {
+      "rec-mig-a": "current",
+      "rec-mig-b": "historical",
+      "rec-mig-c": "historical"
+    },
+    "current_ids": [
+      "rec-mig-a"
+    ]
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "currency": {
+      "rec-mig-a": "current",
+      "rec-mig-b": "historical",
+      "rec-mig-c": "current"
+    },
+    "current_ids": [
+      "rec-mig-a",
+      "rec-mig-c"
+    ]
+  },
+  "reason": "rec-mig-b is historical, so an implementation that discounts supersedes edges declared by historical records loses the only edge naming rec-mig-c and reports the oldest decision in the chain as current alongside the newest. Two mutually exclusive answers to one question then both read as live. Transitivity is what forbids the resurrection: once superseded, a record stays historical however its superseder fares."
+}

@@ -1,0 +1,20 @@
+{
+  "rule": "REC-108",
+  "statement": "`superseded` is not a status. A record is historical when, and only when, another record declares a supersedes relation naming it.",
+  "records_dir_files": {
+    "2026-01-05-how-do-we-ship-logs.md": "# Decision: Ship logs over the agent sidecar\n\n**Id:** rec-logs-1\n**Status:** Accepted\n\n## Context\n\nHow do we ship logs?\n\n## Decision\n\nThe sidecar decouples shipping from the application process.\n",
+    "2026-06-05-how-do-we-ship-logs.md": "# Decision: Ship logs over the platform collector\n\n**Id:** rec-logs-2\n**Status:** Accepted\n\n## Context\n\nHow do we ship logs?\n\n## Decision\n\nThe platform collector removes a process from every pod.\n\n## Relations\n\n- supersedes rec-logs-1\n"
+  },
+  "expected": {
+    "currency": {
+      "rec-logs-1": "historical",
+      "rec-logs-2": "current"
+    },
+    "status_values": {
+      "rec-logs-1": "accepted",
+      "rec-logs-2": "accepted"
+    },
+    "any_record_carries_a_superseded_status": false
+  },
+  "note": "Neither record says `superseded` anywhere. Currency is entirely a property of the incoming supersedes edge."
+}

@@ -7,6 +7,7 @@
   "chosen": "Keep the window",
   "question": "",
   "today": "2026-07-25",
-  "expected_filename": "2026-07-25-keep-the-window.md",
-  "note": "An EMPTY question against a legacy record recording a REAL question. They MUST NOT match: the legacy file is left alone and a fresh dated record is minted. An implementation that treats an empty question as a wildcard would overwrite an unrelated decision's record -- the exact data-loss class REC-056 and REC-065 exist to kill."
+  "expected_filename": "2026-07-25-decision.md",
+  "expected_filename_must_not_equal": "2026-07-25-keep-the-window.md",
+  "note": "An EMPTY question against a legacy record recording a REAL question. They MUST NOT match: the legacy file is left alone and a fresh dated record is minted. An implementation that treats an empty question as a wildcard would overwrite an unrelated decision's record -- the exact data-loss class REC-056 and REC-065 exist to kill. The fresh name's slug is the literal `decision` (REC-126, REC-062): an empty question MUST NOT fall back to a slug derived from the chosen option `Keep the window`, because chosen text repeats across unrelated decisions and that fallback reintroduces the same collision."
 }

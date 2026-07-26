@@ -1,0 +1,16 @@
+{
+  "corpus": [
+    {
+      "path": "docs/decisions/2026-03-04-how-should-reads-be-served.md",
+      "record_text": "# Decision: Use a shared cache layer\n\n**Status:** Accepted\n**Id:** dec-7f3a91\n\n## Decision\n\nReads go through a shared cache layer.\n"
+    },
+    {
+      "path": "docs/decisions/2026-03-11-how-should-queue-workers-scale.md",
+      "record_text": "# Decision: Scale workers on queue depth\n\n**Status:** Accepted\n**Id:** dec-2b8c04\n\n## Decision\n\nWorker count follows queue depth.\n"
+    }
+  ],
+  "citation": "dec-2b8c04",
+  "rule": "REC-078",
+  "statement": "An identifier MUST be unique within a corpus.",
+  "note": "Two records with distinct identifiers. A citation of `dec-2b8c04` has exactly one referent, and it is the second record."
+}

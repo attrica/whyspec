@@ -1,0 +1,52 @@
+{
+  "command": "list-intent",
+  "status": "ok",
+  "count": 3,
+  "filter": {
+    "provenance": null,
+    "intent_kind": null,
+    "since": null,
+    "disposition": null
+  },
+  "intent": [
+    {
+      "id": "intent_1a2b3c4d5e6f",
+      "label": "keep the single broker",
+      "intent_kind": "decision",
+      "claim": "Keep the single message broker and add routing keys",
+      "rationale": "Recorded at the moment of choosing.",
+      "source_file": "docs/decisions/keep-the-single-broker.md",
+      "source_location": "docs/decisions/keep-the-single-broker.md:1",
+      "confidence_score": 1.0,
+      "provenance": "captured",
+      "disposition": "adopted",
+      "deliberation": "resolved"
+    },
+    {
+      "id": "intent_2b3c4d5e6f70",
+      "label": "adopt a second broker",
+      "intent_kind": "decision",
+      "claim": "Adopt a second message broker",
+      "rationale": "Recorded at the moment of choosing.",
+      "source_file": "docs/decisions/adopt-a-second-broker.md",
+      "source_location": "docs/decisions/adopt-a-second-broker.md:1",
+      "confidence_score": 1.0,
+      "provenance": "authored",
+      "disposition": "declined",
+      "deliberation": "resolved"
+    },
+    {
+      "id": "intent_3c4d5e6f7081",
+      "label": "expire idle sessions",
+      "intent_kind": "decision",
+      "claim": "Expire idle sessions after one hour",
+      "rationale": "Recorded at the moment of choosing.",
+      "source_file": "docs/decisions/expire-idle-sessions.md",
+      "source_location": "docs/decisions/expire-idle-sessions.md:1",
+      "confidence_score": 1.0,
+      "provenance": "captured",
+      "disposition": null,
+      "deliberation": "open"
+    }
+  ]
+}

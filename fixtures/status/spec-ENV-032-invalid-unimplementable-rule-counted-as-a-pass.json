@@ -1,0 +1,63 @@
+{
+  "rule": "ENV-032",
+  "statement": "Counter-example: counting a rule the checker cannot evaluate as a rule evaluated with no violation -- an implicit pass. The mirror error, reporting it as a failure, is also forbidden.",
+  "input": {
+    "declared_rules": [
+      {
+        "id": "rule_cited_decision",
+        "type": "path_glob",
+        "detail": "Files under src/queue/ must be cited by a decision."
+      },
+      {
+        "id": "rule_forbidden_import",
+        "type": "forbidden_token",
+        "detail": "No direct import of the legacy client module."
+      },
+      {
+        "id": "rule_semantic_equivalence",
+        "type": "semantic_equivalence",
+        "detail": "Handler behaviour must remain equivalent across the refactor."
+      }
+    ],
+    "rule_types_the_checker_implements": [
+      "path_glob",
+      "forbidden_token"
+    ]
+  },
+  "expected_envelope": {
+    "command": "check",
+    "status": "ok",
+    "rules": 2,
+    "files_checked": 6,
+    "violations": []
+  },
+  "expected": {
+    "evaluated_rule_ids": [
+      "rule_cited_decision",
+      "rule_forbidden_import"
+    ],
+    "violation_rule_ids": []
+  },
+  "wrong_envelope_a_non_conformant_implementation_might_return": {
+    "command": "check",
+    "status": "ok",
+    "rules": 3,
+    "files_checked": 6,
+    "violations": []
+  },
+  "wrong_envelope_of_the_opposite_error": {
+    "command": "check",
+    "status": "conformance_failed",
+    "rules": 3,
+    "files_checked": 6,
+    "violations": [
+      {
+        "rule_id": "rule_semantic_equivalence",
+        "decision_id": "intent_9f2c41ab77de",
+        "file": "src/queue/handler.py",
+        "detail": "unsupported rule type"
+      }
+    ]
+  },
+  "reason": "`rules: 3` with an empty violations list tells a reader that three rules were checked and all three held, when one was never evaluated at all. Reporting it as a violation is the opposite lie and additionally fails the run. Silence about an unimplementable rule is honest; a pass is not."
+}

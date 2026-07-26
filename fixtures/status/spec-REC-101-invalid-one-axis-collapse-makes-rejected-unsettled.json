@@ -1,0 +1,63 @@
+{
+  "rule": "REC-101",
+  "statement": "Counter-example: reading status as ONE axis running from unfinished to finished. That places `rejected` next to `draft` as an unfinished thought, when it is the most settled state a record can reach.",
+  "input_statuses": [
+    "draft",
+    "proposed",
+    "accepted",
+    "rejected"
+  ],
+  "expected_axes": {
+    "draft": {
+      "deliberation": "open",
+      "offered": false,
+      "disposition": null,
+      "yields": "provisional_intent"
+    },
+    "proposed": {
+      "deliberation": "open",
+      "offered": true,
+      "disposition": null,
+      "yields": "provisional_intent"
+    },
+    "accepted": {
+      "deliberation": "resolved",
+      "offered": true,
+      "disposition": "adopted",
+      "yields": "ground_truth_intent"
+    },
+    "rejected": {
+      "deliberation": "resolved",
+      "offered": true,
+      "disposition": "declined",
+      "yields": "foreclosure_intent"
+    }
+  },
+  "wrong_axes_a_non_conformant_implementation_might_return": {
+    "draft": {
+      "deliberation": "open",
+      "offered": false,
+      "disposition": null,
+      "yields": "provisional_intent"
+    },
+    "proposed": {
+      "deliberation": "open",
+      "offered": true,
+      "disposition": null,
+      "yields": "provisional_intent"
+    },
+    "accepted": {
+      "deliberation": "resolved",
+      "offered": true,
+      "disposition": "adopted",
+      "yields": "ground_truth_intent"
+    },
+    "rejected": {
+      "deliberation": "open",
+      "offered": true,
+      "disposition": null,
+      "yields": "provisional_intent"
+    }
+  },
+  "reason": "`rejected` is resolved and declined. Collapsing it onto the deliberation axis loses the disposition entirely, and a consumer can then no longer tell `we decided not to` from `we have not decided yet`."
+}

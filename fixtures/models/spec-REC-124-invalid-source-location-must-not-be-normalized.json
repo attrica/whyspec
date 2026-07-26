@@ -1,0 +1,28 @@
+{
+  "record_title": "Cache: read-through, write-behind",
+  "inputs_order": [
+    "canonical source path",
+    "source location",
+    "intent kind",
+    "normalized label"
+  ],
+  "inputs": [
+    "docs/decisions/2026-05-19-how-should-the-cache-be-written.md",
+    "Cache: read-through, write-behind",
+    "decision",
+    "cache_read_through_write_behind"
+  ],
+  "joined_string": "docs/decisions/2026-05-19-how-should-the-cache-be-written.md::Cache: read-through, write-behind::decision::cache_read_through_write_behind",
+  "expected_identity": "intent_d058178ae5b5",
+  "non_conformant_inputs": [
+    "docs/decisions/2026-05-19-how-should-the-cache-be-written.md",
+    "cache_read_through_write_behind",
+    "decision",
+    "cache_read_through_write_behind"
+  ],
+  "non_conformant_joined_string": "docs/decisions/2026-05-19-how-should-the-cache-be-written.md::cache_read_through_write_behind::decision::cache_read_through_write_behind",
+  "non_conformant_identity": "intent_0ca3ddd98130",
+  "rule": "REC-124",
+  "statement": "The source location MUST be hashed without normalization; normalizing it forks the identity.",
+  "note": "An implementation that normalizes both components -- an easy simplification once it notices that the location and the label are the same string for a decision node -- produces intent_0ca3ddd98130 instead. Same record, same four inputs, different node."
+}

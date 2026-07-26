@@ -1,0 +1,56 @@
+{
+  "rule": "PROV-017",
+  "statement": "Counter-example: treating disposition as a trust signal -- either demoting a declined record's tier, or reading a strong tier as evidence that the record is a commitment.",
+  "input_nodes": [
+    {
+      "id": "intent_a",
+      "source_kind": "adr",
+      "attribution": null,
+      "status": "accepted"
+    },
+    {
+      "id": "intent_b",
+      "source_kind": "adr",
+      "attribution": null,
+      "status": "rejected"
+    },
+    {
+      "id": "intent_c",
+      "source_kind": "decision",
+      "attribution": null,
+      "status": "rejected"
+    }
+  ],
+  "expected": {
+    "provenance": {
+      "intent_a": "authored",
+      "intent_b": "authored",
+      "intent_c": "captured"
+    },
+    "disposition": {
+      "intent_a": "adopted",
+      "intent_b": "declined",
+      "intent_c": "declined"
+    }
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "provenance": {
+      "intent_a": "authored",
+      "intent_b": "reconstructed",
+      "intent_c": "reconstructed"
+    },
+    "disposition": {
+      "intent_a": "adopted",
+      "intent_b": "declined",
+      "intent_c": "declined"
+    }
+  },
+  "wrong_output_of_the_opposite_error": {
+    "disposition": {
+      "intent_a": "adopted",
+      "intent_b": "adopted",
+      "intent_c": "declined"
+    }
+  },
+  "reason": "Demoting a declined record loses the fact that the refusal was reviewed, which is the thing that makes it worth trusting. The opposite error -- inferring disposition from tier, so that anything `authored` reads as adopted -- turns an explicit refusal into a commitment. Provenance says how much to believe the record says what it says; disposition says what it says."
+}

@@ -1,0 +1,45 @@
+{
+  "rule": "ENV-032",
+  "statement": "A rule of a type the checker does not implement is skipped -- never counted as a pass and never counted as a failure.",
+  "input": {
+    "declared_rules": [
+      {
+        "id": "rule_cited_decision",
+        "type": "path_glob",
+        "detail": "Files under src/queue/ must be cited by a decision."
+      },
+      {
+        "id": "rule_forbidden_import",
+        "type": "forbidden_token",
+        "detail": "No direct import of the legacy client module."
+      },
+      {
+        "id": "rule_semantic_equivalence",
+        "type": "semantic_equivalence",
+        "detail": "Handler behaviour must remain equivalent across the refactor."
+      }
+    ],
+    "rule_types_the_checker_implements": [
+      "path_glob",
+      "forbidden_token"
+    ]
+  },
+  "expected_envelope": {
+    "command": "check",
+    "status": "ok",
+    "rules": 2,
+    "files_checked": 6,
+    "violations": []
+  },
+  "expected": {
+    "evaluated_rule_ids": [
+      "rule_cited_decision",
+      "rule_forbidden_import"
+    ],
+    "violation_rule_ids": [],
+    "skipped_rule_ids": [
+      "rule_semantic_equivalence"
+    ]
+  },
+  "note": "`rules` counts rules EVALUATED (ENV-030), so the unimplementable rule is absent from it and absent from `violations`. This specification names no envelope key for reporting the skip; the mechanical requirement is only that the rule appears in neither total."
+}

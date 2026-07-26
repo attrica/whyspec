@@ -1,0 +1,40 @@
+{
+  "rule": "REC-126",
+  "statement": "Where the question is absent, empty, or reduces to an empty slug, the slug MUST be the literal `decision`. An implementation MUST NOT fall back to a slug derived from the chosen option.",
+  "scenario": "A fresh capture on 2026-05-14 with no prior record in the directory. Four questions that each reduce to an empty slug, and one control that does not.",
+  "today": "2026-05-14",
+  "records_dir_is_empty": true,
+  "cases": [
+    {
+      "name": "question absent",
+      "question": null,
+      "chosen": "Adopt the queue library",
+      "expected_filename": "2026-05-14-decision.md"
+    },
+    {
+      "name": "question empty string",
+      "question": "",
+      "chosen": "Keep the current scheduler",
+      "expected_filename": "2026-05-14-decision.md"
+    },
+    {
+      "name": "question is whitespace only",
+      "question": "   \t  ",
+      "chosen": "Retire the batch job",
+      "expected_filename": "2026-05-14-decision.md"
+    },
+    {
+      "name": "question is punctuation only, so the slug reduces to empty",
+      "question": "??? --- !!!",
+      "chosen": "Split the ingest worker",
+      "expected_filename": "2026-05-14-decision.md"
+    },
+    {
+      "name": "control: a real question is slugged normally",
+      "question": "How should the scheduler retry?",
+      "chosen": "Retry with backoff",
+      "expected_filename": "2026-05-14-how-should-the-scheduler-retry.md"
+    }
+  ],
+  "note": "The control case matters: without it, an implementation that returned the literal `decision` for EVERY question would pass this fixture. Two of the four degenerate cases share a chosen option shape with the control deliberately, so a chosen-derived fallback is visible as a wrong filename rather than as a coincidence."
+}

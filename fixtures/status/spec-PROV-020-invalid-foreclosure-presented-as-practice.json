@@ -1,0 +1,36 @@
+{
+  "rule": "PROV-020",
+  "statement": "Counter-example: a result set for `what do we do about message brokers?` that includes the declined record, and includes it first because its tier is higher.",
+  "input_nodes": [
+    {
+      "id": "intent_broker_single",
+      "disposition": "adopted",
+      "provenance": "captured",
+      "claim": "Keep the single message broker and add routing keys"
+    },
+    {
+      "id": "intent_broker_second",
+      "disposition": "declined",
+      "provenance": "authored",
+      "claim": "Adopt a second message broker"
+    }
+  ],
+  "expected": {
+    "presented_as_team_practice": [
+      "intent_broker_single"
+    ],
+    "presented_as_considered_and_declined": [
+      "intent_broker_second"
+    ]
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "presented_as_team_practice": [
+      "intent_broker_second",
+      "intent_broker_single"
+    ],
+    "presented_as_considered_and_declined": [
+      "intent_broker_second"
+    ]
+  },
+  "reason": "A rejection written in a reviewed record is `authored`, the strongest tier the format has, so a ranking that consults provenance alone puts the refusal at the top of the answer to what the team does. The reader is told the team adopts the very thing it explicitly refused. A high-confidence account of a refusal is still a refusal."
+}

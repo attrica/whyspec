@@ -1,0 +1,24 @@
+{
+  "rule": "REC-106",
+  "statement": "Counter-example: taking the first four-digit run of a dated filename as its ADR number. `2026-03-04-<slug>.md` MUST NOT be resolvable as ADR-2026.",
+  "records_dir_files": {
+    "2026-03-04-how-do-we-ship-logs.md": "# Decision: Ship logs over the agent sidecar\n\n**Status:** Accepted\n\n## Context\n\nHow do we ship logs?\n\n## Decision\n\nThe sidecar decouples shipping from the application process.\n",
+    "0044-pooling-revisited.md": "# ADR-0044: Pool connections per host\n\n**Status:** Accepted\n\n## Context\n\nHow do we pool connections?\n\n## Decision\n\nThis supersedes ADR-2026: a per-host pool bounds the connection count by host count instead.\n"
+  },
+  "expected": {
+    "supersedes_edge_count": 0,
+    "supersedes_edges": [],
+    "adr_number_of_dated_filename": null,
+    "errors_raised": []
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "supersedes_edge_count": 1,
+    "supersedes_edges": [
+      {
+        "from": "0044-pooling-revisited.md",
+        "to": "2026-03-04-how-do-we-ship-logs.md"
+      }
+    ]
+  },
+  "reason": "Exactly one dated record is present, so the reference is UNAMBIGUOUS under REC-105 and only REC-106 stands between the reference and a wrong edge -- this fixture isolates REC-106 rather than leaning on the ambiguity rule. Reading the ADR number as the first four-digit run makes every record captured in a given year register under the same key, so a reference intended for a decision about connection pooling resolves to an unrelated decision about log shipping, and the resulting edge is indistinguishable from a correct one."
+}

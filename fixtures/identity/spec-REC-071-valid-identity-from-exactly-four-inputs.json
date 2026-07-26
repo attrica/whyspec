@@ -3,7 +3,7 @@
     "canonical source path",
     "source location",
     "intent kind",
-    "normalized label"
+    "label (raw — normalize per REC-072 before hashing)"
   ],
   "variants": {
     "baseline": [
@@ -53,5 +53,14 @@
   },
   "rule": "REC-071",
   "statement": "Node identity MUST hash `path :: location :: kind :: normalized-label`.",
-  "note": "Six identity tuples: a baseline plus one variant changing each of the four inputs in turn. All six ids MUST be distinct, and the baseline MUST be reproducible. An implementation that drops any one input (a common 'simplification' -- hashing only path plus label) collapses at least one variant onto the baseline."
+  "note": "Six identity tuples: a baseline plus one variant changing each of the four inputs in turn. All six ids MUST be distinct, and the baseline MUST be reproducible. An implementation that drops any one input (a common 'simplification' -- hashing only path plus label) collapses at least one variant onto the baseline.",
+  "normalized_labels": {
+    "baseline": "serve_reads_from_a_replica",
+    "different_path": "serve_reads_from_a_replica",
+    "different_location": "serve_reads_from_a_replica",
+    "different_kind": "serve_reads_from_a_replica",
+    "different_label": "shard_the_primary",
+    "label_differs_only_by_punctuation": "serve_a_replica"
+  },
+  "digest": "intent_ + first 12 lowercase hex chars of SHA-1 over the four inputs joined by '::' (no spaces), UTF-8, with the label normalized per REC-072"
 }

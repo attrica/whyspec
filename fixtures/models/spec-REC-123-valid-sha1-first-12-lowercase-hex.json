@@ -1,0 +1,25 @@
+{
+  "inputs_order": [
+    "canonical source path",
+    "source location",
+    "intent kind",
+    "normalized label"
+  ],
+  "inputs": [
+    "docs/decisions/2026-04-02-shed-read-load.md",
+    "Serve reads from a replica",
+    "decision",
+    "serve_reads_from_a_replica"
+  ],
+  "joined_string": "docs/decisions/2026-04-02-shed-read-load.md::Serve reads from a replica::decision::serve_reads_from_a_replica",
+  "digest_algorithm": "SHA-1",
+  "digest_input_encoding": "UTF-8",
+  "digest_encoding": "lowercase hexadecimal",
+  "digest_full_hex": "b3428e3978343e35e05d0f3af049c2cb3c06993c",
+  "identity_prefix": "intent_",
+  "identity_hex_length": 12,
+  "expected_identity": "intent_b3428e397834",
+  "rule": "REC-123",
+  "statement": "The identity MUST be `intent_` followed by the first 12 characters of the lowercase hexadecimal SHA-1 digest of the joined string encoded as UTF-8.",
+  "note": "End-to-end vector: inputs, the exact joined string, the full SHA-1 hex digest, and the truncated identity. Every intermediate value is given so an implementer can find which step diverged rather than only that the answer differs. This tuple is the same baseline used by identity/spec-REC-071-valid-identity-from-exactly-four-inputs.json, so the two fixtures cross-check each other: the id here MUST equal the `baseline` id there."
+}

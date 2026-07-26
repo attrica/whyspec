@@ -1,0 +1,21 @@
+{
+  "rule": "REC-111",
+  "statement": "Counter-example: an author-written currency claim on the record. An authored `**Currency:** current` line MUST NOT override the graph, which says the record is historical.",
+  "records_dir_files": {
+    "2025-11-01-how-do-we-authenticate-service-calls.md": "# Decision: Authenticate service calls with shared secrets\n\n**Id:** rec-auth-1\n**Status:** Accepted\n**Currency:** current\n\n## Context\n\nHow do we authenticate service calls?\n\n## Decision\n\nShared secrets need no new infrastructure.\n",
+    "2026-06-20-how-do-we-authenticate-service-calls.md": "# Decision: Authenticate service calls with short-lived tokens\n\n**Id:** rec-auth-2\n**Status:** Accepted\n\n## Context\n\nHow do we authenticate service calls?\n\n## Decision\n\nShort-lived tokens bound the damage of a leaked credential.\n\n## Relations\n\n- supersedes rec-auth-1\n"
+  },
+  "expected": {
+    "currency": {
+      "rec-auth-1": "historical",
+      "rec-auth-2": "current"
+    }
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "currency": {
+      "rec-auth-1": "current",
+      "rec-auth-2": "current"
+    }
+  },
+  "reason": "An authored currency claim records what was true when someone last remembered to edit that file. The graph records what is true now. Honouring the authored claim reintroduces the stale flag the derivation rule exists to remove."
+}

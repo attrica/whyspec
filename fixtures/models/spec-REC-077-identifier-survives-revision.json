@@ -1,0 +1,15 @@
+{
+  "revisions": [
+    {
+      "label": "before",
+      "record_text": "# Decision: Use a shared cach layer\n\n**Status:** Accepted\n**Id:** dec-7f3a91\n**Date:** 2026-03-04\n\n## Context\n\nHow should read-heavy endpoints avoid repeating work?\n\n## Decision\n\nReads go through a shared cache.\n"
+    },
+    {
+      "label": "after",
+      "record_text": "# Decision: Use a shared cache layer\n\n**Status:** Accepted\n**Id:** dec-7f3a91\n**Date:** 2026-03-04\n\n## Context\n\nHow should read-heavy endpoints avoid repeating work?\n\n## Decision\n\nReads go through a shared cache layer in front of the primary database.\n"
+    }
+  ],
+  "rule": "REC-077",
+  "statement": "An identifier MUST be stable across an edit to any other part of the record; a record whose title is corrected retains its identifier.",
+  "note": "One record, two revisions: a typo in the title is corrected and the rationale is expanded. The `Id` line is byte-identical in both. Node identity (REC-071) legitimately DIFFERS between these two revisions because the title is hashed; the record identifier legitimately does NOT. That is why the format carries both, and an implementation that derives one from the other fails one of these two fixtures."
+}

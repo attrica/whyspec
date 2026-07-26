@@ -1,0 +1,25 @@
+{
+  "rule": "REC-108",
+  "statement": "Counter-example: an authored `**Status:** Superseded` line. It MUST NOT make a record historical, because no record declares a supersedes relation naming it. Currency has exactly one source of truth and it is the relation graph.",
+  "records_dir_files": {
+    "2026-02-10-where-do-we-terminate-tls.md": "# Decision: Terminate TLS at the edge proxy\n\n**Status:** Superseded\n\n## Context\n\nWhere do we terminate TLS?\n\n## Decision\n\nThe edge proxy already holds the certificate material.\n",
+    "2026-02-11-how-do-we-rotate-signing-keys.md": "# Decision: Rotate signing keys on a fixed schedule\n\n**Status:** Accepted\n\n## Context\n\nHow do we rotate signing keys?\n\n## Decision\n\nA fixed schedule removes the judgement call from the rotation.\n"
+  },
+  "expected": {
+    "currency": {
+      "2026-02-10-where-do-we-terminate-tls.md": "current",
+      "2026-02-11-how-do-we-rotate-signing-keys.md": "current"
+    },
+    "normalized_status": {
+      "2026-02-10-where-do-we-terminate-tls.md": "superseded"
+    },
+    "superseded_is_a_recognized_status": false
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "currency": {
+      "2026-02-10-where-do-we-terminate-tls.md": "historical",
+      "2026-02-11-how-do-we-rotate-signing-keys.md": "current"
+    }
+  },
+  "reason": "Honouring an authored `superseded` creates a second source of truth that drifts the moment a superseding record is written without revisiting the record it replaces, and nothing can then determine which of the two is correct. The status string is still parsed and still normalizes to `superseded` (REC-030); what it MUST NOT do is set currency."
+}

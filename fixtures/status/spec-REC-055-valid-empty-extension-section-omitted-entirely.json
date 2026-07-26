@@ -1,0 +1,36 @@
+{
+  "rule": "REC-055",
+  "statement": "An optional section added by a future vocabulary extension is omitted entirely when it has no content, unless the absence of content is itself an answer for that section.",
+  "inputs": {
+    "chosen": "Keep the nightly export window",
+    "question": null,
+    "options": [],
+    "rationale": "The nightly window is the only period with spare IO on the reporting replica.",
+    "recommendation": null,
+    "date": "2026-05-19",
+    "evidence": null,
+    "attribution": null,
+    "governs": null
+  },
+  "expected_output": "# Decision: Keep the nightly export window\n\n**Status:** Accepted\n**Date:** 2026-05-19\n\n## Context\n\n(none recorded)\n\n## Decision\n\nThe nightly window is the only period with spare IO on the reporting replica.\n\n## Alternatives considered\n\n(none recorded)\n",
+  "extension_sections_offered_by_the_emitter": [
+    "Attribution",
+    "Governs",
+    "Relations",
+    "Evidence",
+    "Assumptions"
+  ],
+  "expected_sections_present": [
+    "Context",
+    "Decision",
+    "Alternatives considered"
+  ],
+  "sections_that_must_not_be_present": [
+    "Attribution",
+    "Governs",
+    "Relations",
+    "Evidence",
+    "Assumptions"
+  ],
+  "note": "Every extension section this revision adds is unsupplied here, and every one of them is omitted. The two placeholdered sections are the pre-existing pair REC-050 names."
+}

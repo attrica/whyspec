@@ -1,0 +1,11 @@
+{
+  "record_path": "docs/decisions/2026-04-08-how-should-retries-be-bounded.md",
+  "record_text": "# Decision: Bound the retry budget per call path\n\n**Status:** Accepted\n\n## Context\n\nHow should retries interact with earlier decisions?\n\n## Decision\n\nEach call path carries its own retry budget.\n\n## Relations\n\n- refines ADR-0007\n",
+  "corpus_files": [
+    "docs/adr/0007-bound-retry-budget.md",
+    "docs/adr/0007-bound-retry-budget-revised.md"
+  ],
+  "rule": "REC-091",
+  "statement": "A relation whose target is ambiguous MUST be dropped and MUST NOT be resolved to any one candidate.",
+  "note": "Both corpus files yield ADR number 0007 under REC-043 (the first run of exactly four digits in the filename), so the reference is ambiguous. No tiebreak is permitted -- not ingest order, not recency, not the shorter filename. An unresolvable reference yields nothing and a reader knows nothing; a tiebroken one yields a WRONG edge carrying the declaring record's provenance, indistinguishable from a correct one."
+}

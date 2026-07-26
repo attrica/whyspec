@@ -1,0 +1,19 @@
+{
+  "rule": "REC-113",
+  "statement": "Supersession MUST be applied transitively. Where A supersedes B and B supersedes C, both B and C are historical.",
+  "records_dir_files": {
+    "2025-05-01-how-do-we-run-migrations.md": "# Decision: Run migrations by hand at deploy time\n\n**Id:** rec-mig-c\n**Status:** Accepted\n\n## Context\n\nHow do we run migrations?\n\n## Decision\n\nA human at the console can stop a bad migration.\n",
+    "2025-09-01-how-do-we-run-migrations.md": "# Decision: Run migrations from a release job\n\n**Id:** rec-mig-b\n**Status:** Accepted\n\n## Context\n\nHow do we run migrations?\n\n## Decision\n\nA release job makes the migration reproducible.\n\n## Relations\n\n- supersedes rec-mig-c\n",
+    "2026-02-01-how-do-we-run-migrations.md": "# Decision: Run migrations from the application on boot\n\n**Id:** rec-mig-a\n**Status:** Accepted\n\n## Context\n\nHow do we run migrations?\n\n## Decision\n\nBoot-time migration removes the separate job to schedule.\n\n## Relations\n\n- supersedes rec-mig-b\n"
+  },
+  "expected": {
+    "currency": {
+      "rec-mig-a": "current",
+      "rec-mig-b": "historical",
+      "rec-mig-c": "historical"
+    },
+    "current_ids": [
+      "rec-mig-a"
+    ]
+  }
+}

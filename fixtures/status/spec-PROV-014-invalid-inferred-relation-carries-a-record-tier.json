@@ -1,0 +1,45 @@
+{
+  "rule": "PROV-014",
+  "statement": "Counter-example: an inferred relation given a record tier, and a declared relation flattened to `reconstructed`. Both directions break the mapping.",
+  "input_relations": [
+    {
+      "id": "rel_1",
+      "relation": "supersedes",
+      "origin": "declared_in_record",
+      "declaring_record_provenance": "authored"
+    },
+    {
+      "id": "rel_2",
+      "relation": "refines",
+      "origin": "declared_in_record",
+      "declaring_record_provenance": "captured"
+    },
+    {
+      "id": "rel_3",
+      "relation": "refines",
+      "origin": "inferred"
+    }
+  ],
+  "expected": {
+    "relation_provenance": {
+      "rel_1": "authored",
+      "rel_2": "captured",
+      "rel_3": "reconstructed"
+    }
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "relation_provenance": {
+      "rel_1": "authored",
+      "rel_2": "captured",
+      "rel_3": "captured"
+    }
+  },
+  "wrong_output_of_the_opposite_error": {
+    "relation_provenance": {
+      "rel_1": "reconstructed",
+      "rel_2": "reconstructed",
+      "rel_3": "reconstructed"
+    }
+  },
+  "reason": "Promoting the inferred relation presents a heuristic's output as something a human wrote. Demoting the declared ones to a single weak tier throws away the distinction the declaring records earned, and makes a declared supersedes edge -- the edge that decides currency -- untrustworthy for no reason."
+}

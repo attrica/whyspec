@@ -15,6 +15,7 @@
     "today": "2026-07-25"
   },
   "expected_output": "docs/decisions/adopt-library-x.md",
-  "conformant_output": "docs/decisions/2026-07-25-adopt-library-x.md",
-  "note": "Verified by execution: the engine correctly REFUSES to claim the legacy file here. `expected_output` above is the non-conformant answer; rejecting it is the test."
+  "conformant_output": "docs/decisions/2026-07-25-decision.md",
+  "conformant_output_must_not_equal": "docs/decisions/2026-07-25-adopt-library-x.md",
+  "note": "Verified by execution: the engine correctly REFUSES to claim the legacy file here. `expected_output` above is the non-conformant answer; rejecting it is the test. The conformant FRESH name uses the literal slug `decision` (REC-126, REC-062) because the question is empty; it MUST NOT be derived from the chosen option `Adopt library X`."
 }

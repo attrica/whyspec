@@ -1,0 +1,31 @@
+{
+  "rule": "PROV-014",
+  "statement": "A relation declared in a record carries the provenance of the declaring record. A relation produced by inference is `reconstructed`.",
+  "input_relations": [
+    {
+      "id": "rel_1",
+      "relation": "supersedes",
+      "origin": "declared_in_record",
+      "declaring_record_provenance": "authored"
+    },
+    {
+      "id": "rel_2",
+      "relation": "refines",
+      "origin": "declared_in_record",
+      "declaring_record_provenance": "captured"
+    },
+    {
+      "id": "rel_3",
+      "relation": "refines",
+      "origin": "inferred"
+    }
+  ],
+  "expected": {
+    "relation_provenance": {
+      "rel_1": "authored",
+      "rel_2": "captured",
+      "rel_3": "reconstructed"
+    }
+  },
+  "note": "The declaring record's tier passes through unchanged in both directions -- a declared relation is worth exactly what the record declaring it is worth."
+}

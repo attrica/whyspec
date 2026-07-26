@@ -1,0 +1,19 @@
+{
+  "inputs_order": [
+    "canonical source path",
+    "source location",
+    "intent kind",
+    "normalized label"
+  ],
+  "inputs": [
+    "docs/decisions/2026-03-04-how-should-requests-be-retried.md",
+    "Route retries through one budget",
+    "decision",
+    "route_retries_through_one_budget"
+  ],
+  "joined_string": "docs/decisions/2026-03-04-how-should-requests-be-retried.md::Route retries through one budget::decision::route_retries_through_one_budget",
+  "expected_identity": "intent_d485c022918f",
+  "rule": "REC-121",
+  "statement": "The four identity inputs MUST be joined by exactly `::`, with no surrounding whitespace.",
+  "note": "The joined string is given in full so an implementer can compare their own join byte for byte before hashing. Hash it as UTF-8 with SHA-1 and take the first 12 lowercase hex characters after the `intent_` prefix (REC-123)."
+}

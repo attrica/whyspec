@@ -3,7 +3,7 @@
     "canonical source path",
     "source location",
     "intent kind",
-    "normalized label"
+    "label (raw — normalize per REC-072 before hashing)"
   ],
   "variants": {
     "baseline": [
@@ -53,5 +53,14 @@
   },
   "rule": "REC-071",
   "statement": "Node identity MUST hash `path :: location :: kind :: normalized-label`.",
-  "note": "The `different_kind` variant differs from the baseline ONLY in intent kind (decision vs assumption) -- same path, same location, same label. An implementation that omits intent kind from the hash returns the SAME id for both, merging a decision node with the assumption it stated. Any output where distinct_count < 6 MUST be rejected."
+  "note": "The `different_kind` variant differs from the baseline ONLY in intent kind (decision vs assumption) -- same path, same location, same label. An implementation that omits intent kind from the hash returns the SAME id for both, merging a decision node with the assumption it stated. Any output where distinct_count < 6 MUST be rejected.",
+  "normalized_labels": {
+    "baseline": "serve_reads_from_a_replica",
+    "different_path": "serve_reads_from_a_replica",
+    "different_location": "serve_reads_from_a_replica",
+    "different_kind": "serve_reads_from_a_replica",
+    "different_label": "shard_the_primary",
+    "label_differs_only_by_punctuation": "serve_a_replica"
+  },
+  "digest": "intent_ + first 12 lowercase hex chars of SHA-1 over the four inputs joined by '::' (no spaces), UTF-8, with the label normalized per REC-072"
 }

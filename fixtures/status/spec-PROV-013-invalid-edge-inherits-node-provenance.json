@@ -1,0 +1,44 @@
+{
+  "rule": "PROV-013",
+  "statement": "Counter-example: giving each edge the provenance of the nodes it connects.",
+  "input_nodes": [
+    {
+      "id": "intent_a",
+      "provenance": "authored"
+    },
+    {
+      "id": "intent_b",
+      "provenance": "authored"
+    }
+  ],
+  "input_edges": [
+    {
+      "id": "edge_1",
+      "from": "intent_a",
+      "to": "intent_b",
+      "relation": "refines",
+      "origin": "declared_in_record",
+      "declaring_record_provenance": "captured"
+    },
+    {
+      "id": "edge_2",
+      "from": "intent_a",
+      "to": "intent_b",
+      "relation": "trade_off_against",
+      "origin": "inferred"
+    }
+  ],
+  "expected": {
+    "edge_provenance": {
+      "edge_1": "captured",
+      "edge_2": "reconstructed"
+    }
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "edge_provenance": {
+      "edge_1": "authored",
+      "edge_2": "authored"
+    }
+  },
+  "reason": "Inheriting from the endpoints dresses a guessed relationship in the strongest tier the format has, and every downstream consumer then reads the guess as a human decision. It also erases the difference between the two edges, which is the whole of the information."
+}

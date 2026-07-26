@@ -1,0 +1,41 @@
+{
+  "rule": "REC-103",
+  "statement": "Counter-example: counting an open record toward a trusted-evidence metric. An open record MUST be ingested and marked open, and MUST NOT be counted as trusted evidence.",
+  "input_nodes": [
+    {
+      "id": "intent_a",
+      "provenance": "captured",
+      "deliberation": "resolved",
+      "disposition": "adopted"
+    },
+    {
+      "id": "intent_b",
+      "provenance": "captured",
+      "deliberation": "open",
+      "disposition": null
+    },
+    {
+      "id": "intent_c",
+      "provenance": "authored",
+      "deliberation": "open",
+      "disposition": null
+    }
+  ],
+  "expected": {
+    "ingested_count": 3,
+    "trusted_evidence_count": 1,
+    "trusted_evidence_ids": [
+      "intent_a"
+    ]
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "ingested_count": 3,
+    "trusted_evidence_count": 3,
+    "trusted_evidence_ids": [
+      "intent_a",
+      "intent_b",
+      "intent_c"
+    ]
+  },
+  "reason": "Both open records carry a golden provenance tier, so an implementation that filters the trusted metric on provenance alone counts them. Deliberation is a second, independent filter."
+}

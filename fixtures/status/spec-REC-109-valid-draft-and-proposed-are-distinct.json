@@ -1,0 +1,19 @@
+{
+  "rule": "REC-109",
+  "statement": "`draft` and `proposed` are both open, and are NOT equivalent: a draft record has not been offered for deliberation, a proposed one has been offered and awaits resolution.",
+  "input_statuses": [
+    "draft",
+    "proposed"
+  ],
+  "expected_axes": {
+    "draft": {
+      "deliberation": "open",
+      "offered": false
+    },
+    "proposed": {
+      "deliberation": "open",
+      "offered": true
+    }
+  },
+  "note": "The distinguishing property is `offered`, not `deliberation` -- both are open."
+}

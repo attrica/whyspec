@@ -1,0 +1,30 @@
+{
+  "record_text": "# ADR-0031 - Pin the cache image digest\n\n**Status:** Accepted\n\n## Context\n\nHow should the build reference its base image?\n\n## Decision\n\nThe build references the base image by digest, not by tag.\n",
+  "record_kind": "adr",
+  "node_kind": "decision",
+  "inputs_order": [
+    "canonical source path",
+    "source location",
+    "intent kind",
+    "normalized label"
+  ],
+  "inputs": [
+    "docs/adr/0031-pin-the-cache-image-digest.md",
+    "Pin the cache image digest",
+    "decision",
+    "pin_the_cache_image_digest"
+  ],
+  "joined_string": "docs/adr/0031-pin-the-cache-image-digest.md::Pin the cache image digest::decision::pin_the_cache_image_digest",
+  "expected_identity": "intent_a1e61222b2c1",
+  "non_conformant_inputs": [
+    "docs/adr/0031-pin-the-cache-image-digest.md",
+    "Pin the cache image digest",
+    "adr",
+    "pin_the_cache_image_digest"
+  ],
+  "non_conformant_joined_string": "docs/adr/0031-pin-the-cache-image-digest.md::Pin the cache image digest::adr::pin_the_cache_image_digest",
+  "non_conformant_identity": "intent_dacd768b7672",
+  "rule": "REC-122",
+  "statement": "`adr` MUST NOT appear in an identity; an ADR-headed record hashes `decision`.",
+  "note": "REC-009's table presents `adr` and `decision` under a column headed 'Kind', so an implementer who reads that table before section 4.12 reasonably hashes `adr` for an ADR-headed record and gets intent_dacd768b7672. An independent implementation built from the earlier draft hit exactly this ambiguity and could not resolve it from the text. Both readings were available; only `decision` is correct."
+}
