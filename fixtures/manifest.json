@@ -3660,13 +3660,13 @@
         "compare_fields": [
           "expected_output"
         ],
-        "filename": "adopt-library-x.md",
+        "filename": "2026-07-25-decision.md",
         "violates": [
           "REC-066",
           "REC-065"
         ],
         "conformant_filename": "2026-07-25-adopt-library-x.md",
-        "expect.conformant_filename": null
+        "source_of_truth": "filenames/FIL-010-invalid-empty-question-claims-a-real-context.json"
       },
       "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
@@ -3715,11 +3715,12 @@
         "compare_fields": [
           "expected_output"
         ],
-        "filename": "adopt-library-x.md",
+        "filename": "2026-07-25-how-do-we-parse-dates.md",
         "violates": [
           "REC-065"
         ],
-        "conformant_filename": "2026-07-25-how-do-we-parse-dates.md"
+        "conformant_filename": "2026-07-25-how-do-we-parse-dates.md",
+        "source_of_truth": "filenames/FIL-011-invalid-legacy-claimed-without-reading-context.json"
       },
       "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
@@ -5008,8 +5009,8 @@
       "notes": "An EMPTY question against a legacy record recording a REAL question. They MUST NOT match: the legacy file is left alone and a fresh dated record is minted. An implementation that treats an empty question as a wildcard would overwrite an unrelated decision's record -- the exact data-loss class REC-056 and REC-065 exist to kill.",
       "verdict_kind": "field_expectation",
       "expect": {
-        "filename": "2026-07-25-keep-the-window.md",
-        "expect.filename": null
+        "filename": "2026-07-25-decision.md",
+        "source_of_truth": "filenames/spec-REC-066-invalid-empty-question-does-not-match-a-real-context.json"
       },
       "spec_rule_ids": [
         "REC-066"
@@ -5025,11 +5026,11 @@
       "notes": "An EMPTY question against a legacy record whose `## Context` section exists but is EMPTY. REC-066 says an empty question matches a recorded context of `(none recorded)` AND ONLY THAT, so this MUST NOT match and a fresh dated record MUST be minted. DIVERGENCE: the reference implementation compares whitespace-normalized strings first, so empty == empty matches and the legacy file IS claimed. The `expect` below states the SPEC-required outcome.",
       "verdict_kind": "field_expectation",
       "expect": {
-        "filename": "2026-07-25-keep-the-window.md",
+        "filename": "2026-07-25-decision.md",
         "engine_diverges": true,
         "engine_filename": "keep-the-window.md",
         "divergence": "REC-066's 'and only that' is not enforced: an empty recorded Context also matches an empty question, because the equality test runs before the `(none recorded)` special case. `expect` states the SPECIFICATION's requirement; the `engine_*` keys are the behaviour observed. A harness run against the reference implementation MUST expect the engine_* values and record the divergence -- it MUST NOT rewrite the conformance target to match.",
-        "expect.filename": null
+        "source_of_truth": "filenames/spec-REC-066-invalid-empty-question-must-not-match-an-empty-context.json"
       },
       "spec_rule_ids": [
         "REC-066"
