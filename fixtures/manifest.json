@@ -519,7 +519,12 @@
       ],
       "spec_rule_ids": [
         "REC-008",
-        "REC-018"
+        "REC-011",
+        "REC-014",
+        "REC-015",
+        "REC-018",
+        "REC-022",
+        "REC-026"
       ]
     },
     {
@@ -549,7 +554,9 @@
       "spec_rule_ids": [
         "REC-022",
         "REC-026"
-      ]
+      ],
+      "superseded_by": "REC-002-valid-has-decision-section",
+      "redundant": "same path and same expect as the keeper; retained only so the id does not dangle. Re-point at a distinct input or remove once no report references it."
     },
     {
       "id": "REC-009-valid-adr-prefix-stripped",
@@ -576,7 +583,9 @@
       ],
       "spec_rule_ids": [
         "REC-015"
-      ]
+      ],
+      "superseded_by": "REC-002-valid-has-decision-section",
+      "redundant": "same path and same expect as the keeper; retained only so the id does not dangle. Re-point at a distinct input or remove once no report references it."
     },
     {
       "id": "REC-001-valid-adr-h1",
@@ -607,7 +616,9 @@
         "REC-008",
         "REC-011",
         "REC-014"
-      ]
+      ],
+      "superseded_by": "REC-002-valid-has-decision-section",
+      "redundant": "same path and same expect as the keeper; retained only so the id does not dangle. Re-point at a distinct input or remove once no report references it."
     },
     {
       "id": "REC-001-valid-decision-h1",
@@ -930,9 +941,15 @@
       ],
       "verdict_kind": "ingest_scenario",
       "expect": {
-        "compare": "the set of intent produced by ingesting the directory",
         "expected_file": "expected.json",
-        "note": "the verdict is the expected.json beside the fixture directory"
+        "note": "the verdict is the expected.json beside the fixture directory",
+        "decision_node_count": 2,
+        "ground_truth_titles": [
+          "Use structured logging"
+        ],
+        "foreclosure_titles": [
+          "Use free-text logging"
+        ]
       }
     },
     {
@@ -952,9 +969,11 @@
       ],
       "verdict_kind": "ingest_scenario",
       "expect": {
-        "compare": "the set of intent produced by ingesting the directory",
         "expected_file": "expected.json",
-        "note": "the verdict is the expected.json beside the fixture directory"
+        "note": "the verdict is the expected.json beside the fixture directory",
+        "decision_node_count": 2,
+        "decision_node_count_must_not_equal": 1,
+        "note_key": "a conformant set retains the declined record as foreclosure intent"
       }
     },
     {
@@ -1326,7 +1345,9 @@
           "expected_output"
         ],
         "filename": "adopt-library-x.md"
-      }
+      },
+      "superseded_by": "FIL-003-valid-legacy-reused-when-context-matches",
+      "redundant": "same path and same expect as the keeper; retained only so the id does not dangle. Re-point at a distinct input or remove once no report references it."
     },
     {
       "id": "FIL-004-invalid-unreadable-legacy-never-claimed",
@@ -1477,10 +1498,11 @@
         "compare_fields": [
           "expected_output"
         ],
-        "filename": null,
         "violates": [
           "REC-060"
-        ]
+        ],
+        "slug": "one-reviewed-taxonomy-document-mapping-existing-error",
+        "slug_must_not_equal": "one-reviewed-taxonomy-document-mapping-existing-error-classe"
       }
     },
     {
@@ -5246,7 +5268,9 @@
       },
       "spec_rule_ids": [
         "REC-001"
-      ]
+      ],
+      "superseded_by": "spec-REC-001-valid-reserved-name-unread",
+      "redundant": "same path and same expect as the keeper; retained only so the id does not dangle. Re-point at a distinct input or remove once no report references it."
     },
     {
       "id": "spec-REC-033-valid-non-rejected-statuses-all-ingested",
@@ -5290,7 +5314,9 @@
       },
       "spec_rule_ids": [
         "REC-033"
-      ]
+      ],
+      "superseded_by": "spec-REC-033-valid-non-rejected-statuses-all-ingested",
+      "redundant": "same path and same expect as the keeper; retained only so the id does not dangle. Re-point at a distinct input or remove once no report references it."
     },
     {
       "id": "spec-REC-043-valid-four-digit-filename-resolves",
@@ -5334,7 +5360,9 @@
       },
       "spec_rule_ids": [
         "REC-043"
-      ]
+      ],
+      "superseded_by": "spec-REC-043-valid-four-digit-filename-resolves",
+      "redundant": "same path and same expect as the keeper; retained only so the id does not dangle. Re-point at a distinct input or remove once no report references it."
     },
     {
       "id": "spec-REC-044-valid-unresolvable-reference-dropped-silently",
@@ -5368,7 +5396,9 @@
       },
       "spec_rule_ids": [
         "REC-044"
-      ]
+      ],
+      "superseded_by": "spec-REC-044-valid-unresolvable-reference-dropped-silently",
+      "redundant": "same path and same expect as the keeper; retained only so the id does not dangle. Re-point at a distinct input or remove once no report references it."
     },
     {
       "id": "spec-REC-057-valid-kind-comes-from-h1-not-directory",

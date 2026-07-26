@@ -5,5 +5,6 @@
   "max_len": 60,
   "wrong_slug_a_naive_hard_cut_would_produce": "one-reviewed-taxonomy-document-mapping-existing-error-classe",
   "reason": "A plain 60-character hard cut lands mid-word, splitting 'classes' into 'classe'. The conformant slugify() finds the last '-' inside the 60-char window and cuts there instead, yielding 'one-reviewed-taxonomy-document-mapping-existing-error' (55 chars). NOTE: the pre-existing LEGACY slug function (used only to recognise old filenames, see FIL-003/FIL-004) intentionally reproduces this exact hard-cut behaviour and must never be changed to match -- this invalid example applies to the NEW-scheme slugify() only.",
-  "note": "Verified: whyfile.passes.capture._legacy_slug() on this exact input DOES produce 'one-reviewed-taxonomy-document-mapping-existing-error-classe' (mid-word) by design -- that legacy behaviour is correct for ITS rule (FIL-004-adjacent: reproduce old filenames exactly); slugify() must not be 'simplified' to match it."
+  "note": "Verified: whyfile.passes.capture._legacy_slug() on this exact input DOES produce 'one-reviewed-taxonomy-document-mapping-existing-error-classe' (mid-word) by design -- that legacy behaviour is correct for ITS rule (FIL-004-adjacent: reproduce old filenames exactly); slugify() must not be 'simplified' to match it.",
+  "conformant_slug": "one-reviewed-taxonomy-document-mapping-existing-error"
 }
