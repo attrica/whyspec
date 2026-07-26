@@ -1,0 +1,406 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://whyfile.example/schema/parsed-record.schema.json",
+  "title": "Whyfile parsed record",
+  "description": "The object a conforming parser yields from ONE record. Derived from spec/whyfile-spec-draft.md; every property names the rule that mandates it. Where the specification is silent the property is either absent from this schema or explicitly flagged with x-gap -- nothing here is invented to fill a hole.",
+  "$comment": "LAYERING. The specification does not cleanly separate 'the parsed record' from 'the intent node it becomes' (§2, gap G7): REC-107 speaks of both in one sentence, REC-045 places resolution_delta on the node, PROV-005/006 place provenance there, REC-112 derives currency corpus-wide. This schema carries all of them in one object and tags each with x-layer so an implementation that keeps two objects can split on that tag. NAME SPELLINGS. Several rules name a property in prose without fixing its JSON key. Where the prose fixes the spelling, x-name-source is 'rule'. Where only the conformance corpus fixes it, x-name-source is 'corpus' and the gap is listed in schema/PROPOSED-RULES.md.",
+  "type": "object",
+  "required": [
+    "kind",
+    "title",
+    "rationale",
+    "alternatives",
+    "assumptions",
+    "supersedes"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "kind": {
+      "description": "[REC-009] The record kind, determined by which level-1 heading form matched: an `ADR-<digits><sep> <title>` H1 yields `adr`, a `Decision: <title>` H1 yields `decision`. [REC-057] MUST NOT be inferred from the record's directory. [REC-122] This is NOT the intent-kind component of node identity.",
+      "x-rule": ["REC-009", "REC-057"],
+      "x-layer": "parsed-record",
+      "x-name-source": "rule",
+      "type": "string",
+      "enum": ["adr", "decision"]
+    },
+    "title": {
+      "description": "[REC-015] The matched heading text with its prefix (the `ADR-…` run and separator, or the `Decision:` literal) removed and surrounding whitespace trimmed. [REC-016] MUST be non-empty; a document whose title reduces to the empty string is not a record. [REC-017] For a `decision` record the title IS the chosen option.",
+      "x-rule": ["REC-015", "REC-016", "REC-017"],
+      "x-layer": "parsed-record",
+      "x-name-source": "rule",
+      "type": "string",
+      "minLength": 1
+    },
+    "rationale": {
+      "description": "[REC-018] The `Decision` section body, trimmed. The section is REQUIRED for a document to be a record ([REC-008]), so the key is always present. [REC-019] When several headings match, the first wins.",
+      "x-rule": ["REC-018", "REC-008", "REC-019"],
+      "x-layer": "parsed-record",
+      "x-name-source": "rule",
+      "x-gap": "No rule states whether a `## Decision` heading with an EMPTY body yields \"\" or omits the key. REC-107 sets the opposite precedent for `question`. See PROPOSED-RULES.md, additional gap A1.",
+      "type": "string"
+    },
+    "question": {
+      "description": "[REC-107] The `Context` section body, yielded as `question` on the parsed record and reaching the intent node. [REC-021] The Context section carries the question the record answers. An empty or absent Context yields an ABSENT question, never an empty string -- the key is omitted entirely.",
+      "x-rule": ["REC-107", "REC-021"],
+      "x-layer": "parsed-record",
+      "x-name-source": "rule",
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "description": "[REC-030] The status value normalized to its first run of lowercase alphabetic characters. [REC-027] Sourced from the inline `**Status:**` line or a `## Status` section; [REC-028] inline wins; [REC-029] the inline search is document-wide and first-match-wins. [REC-031] When no status can be determined the key is OMITTED ENTIRELY -- never defaulted, never an explicit null. [REC-033] No enum: only `draft`/`proposed`/`accepted`/`rejected` carry behaviour, but any other value is conventional and parses. [REC-108] `superseded` MUST NOT be a status.",
+      "x-rule": ["REC-030", "REC-027", "REC-028", "REC-029", "REC-031", "REC-033"],
+      "x-layer": "parsed-record",
+      "x-name-source": "rule",
+      "type": "string",
+      "pattern": "^[a-z]+$"
+    },
+    "deliberation": {
+      "description": "[REC-101] The deliberation state a status determines: `draft` and `proposed` are open, `accepted` and `rejected` are resolved. [REC-125] An ABSENT status is `unstated` -- neither open nor resolved -- and still yields ground-truth intent; an UNRECOGNIZED status is treated as open. [REC-103] An open record MUST be ingested and MUST be marked open.",
+      "x-rule": ["REC-101", "REC-125", "REC-103"],
+      "x-layer": "intent-node",
+      "x-name-source": "corpus",
+      "type": "string",
+      "enum": ["open", "resolved", "unstated"]
+    },
+    "offered": {
+      "description": "[REC-101] Whether the record was offered for deliberation: `draft` is not offered, `proposed`/`accepted`/`rejected` are. [REC-109] `draft` and `proposed` MUST NOT be treated as equivalent, and this is the field that distinguishes them. [REC-125] An unrecognized status is open and UNOFFERED.",
+      "x-rule": ["REC-101", "REC-109", "REC-125"],
+      "x-layer": "intent-node",
+      "x-name-source": "corpus",
+      "type": "boolean"
+    },
+    "disposition": {
+      "description": "[REC-101] The disposition a RESOLVED status determines: `accepted` yields `adopted`, `rejected` yields `declined`. Present with an explicit null when deliberation is open or unstated, because disposition exists only once deliberation is resolved. [REC-104] A `declined` record yields foreclosure intent: retained and queryable, never counted as trusted evidence, never presented as team practice. [PROV-019] A result containing intent MUST expose this. [PROV-017] Independent of provenance.",
+      "x-rule": ["REC-101", "REC-104", "PROV-019", "PROV-017"],
+      "x-layer": "intent-node",
+      "x-name-source": "rule",
+      "type": ["string", "null"],
+      "enum": ["adopted", "declined", null]
+    },
+    "alternatives": {
+      "description": "[REC-018] An ordered list yielded from the `Alternatives considered` or `Alternatives` section. [REC-022] Parsed as a FLAT list, every marker at top level. [REC-023] Each item's whitespace collapsed, trimmed, every `**` sequence removed. [REC-024] Yielded in document order. [REC-025] A prose (list-free) section yields an EMPTY list, not an error and not the prose. Absent section yields an empty list too.",
+      "x-rule": ["REC-018", "REC-022", "REC-023", "REC-024", "REC-025"],
+      "x-layer": "parsed-record",
+      "x-name-source": "rule",
+      "x-conflict": "REC-018 and ENV-016 both say `alternatives` is a list of STRINGS. REC-097/098/099 require each item to carry an option, an optional disposition and an optional rationale, which a bare string cannot hold. Both are normative and the corpus instantiates both. The `items` below is `oneOf` because the specification genuinely says both -- it is NOT a design choice. See PROPOSED-RULES.md, REC-133.",
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "description": "[REC-018] [ENV-016] The list-of-strings reading.",
+            "type": "string"
+          },
+          {
+            "$ref": "#/$defs/alternative"
+          }
+        ]
+      }
+    },
+    "recommendation": {
+      "description": "[REC-018] The `Recommendation` section body, trimmed. Optional section; the key is absent when no such section exists.",
+      "x-rule": ["REC-018"],
+      "x-layer": "parsed-record",
+      "x-name-source": "rule",
+      "type": "string"
+    },
+    "resolution_delta": {
+      "description": "[REC-045] Present on the intent node when a `Recommendation` body differs from the trimmed title. [REC-046] OMITTED ENTIRELY from the node when the recommendation is absent, empty, or equal to the title. Note the deliberate divergence at the envelope: [ENV-037] requires the CAPTURE envelope to carry it present-with-explicit-null instead.",
+      "x-rule": ["REC-045", "REC-046"],
+      "x-layer": "intent-node",
+      "x-name-source": "rule",
+      "type": "object",
+      "required": ["recommended", "chosen"],
+      "properties": {
+        "recommended": {
+          "description": "[REC-045] The recommendation body.",
+          "x-rule": ["REC-045"],
+          "type": "string"
+        },
+        "chosen": {
+          "description": "[REC-045] The record's title.",
+          "x-rule": ["REC-045"],
+          "type": "string"
+        }
+      }
+    },
+    "assumptions": {
+      "description": "[REC-018] A list of structured claims yielded from the `Assumptions` section. [REC-034] Each list item (parsed per REC-022--REC-025) yields one assumption. An absent section yields an empty list. [REC-032] A rejected record's assumptions MUST NOT become ground-truth intent either.",
+      "x-rule": ["REC-018", "REC-034", "REC-032"],
+      "x-layer": "parsed-record",
+      "x-name-source": "rule",
+      "type": "array",
+      "items": { "$ref": "#/$defs/assumption" }
+    },
+    "supersedes": {
+      "description": "[REC-040] Every match of `\\bsupersedes?\\s+(ADR-\\d+)` collected case-insensitively over the whole document. [REC-041] The passive form 'superseded by ADR-N' MUST NOT be collected. [REC-042] Uppercased, de-duplicated, yielded in first-seen order. Empty list when the document declares none.",
+      "x-rule": ["REC-040", "REC-041", "REC-042"],
+      "x-layer": "parsed-record",
+      "x-name-source": "rule",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^ADR-[0-9]+$"
+      }
+    },
+    "identifier": {
+      "description": "[REC-075] The citational record identifier from the inline `**Id:** <value>` field. [REC-076] Read verbatim; MUST NOT be regenerated and MUST NOT be derived from the title, the body or the filename. [REC-077] Stable across an edit to any other part of the record. [REC-078] Unique within a corpus; two records sharing one leaves neither as the referent. Absent when no `Id` line was written.",
+      "x-rule": ["REC-075", "REC-076", "REC-077", "REC-078"],
+      "x-layer": "parsed-record",
+      "x-name-source": "corpus",
+      "type": "string"
+    },
+    "attribution": {
+      "description": "[REC-079] A list yielded from the `## Attribution` section, one entry per list item, each of the form `<role> <kind>:<id> [on <date>]`. [REC-081] Any number of entries, including several sharing a role; an ABSENT section means unrecorded and MUST NOT be defaulted or inferred, so the key is omitted rather than empty. [REC-115] Roles are distinct and MUST NOT be collapsed by actor.",
+      "x-rule": ["REC-079", "REC-081", "REC-115"],
+      "x-layer": "parsed-record",
+      "x-name-source": "corpus",
+      "type": "array",
+      "items": { "$ref": "#/$defs/attribution" }
+    },
+    "self_ratification": {
+      "description": "[REC-118] True when a ratifying actor also carries the role `drafted` or `decided` on this record. MUST be marked, MUST NOT promote provenance, and [REC-120] MUST NOT cause the attribution to be discarded.",
+      "x-rule": ["REC-118", "REC-120"],
+      "x-layer": "intent-node",
+      "x-name-source": "corpus",
+      "x-gap": "REC-118 compares 'the same actor' without defining what an actor is structurally -- bare <id> or the <kind>:<id> pair. See PROPOSED-RULES.md, REC-128.",
+      "type": "boolean"
+    },
+    "governs": {
+      "description": "[REC-082] Artifact references from the `## Governs` section, one per list item, each taken VERBATIM: list markers are stripped per REC-022 and empty items dropped per REC-025, but REC-023's emphasis-stripping and whitespace normalization MUST NOT be applied (they would destroy `src/**/*.py`). [REC-083] Exactly one reference kind is defined: a repository-relative path glob. [REC-084] An ABSENT section means 'scope not declared' and MUST NOT be read as 'governs nothing' -- the key is OMITTED, never an empty array. [REC-085] A declared scope inherits the record's provenance.",
+      "x-rule": ["REC-082", "REC-083", "REC-084", "REC-085"],
+      "x-layer": "parsed-record",
+      "x-name-source": "corpus",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "relations": {
+      "description": "[REC-087] Declared relations from the `## Relations` section, one per list item, in the form `<relation> <identifier>`. [REC-090] A relation whose target cannot be resolved is dropped silently; [REC-091] an AMBIGUOUS target is also dropped and MUST NOT be resolved by any tiebreak. [PROV-014] A declared relation carries the declaring record's provenance; an inferred one is `reconstructed`.",
+      "x-rule": ["REC-087", "REC-090", "REC-091", "PROV-014"],
+      "x-layer": "parsed-record",
+      "x-name-source": "corpus",
+      "type": "array",
+      "items": { "$ref": "#/$defs/relation" }
+    },
+    "evidence": {
+      "description": "[REC-093] Entries from the `## Evidence` section, one per list item, in the form `<method>: <qualifier>` with the qualifier optional. [REC-096] A record with no `## Evidence` section records NOTHING about method: the key is omitted, it MUST NOT be read as 'no evidence existed', and it MUST NOT be flagged. [REC-095] A citation of deliberation MUST be a reference; deliberation content MUST NOT be embedded and this specification defines no field for it.",
+      "x-rule": ["REC-093", "REC-096", "REC-095"],
+      "x-layer": "parsed-record",
+      "x-name-source": "corpus",
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidence" }
+    },
+    "provenance": {
+      "description": "[PROV-001] One of exactly four values; the set is closed. [PROV-005] An ADR record with no `## Attribution` yields `authored`; [PROV-006] a decision record with no `## Attribution` yields `captured`. [PROV-021] Where attribution IS present the tier is determined by ratification and NOT by record kind, and a record with no corroborated ratification is `captured` whatever its heading form. [REC-119] A ratification alone MUST NOT promote to `authored`. [PROV-003] Absent or unrecognized provenance ranks as `reconstructed`. [PROV-007] An assumption node SHOULD inherit its record's tier.",
+      "x-rule": ["PROV-001", "PROV-005", "PROV-006", "PROV-021", "REC-119", "PROV-003", "PROV-007"],
+      "x-layer": "intent-node",
+      "x-name-source": "rule",
+      "type": "string",
+      "enum": ["authored", "captured", "attested", "reconstructed"]
+    },
+    "confidence_score": {
+      "description": "[PROV-008] Intent ingested from a record MUST carry a numeric confidence of 1.0 -- the record IS the evidence. [PROV-009] MUST NOT be conflated with provenance: filtering and merging use this number only, trust decisions use provenance only.",
+      "x-rule": ["PROV-008", "PROV-009"],
+      "x-layer": "intent-node",
+      "x-name-source": "rule",
+      "type": "number",
+      "const": 1.0
+    },
+    "id": {
+      "description": "[REC-123] The node identity: `intent_` followed by the first 12 characters of the lowercase hexadecimal SHA-1 digest of the joined identity string, UTF-8 encoded. [REC-071] The joined string is `<canonical source path> :: <source location> :: <intent kind> :: <normalized label>`; [REC-121] joined by exactly `::` with NO surrounding whitespace. [REC-124] Only the label is normalized ([REC-072]); the source location is hashed as it appears. This is content-derived and changes when the content changes -- it is not the citational `identifier` of REC-075.",
+      "x-rule": ["REC-123", "REC-071", "REC-121", "REC-124", "REC-072"],
+      "x-layer": "intent-node",
+      "x-name-source": "rule",
+      "type": "string",
+      "pattern": "^intent_[0-9a-f]{12}$"
+    },
+    "intent_kind": {
+      "description": "[REC-122] The kind of the NODE, exactly `decision` or `assumption`. An ADR-headed record still produces a decision node, and `adr` MUST NOT appear in an identity. This is the third identity component of REC-071.",
+      "x-rule": ["REC-122", "REC-071"],
+      "x-layer": "intent-node",
+      "x-name-source": "rule",
+      "type": "string",
+      "enum": ["decision", "assumption"]
+    },
+    "source_file": {
+      "description": "[REC-073] The canonical source path: the repository-relative path in POSIX separator form. An absolute path MUST be resolved (collapsing symlink aliases) and made relative to the repository root before hashing; a relative path is left byte-identical apart from separator normalization. [REC-074] A path outside any repository falls back to a POSIX-normalized absolute spelling, and canonicalization MUST NOT raise. First identity component of REC-071.",
+      "x-rule": ["REC-073", "REC-074", "REC-071"],
+      "x-layer": "intent-node",
+      "x-name-source": "rule",
+      "type": "string"
+    },
+    "source_location": {
+      "description": "[REC-071] The second identity component. [REC-124] Hashed AS IT APPEARS, without normalization. §4.12: for a decision node the source location and the label are both the record title; for an assumption node they are derived from the claim.",
+      "x-rule": ["REC-071", "REC-124"],
+      "x-layer": "intent-node",
+      "x-name-source": "rule",
+      "x-gap": "§4.12 says an assumption node's location and label are 'derived from the claim' without saying how. See PROPOSED-RULES.md, REC-127.",
+      "type": "string"
+    },
+    "label": {
+      "description": "[REC-071] The fourth identity component, hashed after normalization. [REC-072] The normalized label is the label lowercased, every run of characters outside `[a-z0-9]` replaced by `_`, and leading/trailing `_` stripped. [REC-124] The label is the ONLY component that is normalized.",
+      "x-rule": ["REC-071", "REC-072", "REC-124"],
+      "x-layer": "intent-node",
+      "x-name-source": "rule",
+      "type": "string"
+    },
+    "currency": {
+      "description": "[REC-111] Whether the decision is still live. MUST be derived from the relation graph and MUST NOT be authored on the record. [REC-112] `historical` when at least one other record declares a `supersedes` relation naming it, `current` otherwise; defined ONLY for records whose disposition is `adopted`, so the key is omitted for an open or declined record. [REC-113] Supersession applies transitively. [REC-114] A record in a supersession CYCLE is `indeterminate`, and MUST NOT be resolved by any tiebreak.",
+      "x-rule": ["REC-111", "REC-112", "REC-113", "REC-114"],
+      "x-layer": "corpus-derived",
+      "x-name-source": "corpus",
+      "type": "string",
+      "enum": ["current", "historical", "indeterminate"]
+    }
+  },
+  "$defs": {
+    "alternative": {
+      "title": "Structured alternative",
+      "description": "[REC-097] An alternative item MAY carry a disposition and a rejection rationale, in the form `<option> — <disposition>: <rationale>`.",
+      "x-rule": ["REC-097"],
+      "type": "object",
+      "required": ["option"],
+      "properties": {
+        "option": {
+          "description": "[REC-097] The option text. [REC-099] An alternative carrying no disposition yields the WHOLE item as its option text -- an em dash with no recognized disposition token after it MUST NOT be split.",
+          "x-rule": ["REC-097", "REC-099"],
+          "type": "string"
+        },
+        "disposition": {
+          "description": "[REC-098] One of exactly `rejected`, `deferred`, `partially-adopted`, `not-evaluated`. The set is closed; adding one requires a version marker (§7). [REC-099] ABSENT (key omitted) when the item carries none -- absence means not recorded, never that no disposition existed. [REC-100] `deferred` MUST NOT be treated as equivalent to `rejected`.",
+          "x-rule": ["REC-098", "REC-099", "REC-100"],
+          "x-gap": "REC-097 shows only an em dash as the separator and says nothing about case-sensitivity or an unrecognized token. See PROPOSED-RULES.md, REC-134.",
+          "type": "string",
+          "enum": ["rejected", "deferred", "partially-adopted", "not-evaluated"]
+        },
+        "rationale": {
+          "description": "[REC-097] The rejection rationale following the disposition. [REC-099] ABSENT (key omitted) when the item carries no disposition.",
+          "x-rule": ["REC-097", "REC-099"],
+          "type": "string"
+        }
+      }
+    },
+    "assumption": {
+      "title": "Assumption",
+      "description": "[REC-034] One assumption per list item in the `Assumptions` section, with a `claim` plus two optional fields.",
+      "x-rule": ["REC-034"],
+      "type": "object",
+      "required": ["claim"],
+      "additionalProperties": false,
+      "properties": {
+        "claim": {
+          "description": "[REC-034] The claim. [REC-038] After the review-date and expiry strippings, normalized by collapsing whitespace and trimming spaces AND periods from both ends.",
+          "x-rule": ["REC-034", "REC-038"],
+          "type": "string"
+        },
+        "review_by": {
+          "description": "[REC-035] Captured from `\\(?\\s*review[ -]by:?\\s*(\\d{4}-\\d{2}-\\d{2})\\s*\\)?` case-insensitively and REMOVED from the claim text. [REC-036] A full ISO-8601 calendar date, `YYYY-MM-DD`; this is the machine-checkable field. [REC-039] OMITTED ENTIRELY when not present, never serialized as null.",
+          "x-rule": ["REC-035", "REC-036", "REC-039"],
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "expiry": {
+          "description": "[REC-037] Captured from `\\(\\s*expires?:?\\s*([^)]+?)\\s*\\)` case-insensitively and REMOVED from the claim text. FREE TEXT and not machine-checkable: it records a condition, not a date. [REC-039] OMITTED ENTIRELY when not present, never serialized as null.",
+          "x-rule": ["REC-037", "REC-039"],
+          "type": "string"
+        }
+      }
+    },
+    "attribution": {
+      "title": "Attribution",
+      "description": "[REC-079] One attribution per list item, in the form `<role> <kind>:<id> [on <date>]`. Attribution is a relation, not a field.",
+      "x-rule": ["REC-079"],
+      "type": "object",
+      "required": ["role", "kind", "id", "provenance"],
+      "properties": {
+        "role": {
+          "description": "[REC-080] One of exactly `drafted`, `decided`, `ratified`. The set is closed; adding to it requires a version marker (§7). [REC-115] `drafted` names who composed the record, `decided` who chose among the alternatives, `ratified` who accepted it through a review process -- these MUST NOT be conflated.",
+          "x-rule": ["REC-080", "REC-115"],
+          "type": "string",
+          "enum": ["drafted", "decided", "ratified"]
+        },
+        "kind": {
+          "description": "[REC-080] One of exactly `human` or `agent`. The set is closed; adding to it requires a version marker (§7).",
+          "x-rule": ["REC-080"],
+          "type": "string",
+          "enum": ["human", "agent"]
+        },
+        "id": {
+          "description": "[REC-079] The actor identifier from the `<kind>:<id>` term.",
+          "x-rule": ["REC-079"],
+          "x-gap": "No rule says whether actor equality -- which REC-118's self-ratification check depends on -- compares the bare id or the (kind, id) pair. See PROPOSED-RULES.md, REC-128.",
+          "type": "string"
+        },
+        "date": {
+          "description": "[REC-117] An attribution MAY carry a date. Where present it MUST be a full ISO-8601 calendar date. Omitted when the item carries none.",
+          "x-rule": ["REC-117"],
+          "x-gap": "No rule says whether a MALFORMED date drops the date or the whole attribution. See PROPOSED-RULES.md, REC-129.",
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "provenance": {
+          "description": "[REC-117] Each attribution MUST carry its own provenance (§5.5). [PROV-013] An edge MUST carry its own provenance and MUST NOT inherit it from either node it connects. [PROV-001] The closed four-value set.",
+          "x-rule": ["REC-117", "PROV-013", "PROV-001"],
+          "type": "string",
+          "enum": ["authored", "captured", "attested", "reconstructed"]
+        },
+        "corroborated": {
+          "description": "[REC-119] For a `ratified` role: whether corroboration external to the record was found. An implementation unable to corroborate MUST mark the ratification uncorroborated, MUST NOT promote, and MUST leave the record at `captured`. [REC-120] An uncorroborated ratification MUST NOT be discarded.",
+          "x-rule": ["REC-119", "REC-120"],
+          "x-name-source": "none",
+          "x-gap": "REC-119 mandates the marking but names no key. This spelling follows no rule and no fixture; treat it as illustrative until PROPOSED-RULES.md REC-131 lands.",
+          "type": "boolean"
+        }
+      }
+    },
+    "relation": {
+      "title": "Declared relation",
+      "description": "[REC-087] One relation per list item, in the form `<relation> <identifier>`.",
+      "x-rule": ["REC-087"],
+      "type": "object",
+      "required": ["relation", "target"],
+      "properties": {
+        "relation": {
+          "description": "[REC-088] One of exactly `supersedes`, `refines`, `constrains`, `motivated_by`, `trade_off_against`, `contradicts`. The set is closed; adding a relation requires a version marker (§7).",
+          "x-rule": ["REC-088"],
+          "type": "string",
+          "enum": ["supersedes", "refines", "constrains", "motivated_by", "trade_off_against", "contradicts"]
+        },
+        "target": {
+          "description": "[REC-089] A record identifier ([REC-075]) or an ADR number.",
+          "x-rule": ["REC-089", "REC-075"],
+          "x-name-source": "none",
+          "type": "string"
+        },
+        "provenance": {
+          "description": "[PROV-014] A relation declared in a record carries the provenance of the declaring record; a relation produced by inference MUST be `reconstructed`. [REC-092] An inferred relation MUST NOT be presented as a declared one.",
+          "x-rule": ["PROV-014", "REC-092"],
+          "type": "string",
+          "enum": ["authored", "captured", "attested", "reconstructed"]
+        }
+      }
+    },
+    "evidence": {
+      "title": "Evidence entry",
+      "description": "[REC-093] One entry per list item, in the form `<method>: <qualifier>`, where the qualifier is optional.",
+      "x-rule": ["REC-093"],
+      "type": "object",
+      "required": ["method"],
+      "properties": {
+        "method": {
+          "description": "[REC-094] One of exactly `grep`, `diff`, `executed`, `read`, `traced`. The set is closed; an unrecognized method is a validation error AT CAPTURE TIME, not a silently unflagged value.",
+          "x-rule": ["REC-094"],
+          "x-gap": "REC-094 names capture-time behaviour only. What a PARSER reading an existing file containing an unrecognized method yields is unstated. See PROPOSED-RULES.md, REC-130.",
+          "type": "string",
+          "enum": ["grep", "diff", "executed", "read", "traced"]
+        },
+        "qualifier": {
+          "description": "[REC-093] The optional qualifier after the method. Omitted when the entry carries none.",
+          "x-rule": ["REC-093"],
+          "x-name-source": "corpus",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

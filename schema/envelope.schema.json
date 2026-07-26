@@ -1,0 +1,1550 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://whyfile.example/schema/envelope.schema.json",
+  "title": "Whyfile result envelope",
+  "description": "[ENV-001] A query result MUST be a single JSON object -- not an array, not a stream of objects, not a bare value. [ENV-005] Modelled as a TAGGED UNION discriminated by `command` over a universal core of {command, status}, never as one struct with many optional fields. Key sets are taken from the §6.1 table and the ENV-0nn enumerations; every property names the rule that mandates it.",
+  "$comment": "OPEN AT THREE POINTS, ON PURPOSE. (1) `command` carries no enum: [VER-004] makes adding a command a vocabulary extension and [ENV-008] already requires consumers to handle an unknown tag, so a closed enum would contradict both -- unknown tags validate against the core only. (2) additionalProperties is left open: [ENV-040]/[ENV-041] require a transport to attach a credential block such as `graph_identity` unconditionally, so a closed envelope would reject a conforming transport. [ENV-042] forbids such a key from COLLIDING with a variant key, which JSON Schema cannot express and which the checker does not attempt. (3) Nested entries are open for the same reason -- the corpus's `changed` result carries a `resolved_paths` key that [ENV-025] does not name.",
+  "type": "object",
+  "required": [
+    "command",
+    "status"
+  ],
+  "properties": {
+    "command": {
+      "description": "[ENV-002] Every envelope MUST carry `command`: a stable lowercase string naming the operation that produced it. [ENV-004] With `status`, one of the only two universal keys. [ENV-005] The union discriminator.",
+      "x-rule": [
+        "ENV-002",
+        "ENV-004",
+        "ENV-005"
+      ],
+      "type": "string",
+      "pattern": "^[a-z][a-z-]*$"
+    },
+    "status": {
+      "description": "[ENV-003] Every envelope MUST carry `status`: a lowercase snake_case token classifying the outcome. [ENV-007] Status tokens are PER-COMMAND, not global. [ENV-009] MUST NOT be overloaded to carry data. [ENV-010] An honest negative is a complete answer, not an error.",
+      "x-rule": [
+        "ENV-003",
+        "ENV-007",
+        "ENV-009",
+        "ENV-010"
+      ],
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "why"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/error_envelope"
+          },
+          {
+            "$ref": "#/$defs/why_ok"
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "list-intent"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/error_envelope"
+          },
+          {
+            "$ref": "#/$defs/list_intent_ok"
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "explain"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/error_envelope"
+          },
+          {
+            "$ref": "#/$defs/explain_ok"
+          },
+          {
+            "$ref": "#/$defs/explain_ambiguous"
+          },
+          {
+            "$ref": "#/$defs/explain_not_found"
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "changed"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/error_envelope"
+          },
+          {
+            "$ref": "#/$defs/changed_ok"
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "digest"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/error_envelope"
+          },
+          {
+            "$ref": "#/$defs/digest_ok"
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "coverage"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/error_envelope"
+          },
+          {
+            "$ref": "#/$defs/coverage_explain"
+          },
+          {
+            "$ref": "#/$defs/coverage_summary"
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "check"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/error_envelope"
+          },
+          {
+            "$ref": "#/$defs/check_ok"
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "intent-diff"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/error_envelope"
+          },
+          {
+            "$ref": "#/$defs/intent_diff_ok"
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "review-context"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/error_envelope"
+          },
+          {
+            "$ref": "#/$defs/review_context_ok"
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "capture"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/error_envelope"
+          },
+          {
+            "$ref": "#/$defs/capture_ok"
+          }
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "error_envelope": {
+      "title": "Error variant (any command)",
+      "description": "[ENV-011] An envelope reporting a failure MUST carry `command`, `status` and a human-readable `message`, and MUST NOT be required to carry any variant-specific key. [ENV-012] A consumer MUST NOT assume a variant key is present merely because `command` names a variant that normally has it -- the error variant of every command is a legitimate shape with none of them. [ENV-007] The two input-failure tokens available to any command.",
+      "x-rule": [
+        "ENV-011",
+        "ENV-012",
+        "ENV-007"
+      ],
+      "type": "object",
+      "required": [
+        "command",
+        "status",
+        "message"
+      ],
+      "properties": {
+        "status": {
+          "description": "[ENV-007] `no_intent_layer` or `error` -- the tokens the table lists for 'any (input failure)'.",
+          "x-rule": [
+            "ENV-007"
+          ],
+          "enum": [
+            "no_intent_layer",
+            "error"
+          ]
+        },
+        "message": {
+          "description": "[ENV-011] A human-readable message.",
+          "x-rule": [
+            "ENV-011"
+          ],
+          "type": "string"
+        }
+      }
+    },
+    "why_ok": {
+      "title": "why",
+      "description": "[ENV-013] The `why` envelope MUST carry `query` (the question as asked), `count` (number of results returned), `cutoff` (the strong-match score threshold in effect), `score_stats` and `results`.",
+      "x-rule": [
+        "ENV-013"
+      ],
+      "type": "object",
+      "required": [
+        "command",
+        "status",
+        "query",
+        "count",
+        "cutoff",
+        "score_stats",
+        "results"
+      ],
+      "properties": {
+        "status": {
+          "description": "[ENV-007] `why` emits `ok`, `weak_match`, `topically_weak`, `no_strong_match`. [ENV-019] `topically_weak` means the top result cleared the cutoff but its match evidence does not support treating it as an answer -- an abstention ABOVE the cutoff, which a consumer MUST NOT treat as equivalent to `ok`. [ENV-020] `weak_match` means the top result scored UNDER the cutoff but stands clearly apart from the runner-up.",
+          "x-rule": [
+            "ENV-007",
+            "ENV-019",
+            "ENV-020"
+          ],
+          "enum": [
+            "ok",
+            "weak_match",
+            "topically_weak",
+            "no_strong_match"
+          ]
+        },
+        "query": {
+          "description": "[ENV-013] The question as asked.",
+          "x-rule": [
+            "ENV-013"
+          ],
+          "type": "string"
+        },
+        "count": {
+          "description": "[ENV-013] Number of results returned. §6.1: not universal -- `count` appears on `why` and `list-intent` and nowhere else.",
+          "x-rule": [
+            "ENV-013"
+          ],
+          "type": "integer",
+          "minimum": 0
+        },
+        "cutoff": {
+          "description": "[ENV-013] The strong-match score threshold in effect. §1.4: the threshold's VALUE and the scoring function are out of scope.",
+          "x-rule": [
+            "ENV-013"
+          ],
+          "type": "number"
+        },
+        "score_stats": {
+          "description": "[ENV-014] An object with `top`, `runner_up` and `median`, computed over the WHOLE scored field, not only the returned rows.",
+          "x-rule": [
+            "ENV-014"
+          ],
+          "type": "object",
+          "required": [
+            "top",
+            "runner_up",
+            "median"
+          ],
+          "properties": {
+            "top": {
+              "description": "[ENV-014] Highest score over the whole scored field.",
+              "x-rule": [
+                "ENV-014"
+              ],
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "runner_up": {
+              "description": "[ENV-014] Second score over the whole scored field.",
+              "x-rule": [
+                "ENV-014"
+              ],
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "median": {
+              "description": "[ENV-014] Median score over the whole scored field.",
+              "x-rule": [
+                "ENV-014"
+              ],
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          }
+        },
+        "results": {
+          "description": "[ENV-013] The returned rows.",
+          "x-rule": [
+            "ENV-013"
+          ],
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/why_result"
+          }
+        },
+        "note": {
+          "description": "§6.1: `why` carries an eighth key, `note`, WHEN AND ONLY WHEN `status` is `topically_weak`. [ENV-004] A variant's key set is keyed on the status it carries, so an implementation MUST NOT assert an exact key count for a variant without naming the status it holds for.",
+          "x-rule": [
+            "ENV-004"
+          ],
+          "type": "string"
+        }
+      },
+      "if": {
+        "properties": {
+          "status": {
+            "const": "topically_weak"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "note"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "note"
+          ]
+        }
+      }
+    },
+    "why_result": {
+      "title": "why result entry",
+      "description": "[ENV-015] Each entry in `results` MUST carry `score`, `id`, `label`, `intent_kind`, `claim`, `rationale`, `alternatives`, `source_file`, `source_location`, `provenance`, `matched_terms`, `distinctive_matches`, `matched_coverage`.",
+      "x-rule": [
+        "ENV-015"
+      ],
+      "x-carries-intent": true,
+      "type": "object",
+      "required": [
+        "alternatives",
+        "claim",
+        "disposition",
+        "distinctive_matches",
+        "id",
+        "intent_kind",
+        "label",
+        "matched_coverage",
+        "matched_terms",
+        "provenance",
+        "rationale",
+        "score",
+        "source_file",
+        "source_location"
+      ],
+      "properties": {
+        "score": {
+          "description": "[ENV-015] This row's score. §1.4: how it is computed is out of scope.",
+          "x-rule": [
+            "ENV-015"
+          ],
+          "type": "number"
+        },
+        "id": {
+          "description": "[ENV-015] The node identity. [REC-123] `intent_` plus 12 lowercase hex characters of a SHA-1 digest.",
+          "x-rule": [
+            "ENV-015",
+            "REC-123"
+          ],
+          "type": "string"
+        },
+        "label": {
+          "description": "[ENV-015] The node label. [REC-071] The fourth identity component, before normalization.",
+          "x-rule": [
+            "ENV-015",
+            "REC-071"
+          ],
+          "type": "string"
+        },
+        "intent_kind": {
+          "description": "[ENV-015] The kind of the node. [REC-122] closes the intent-kind IDENTITY COMPONENT at exactly `decision` or `assumption` for a node derived from a record, and forbids `adr`. No enum is stated here: [ENV-033] itself presupposes a `constraint` kind at envelope level, and §1.4 puts intent derived from non-record sources out of scope, so no rule closes this field.",
+          "x-rule": [
+            "ENV-015",
+            "REC-122",
+            "ENV-033"
+          ],
+          "x-incomplete": "REC-122's closed pair and ENV-033's `constraint` cannot both describe this field. See PROPOSED-RULES.md, ENV-047.",
+          "type": "string"
+        },
+        "claim": {
+          "description": "[ENV-015] The node's claim.",
+          "x-rule": [
+            "ENV-015"
+          ],
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rationale": {
+          "description": "[ENV-015] [REC-018] The `Decision` section body of the source record.",
+          "x-rule": [
+            "ENV-015",
+            "REC-018"
+          ],
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "alternatives": {
+          "description": "[ENV-016] MUST be a list of strings. An implementation reading a legacy scalar MUST coerce it to a single-element list, and MUST NOT iterate a bare string character by character.",
+          "x-rule": [
+            "ENV-015",
+            "ENV-016"
+          ],
+          "x-conflict": "ENV-016's 'list of strings' cannot carry the per-item disposition and rationale that REC-097--REC-099 require. See PROPOSED-RULES.md, REC-133.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_file": {
+          "description": "[ENV-015] [REC-073] The canonical, repository-relative POSIX source path.",
+          "x-rule": [
+            "ENV-015",
+            "REC-073"
+          ],
+          "type": "string"
+        },
+        "source_location": {
+          "description": "[ENV-015] [REC-124] The second identity component, un-normalized.",
+          "x-rule": [
+            "ENV-015",
+            "REC-124"
+          ],
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provenance": {
+          "description": "[ENV-015] [PROV-001] One of exactly four values. [PROV-004] The primary sort key when results are ordered by trust.",
+          "x-rule": [
+            "ENV-015",
+            "PROV-001",
+            "PROV-004"
+          ],
+          "type": "string",
+          "enum": [
+            "authored",
+            "captured",
+            "attested",
+            "reconstructed"
+          ]
+        },
+        "matched_terms": {
+          "description": "[ENV-017] Which of the question's terms matched this result at all. An implementation MUST NOT redefine this.",
+          "x-rule": [
+            "ENV-015",
+            "ENV-017"
+          ],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "distinctive_matches": {
+          "description": "[ENV-017] The SUBSET of `matched_terms` whose matched corpus token is corpus-distinctive rather than shared by nearly every record. A term every record contains carries no topical evidence.",
+          "x-rule": [
+            "ENV-015",
+            "ENV-017"
+          ],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "matched_coverage": {
+          "description": "[ENV-017] The fraction of the question's CONTENT terms that matched. [ENV-018] MUST be in [0, 1] inclusive.",
+          "x-rule": [
+            "ENV-015",
+            "ENV-017",
+            "ENV-018"
+          ],
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "disposition": {
+          "description": "The disposition of the record this result derives from — adopted or declined. Required by [PROV-019] so a consumer can partition commitments from foreclosures without inspecting record text.",
+          "x-rule": [
+            "PROV-019",
+            "ENV-015"
+          ],
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "adopted",
+            "declined",
+            null
+          ]
+        }
+      }
+    },
+    "list_intent_ok": {
+      "title": "list-intent",
+      "description": "[ENV-021] The `list-intent` envelope MUST carry `count`, `filter` and `intent`.",
+      "x-rule": [
+        "ENV-021"
+      ],
+      "type": "object",
+      "required": [
+        "command",
+        "status",
+        "count",
+        "filter",
+        "intent"
+      ],
+      "properties": {
+        "status": {
+          "description": "[ENV-007] `list-intent` emits `ok`.",
+          "x-rule": [
+            "ENV-007"
+          ],
+          "enum": [
+            "ok"
+          ]
+        },
+        "count": {
+          "description": "[ENV-021] Number of intent entries returned.",
+          "x-rule": [
+            "ENV-021"
+          ],
+          "type": "integer",
+          "minimum": 0
+        },
+        "filter": {
+          "description": "[ENV-021] MUST echo the filter that was applied, with an EXPLICIT NULL for each unset criterion -- a consumer must be able to see what was not filtered. [ENV-038] Present-with-null therefore means 'applicable, and not set', which an omitted key could not say.",
+          "x-rule": [
+            "ENV-021",
+            "ENV-038"
+          ],
+          "type": "object"
+        },
+        "intent": {
+          "description": "[ENV-021] The intent entries.",
+          "x-rule": [
+            "ENV-021"
+          ],
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/intent_entry"
+          }
+        }
+      }
+    },
+    "intent_entry": {
+      "title": "list-intent entry",
+      "description": "[ENV-022] Each entry in `intent` MUST carry `id`, `label`, `intent_kind`, `claim`, `rationale`, `source_file`, `source_location`, `confidence_score`, `provenance`, `disposition`.",
+      "x-rule": [
+        "ENV-022"
+      ],
+      "x-carries-intent": true,
+      "type": "object",
+      "required": [
+        "id",
+        "label",
+        "intent_kind",
+        "claim",
+        "rationale",
+        "source_file",
+        "source_location",
+        "confidence_score",
+        "provenance",
+        "disposition"
+      ],
+      "properties": {
+        "id": {
+          "description": "[ENV-022] [REC-123] The node identity.",
+          "x-rule": [
+            "ENV-022",
+            "REC-123"
+          ],
+          "type": "string"
+        },
+        "label": {
+          "description": "[ENV-022] The node label.",
+          "x-rule": [
+            "ENV-022"
+          ],
+          "type": "string"
+        },
+        "intent_kind": {
+          "description": "[ENV-022] The kind of the node. [REC-122] closes the intent-kind IDENTITY COMPONENT at exactly `decision` or `assumption` for a node derived from a record. No enum is stated here, for the reason given on the `why` result entry: [ENV-033] presupposes a `constraint` kind and §1.4 puts non-record intent out of scope.",
+          "x-rule": [
+            "ENV-022",
+            "REC-122",
+            "ENV-033"
+          ],
+          "x-incomplete": "See PROPOSED-RULES.md, ENV-047.",
+          "type": "string"
+        },
+        "claim": {
+          "description": "[ENV-022] The node's claim.",
+          "x-rule": [
+            "ENV-022"
+          ],
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rationale": {
+          "description": "[ENV-022] The source record's `Decision` body.",
+          "x-rule": [
+            "ENV-022"
+          ],
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_file": {
+          "description": "[ENV-022] [REC-073] The canonical source path.",
+          "x-rule": [
+            "ENV-022",
+            "REC-073"
+          ],
+          "type": "string"
+        },
+        "source_location": {
+          "description": "[ENV-022] [REC-124] The un-normalized source location.",
+          "x-rule": [
+            "ENV-022",
+            "REC-124"
+          ],
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "confidence_score": {
+          "description": "[ENV-022] [PROV-008] Intent ingested from a record MUST carry a numeric confidence of 1.0. [PROV-009] Orthogonal to provenance: filtering and merging use this number only.",
+          "x-rule": [
+            "ENV-022",
+            "PROV-008",
+            "PROV-009"
+          ],
+          "type": "number"
+        },
+        "provenance": {
+          "description": "[ENV-022] [PROV-001] One of exactly four values.",
+          "x-rule": [
+            "ENV-022",
+            "PROV-001"
+          ],
+          "type": "string",
+          "enum": [
+            "authored",
+            "captured",
+            "attested",
+            "reconstructed"
+          ]
+        },
+        "disposition": {
+          "description": "[ENV-022] [PROV-019] A result containing intent MUST expose disposition, so a consumer can partition commitments from foreclosures without inspecting record text. [REC-101] `adopted` or `declined`; explicit null while deliberation is open or unstated. [PROV-017] Independent of provenance -- being declined MUST NOT lower a tier, and a strong tier MUST NOT make a foreclosure read as a commitment.",
+          "x-rule": [
+            "ENV-022",
+            "PROV-019",
+            "REC-101",
+            "PROV-017"
+          ],
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "adopted",
+            "declined",
+            null
+          ]
+        }
+      }
+    },
+    "explain_ok": {
+      "title": "explain (ok)",
+      "description": "[ENV-023] The `ok` variant MUST carry `query`, `resolved`, `intent`, `explains` and `relations`. [ENV-006] `explain`'s three disjoint shapes are keyed by `status`, which a consumer MUST apply before reading any variant-specific key.",
+      "x-rule": [
+        "ENV-023",
+        "ENV-006"
+      ],
+      "type": "object",
+      "required": [
+        "command",
+        "status",
+        "query",
+        "resolved",
+        "intent",
+        "explains",
+        "relations"
+      ],
+      "properties": {
+        "status": {
+          "description": "[ENV-006] [ENV-007] The secondary discriminator: `ok`.",
+          "x-rule": [
+            "ENV-006",
+            "ENV-007"
+          ],
+          "const": "ok"
+        },
+        "query": {
+          "description": "[ENV-023] The argument as asked.",
+          "x-rule": [
+            "ENV-023"
+          ],
+          "type": "string"
+        },
+        "resolved": {
+          "description": "[ENV-023] MUST report how the argument was matched (`matched_by`) and, for a non-exact match, a `score`.",
+          "x-rule": [
+            "ENV-023"
+          ],
+          "type": "object",
+          "required": [
+            "matched_by"
+          ],
+          "properties": {
+            "matched_by": {
+              "description": "[ENV-023] How the argument was matched.",
+              "x-rule": [
+                "ENV-023"
+              ],
+              "type": "string"
+            },
+            "score": {
+              "description": "[ENV-023] Present for a non-exact match.",
+              "x-rule": [
+                "ENV-023"
+              ],
+              "type": "number"
+            }
+          }
+        },
+        "intent": {
+          "description": "[ENV-023] The resolved intent.",
+          "x-rule": [
+            "ENV-023"
+          ]
+        },
+        "explains": {
+          "description": "[ENV-023] What the intent explains.",
+          "x-rule": [
+            "ENV-023"
+          ]
+        },
+        "relations": {
+          "description": "[ENV-023] The intent's relations. [PROV-013] Each edge carries its own provenance and MUST NOT inherit it from either node.",
+          "x-rule": [
+            "ENV-023",
+            "PROV-013"
+          ]
+        }
+      }
+    },
+    "explain_ambiguous": {
+      "title": "explain (ambiguous)",
+      "description": "[ENV-024] The `ambiguous` variant MUST carry `candidates` and `message` and MUST NOT carry `resolved`. Ambiguity is not a partial answer; an implementation MUST NOT silently pick a candidate.",
+      "x-rule": [
+        "ENV-024"
+      ],
+      "type": "object",
+      "required": [
+        "command",
+        "status",
+        "query",
+        "candidates",
+        "message"
+      ],
+      "not": {
+        "required": [
+          "resolved"
+        ]
+      },
+      "properties": {
+        "status": {
+          "description": "[ENV-006] [ENV-007] The secondary discriminator: `ambiguous`.",
+          "x-rule": [
+            "ENV-006",
+            "ENV-007"
+          ],
+          "const": "ambiguous"
+        },
+        "query": {
+          "description": "[ENV-004] §6.1 table: the `explain` (ambiguous) row carries `query`.",
+          "x-rule": [
+            "ENV-004"
+          ],
+          "type": "string"
+        },
+        "candidates": {
+          "description": "[ENV-024] The candidates the argument resolved to.",
+          "x-rule": [
+            "ENV-024"
+          ],
+          "type": "array"
+        },
+        "message": {
+          "description": "[ENV-024] A human-readable message.",
+          "x-rule": [
+            "ENV-024"
+          ],
+          "type": "string"
+        }
+      }
+    },
+    "explain_not_found": {
+      "title": "explain (not_found)",
+      "description": "[ENV-004] §6.1 table: the `explain` (not_found) row carries `command`, `status`, `query`, `message`. [ENV-010] An honest negative is a complete answer, not an error.",
+      "x-rule": [
+        "ENV-004",
+        "ENV-010"
+      ],
+      "type": "object",
+      "required": [
+        "command",
+        "status",
+        "query",
+        "message"
+      ],
+      "properties": {
+        "status": {
+          "description": "[ENV-006] [ENV-007] The secondary discriminator: `not_found`.",
+          "x-rule": [
+            "ENV-006",
+            "ENV-007"
+          ],
+          "const": "not_found"
+        },
+        "query": {
+          "description": "[ENV-004] §6.1 table.",
+          "x-rule": [
+            "ENV-004"
+          ],
+          "type": "string"
+        },
+        "message": {
+          "description": "[ENV-004] §6.1 table.",
+          "x-rule": [
+            "ENV-004"
+          ],
+          "type": "string"
+        }
+      }
+    },
+    "changed_ok": {
+      "title": "changed",
+      "description": "[ENV-025] The `changed` envelope MUST carry `base` (the reference diffed against, or null when files were supplied explicitly), `changed_files`, `files_with_intent` and `results`.",
+      "x-rule": [
+        "ENV-025"
+      ],
+      "type": "object",
+      "required": [
+        "command",
+        "status",
+        "base",
+        "changed_files",
+        "files_with_intent",
+        "results"
+      ],
+      "properties": {
+        "status": {
+          "description": "[ENV-007] `changed` emits `ok`, `no_intent_governing_changes`. [ENV-010] The negative is a complete answer.",
+          "x-rule": [
+            "ENV-007",
+            "ENV-010"
+          ],
+          "enum": [
+            "ok",
+            "no_intent_governing_changes"
+          ]
+        },
+        "base": {
+          "description": "[ENV-025] The reference diffed against, or an explicit NULL when files were supplied explicitly. [ENV-038] Present-with-null, not omitted.",
+          "x-rule": [
+            "ENV-025",
+            "ENV-038"
+          ],
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "changed_files": {
+          "description": "[ENV-025] The changed files.",
+          "x-rule": [
+            "ENV-025"
+          ]
+        },
+        "files_with_intent": {
+          "description": "[ENV-025] Those with governing intent.",
+          "x-rule": [
+            "ENV-025"
+          ]
+        },
+        "results": {
+          "description": "[ENV-025] Per-file results.",
+          "x-rule": [
+            "ENV-025"
+          ],
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/changed_result"
+          }
+        }
+      }
+    },
+    "changed_result": {
+      "title": "changed result entry",
+      "description": "[ENV-025] Each result MUST carry `file`, `matched_by`, `ambiguous` and `governed_by`.",
+      "x-rule": [
+        "ENV-025"
+      ],
+      "type": "object",
+      "required": [
+        "file",
+        "matched_by",
+        "ambiguous",
+        "governed_by"
+      ],
+      "properties": {
+        "file": {
+          "description": "[ENV-025] The file this result is about.",
+          "x-rule": [
+            "ENV-025"
+          ],
+          "type": "string"
+        },
+        "matched_by": {
+          "description": "[ENV-025] How the file was matched.",
+          "x-rule": [
+            "ENV-025"
+          ],
+          "type": "string"
+        },
+        "ambiguous": {
+          "description": "[ENV-026] MUST be true when the file was matched by BASENAME and that basename resolves to more than one path. A basename match that could mean several files MUST be reported as such rather than silently resolved.",
+          "x-rule": [
+            "ENV-025",
+            "ENV-026"
+          ],
+          "type": "boolean"
+        },
+        "governed_by": {
+          "description": "[ENV-025] The intent governing this file. [PROV-015] A binding between intent and an artifact is `reconstructed` unless it was DECLARED (§4.15).",
+          "x-rule": [
+            "ENV-025",
+            "PROV-015"
+          ]
+        }
+      }
+    },
+    "digest_ok": {
+      "title": "digest",
+      "description": "[ENV-027] The `digest` envelope MUST carry `since`, `added`, `removed` and `superseded`.",
+      "x-rule": [
+        "ENV-027"
+      ],
+      "type": "object",
+      "required": [
+        "command",
+        "status",
+        "since",
+        "added",
+        "removed",
+        "superseded"
+      ],
+      "properties": {
+        "status": {
+          "description": "[ENV-007] `digest` emits `ok`, `no_changes`. [ENV-010] `no_changes` is a complete answer.",
+          "x-rule": [
+            "ENV-007",
+            "ENV-010"
+          ],
+          "enum": [
+            "ok",
+            "no_changes"
+          ]
+        },
+        "since": {
+          "description": "[ENV-027] The point compared against.",
+          "x-rule": [
+            "ENV-027"
+          ]
+        },
+        "added": {
+          "description": "[ENV-027] Intent added since.",
+          "x-rule": [
+            "ENV-027"
+          ]
+        },
+        "removed": {
+          "description": "[ENV-027] Intent removed since.",
+          "x-rule": [
+            "ENV-027"
+          ]
+        },
+        "superseded": {
+          "description": "[ENV-027] Intent superseded since. [REC-111] Currency is derived from the relation graph, never authored.",
+          "x-rule": [
+            "ENV-027",
+            "REC-111"
+          ]
+        }
+      }
+    },
+    "coverage_summary": {
+      "title": "coverage (corpus-wide summary)",
+      "description": "[ENV-028] The summary variant MUST carry a trusted-evidence block (`golden`) and a debt block (`intent_debt`) alongside its coverage counts. [ENV-006] The discriminator against the explain variant is the ABSENCE of the `explain` key; the two shapes share no keys beyond `command` and `status`.",
+      "x-rule": [
+        "ENV-028",
+        "ENV-006"
+      ],
+      "x-incomplete": "§6.1 states this variant carries `command`, `status` + TWELVE coverage-specific keys. Only two of the twelve are named by any rule (`golden`, `intent_debt` in ENV-028). The remaining ten are unnamed, so this schema requires only what a rule names and asserts the count via minProperties. See PROPOSED-RULES.md, ENV-044.",
+      "type": "object",
+      "required": [
+        "command",
+        "status",
+        "golden",
+        "intent_debt"
+      ],
+      "minProperties": 14,
+      "not": {
+        "required": [
+          "explain"
+        ]
+      },
+      "properties": {
+        "status": {
+          "description": "[ENV-007] The summary form emits `ok`.",
+          "x-rule": [
+            "ENV-007"
+          ],
+          "enum": [
+            "ok"
+          ]
+        },
+        "golden": {
+          "description": "[ENV-028] The trusted-evidence block. [PROV-010] The golden tiers MUST be exactly {authored, captured, attested}. [PROV-012] A trust metric MUST NOT blend tiers into a single scalar without also reporting the per-tier breakdown, so a blended figure here obliges a per-tier breakdown beside it. [PROV-011] `reconstructed` MUST NOT be counted. [PROV-018] Foreclosure intent MUST NOT be counted either, whatever its tier. [REC-103] Nor MUST open intent.",
+          "x-rule": [
+            "ENV-028",
+            "PROV-010",
+            "PROV-012",
+            "PROV-011",
+            "PROV-018",
+            "REC-103"
+          ],
+          "x-incomplete": "No rule enumerates this block's components.",
+          "type": "object"
+        },
+        "intent_debt": {
+          "description": "[ENV-028] The debt block. [ENV-029] A component the implementation CANNOT COMPUTE MUST be reported as an explicit null, never as 0 -- a zero claims 'we measured and found none', a null honestly says 'not measured'. [ENV-039] Where the spec names a present-with-null field the key MUST be present.",
+          "x-rule": [
+            "ENV-028",
+            "ENV-029",
+            "ENV-039"
+          ],
+          "x-incomplete": "ENV-029 constrains the components without enumerating them, so 'a component the implementation cannot compute' names no field a validator can check. See PROPOSED-RULES.md, ENV-045.",
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "coverage_explain": {
+      "title": "coverage (per-file explain form)",
+      "description": "[ENV-004] §6.1 table: carries `command`, `status`, `explain`, `trace_present`, `referencing_intent`, `counts`. [ENV-006] The discriminator is the PRESENCE of the `explain` key; the two coverage shapes share no keys beyond `command` and `status`, and a consumer MUST apply the discriminator before reading any variant key.",
+      "x-rule": [
+        "ENV-006",
+        "ENV-004"
+      ],
+      "type": "object",
+      "required": [
+        "command",
+        "status",
+        "explain",
+        "trace_present",
+        "referencing_intent",
+        "counts"
+      ],
+      "properties": {
+        "status": {
+          "description": "[ENV-007] The explain form emits `ok`, `no_references`. [ENV-010] `no_references` is a complete answer, not an error.",
+          "x-rule": [
+            "ENV-007",
+            "ENV-010"
+          ],
+          "enum": [
+            "ok",
+            "no_references"
+          ]
+        },
+        "explain": {
+          "description": "[ENV-004] §6.1 table: the discriminating key ([ENV-006]).",
+          "x-rule": [
+            "ENV-006"
+          ]
+        },
+        "trace_present": {
+          "description": "[ENV-004] §6.1 table.",
+          "x-rule": [
+            "ENV-004"
+          ]
+        },
+        "referencing_intent": {
+          "description": "[ENV-004] §6.1 table.",
+          "x-rule": [
+            "ENV-004"
+          ]
+        },
+        "counts": {
+          "description": "[ENV-004] §6.1 table.",
+          "x-rule": [
+            "ENV-004"
+          ]
+        }
+      }
+    },
+    "check_ok": {
+      "title": "check",
+      "description": "[ENV-030] The `check` envelope MUST carry `rules` (count of rules evaluated), `files_checked` and `violations`.",
+      "x-rule": [
+        "ENV-030"
+      ],
+      "type": "object",
+      "required": [
+        "command",
+        "status",
+        "rules",
+        "files_checked",
+        "violations"
+      ],
+      "properties": {
+        "status": {
+          "description": "[ENV-007] `check` emits `ok`, `conformance_failed`.",
+          "x-rule": [
+            "ENV-007"
+          ],
+          "enum": [
+            "ok",
+            "conformance_failed"
+          ]
+        },
+        "rules": {
+          "description": "[ENV-030] Count of rules evaluated. [ENV-032] A rule of a type the checker does not implement MUST be SKIPPED -- never counted as a pass and never as a failure.",
+          "x-rule": [
+            "ENV-030",
+            "ENV-032"
+          ],
+          "type": "integer",
+          "minimum": 0
+        },
+        "files_checked": {
+          "description": "[ENV-030] Count of files checked.",
+          "x-rule": [
+            "ENV-030"
+          ],
+          "type": "integer",
+          "minimum": 0
+        },
+        "violations": {
+          "description": "[ENV-030] The violations found.",
+          "x-rule": [
+            "ENV-030"
+          ],
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/violation"
+          }
+        }
+      }
+    },
+    "violation": {
+      "title": "check violation",
+      "description": "[ENV-031] Each violation MUST carry the identifier of the decision it cites. A rule whose failure cannot name the decision that motivated it is not a conformance check; it is a lint.",
+      "x-rule": [
+        "ENV-031"
+      ],
+      "type": "object",
+      "x-incomplete": "ENV-031 mandates the citation without naming the key that carries it, so this schema states no `required` list. The corpus spells it `decision_id`. See PROPOSED-RULES.md, additional gap A2.",
+      "properties": {
+        "decision_id": {
+          "description": "[ENV-031] The identifier of the decision this violation cites. Key spelling follows the conformance corpus; ENV-031 names the obligation, not the key.",
+          "x-rule": [
+            "ENV-031"
+          ],
+          "x-name-source": "corpus",
+          "type": "string"
+        }
+      }
+    },
+    "intent_diff_ok": {
+      "title": "intent-diff",
+      "description": "[ENV-004] §6.1 table: carries `command`, `status`, `base`, `summary`, `introduces`, `supersedes`, `governed`, `constraint_review`. [ENV-033] MUST distinguish 'governed by a decision' from 'governed by a constraint': deterministic inspection cannot tell conformance from violation, so a constraint touch MUST NOT be reported as a proven violation.",
+      "x-rule": [
+        "ENV-004",
+        "ENV-033"
+      ],
+      "type": "object",
+      "required": [
+        "command",
+        "status",
+        "base",
+        "summary",
+        "introduces",
+        "supersedes",
+        "governed",
+        "constraint_review"
+      ],
+      "properties": {
+        "status": {
+          "description": "[ENV-007] `intent-diff` emits `ok`, `conformance_required`.",
+          "x-rule": [
+            "ENV-007"
+          ],
+          "enum": [
+            "ok",
+            "conformance_required"
+          ]
+        },
+        "base": {
+          "description": "[ENV-004] §6.1 table.",
+          "x-rule": [
+            "ENV-004"
+          ]
+        },
+        "summary": {
+          "description": "[ENV-004] §6.1 table.",
+          "x-rule": [
+            "ENV-004"
+          ]
+        },
+        "introduces": {
+          "description": "[ENV-004] §6.1 table.",
+          "x-rule": [
+            "ENV-004"
+          ]
+        },
+        "supersedes": {
+          "description": "[ENV-004] §6.1 table. [REC-111] Currency is derived from the relation graph.",
+          "x-rule": [
+            "ENV-004",
+            "REC-111"
+          ]
+        },
+        "governed": {
+          "description": "[ENV-004] §6.1 table. [ENV-033] Governed BY A DECISION, kept distinct from a constraint touch.",
+          "x-rule": [
+            "ENV-004",
+            "ENV-033"
+          ]
+        },
+        "constraint_review": {
+          "description": "[ENV-004] §6.1 table. [ENV-033] Governed BY A CONSTRAINT -- a touch, never a proven violation.",
+          "x-rule": [
+            "ENV-004",
+            "ENV-033"
+          ]
+        }
+      }
+    },
+    "review_context_ok": {
+      "title": "review-context",
+      "description": "[ENV-004] §6.1 table: carries `command`, `status`, `base`, `changed_files`, `governing`, `unresolved_constraints`, `guidance`. [ENV-033] MUST distinguish 'governed by a decision' from 'governed by a constraint'.",
+      "x-rule": [
+        "ENV-004",
+        "ENV-033"
+      ],
+      "type": "object",
+      "required": [
+        "command",
+        "status",
+        "base",
+        "changed_files",
+        "governing",
+        "unresolved_constraints",
+        "guidance"
+      ],
+      "properties": {
+        "status": {
+          "description": "[ENV-007] `review-context` emits `ok`, `no_intent_governing_changes`. [ENV-010] The negative is a complete answer.",
+          "x-rule": [
+            "ENV-007",
+            "ENV-010"
+          ],
+          "enum": [
+            "ok",
+            "no_intent_governing_changes"
+          ]
+        },
+        "base": {
+          "description": "[ENV-004] §6.1 table.",
+          "x-rule": [
+            "ENV-004"
+          ]
+        },
+        "changed_files": {
+          "description": "[ENV-004] §6.1 table.",
+          "x-rule": [
+            "ENV-004"
+          ]
+        },
+        "governing": {
+          "description": "[ENV-004] §6.1 table. [ENV-033] Governed by a decision.",
+          "x-rule": [
+            "ENV-004",
+            "ENV-033"
+          ]
+        },
+        "unresolved_constraints": {
+          "description": "[ENV-004] §6.1 table. [ENV-033] Constraint touches, never proven violations.",
+          "x-rule": [
+            "ENV-004",
+            "ENV-033"
+          ]
+        },
+        "guidance": {
+          "description": "[ENV-004] §6.1 table.",
+          "x-rule": [
+            "ENV-004"
+          ]
+        }
+      }
+    },
+    "capture_ok": {
+      "title": "capture",
+      "description": "[ENV-034] The `capture` envelope MUST carry `record` (the path as given, from which node identity derives), `record_abs` (the resolved absolute destination), `node_id`, `title`, `provenance`, `resolution_delta` and `merged`.",
+      "x-rule": [
+        "ENV-034"
+      ],
+      "type": "object",
+      "required": [
+        "command",
+        "status",
+        "record",
+        "record_abs",
+        "node_id",
+        "title",
+        "provenance",
+        "resolution_delta",
+        "merged"
+      ],
+      "properties": {
+        "status": {
+          "description": "[ENV-007] `capture` emits `ok`, `dry_run`, `error`; `error` takes the error variant ([ENV-011]).",
+          "x-rule": [
+            "ENV-007",
+            "ENV-011"
+          ],
+          "enum": [
+            "ok",
+            "dry_run"
+          ]
+        },
+        "record": {
+          "description": "[ENV-034] The path AS GIVEN, from which node identity derives. [ENV-035] Reporting only the absolute path hides the spelling that identity was derived from. [REC-073] Identity hashes the canonical spelling of this path.",
+          "x-rule": [
+            "ENV-034",
+            "ENV-035",
+            "REC-073"
+          ],
+          "type": "string"
+        },
+        "record_abs": {
+          "description": "[ENV-034] The resolved absolute destination. [ENV-035] Reporting only the relative path lets a success envelope hide a write into an unrelated working tree.",
+          "x-rule": [
+            "ENV-034",
+            "ENV-035"
+          ],
+          "type": "string"
+        },
+        "node_id": {
+          "description": "[ENV-034] [REC-123] The node identity: `intent_` plus 12 lowercase hex characters of a SHA-1 digest.",
+          "x-rule": [
+            "ENV-034",
+            "REC-123"
+          ],
+          "type": "string",
+          "pattern": "^intent_[0-9a-f]{12}$"
+        },
+        "title": {
+          "description": "[ENV-034] [REC-017] The chosen option, which for a decision record IS the title.",
+          "x-rule": [
+            "ENV-034",
+            "REC-017"
+          ],
+          "type": "string"
+        },
+        "provenance": {
+          "description": "[ENV-034] [PROV-001] One of exactly four values.",
+          "x-rule": [
+            "ENV-034",
+            "PROV-001"
+          ],
+          "type": "string",
+          "enum": [
+            "authored",
+            "captured",
+            "attested",
+            "reconstructed"
+          ]
+        },
+        "resolution_delta": {
+          "description": "[ENV-034] [ENV-037] MUST be present with an EXPLICIT NULL when there was no delta -- a deliberate exception to [ENV-038], because the consumer of this field asks a yes/no question that a missing key cannot answer. [REC-045] The object is `{recommended, chosen}`.",
+          "x-rule": [
+            "ENV-034",
+            "ENV-037",
+            "ENV-038",
+            "REC-045"
+          ],
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "merged": {
+          "description": "[ENV-034] [ENV-036] MUST report whether the derived view was updated, INDEPENDENTLY of `status`. Writing the record and failing to update a derived index is an honest partial success: it MUST NOT be reported as a failure and MUST NOT be reported as an unqualified success.",
+          "x-rule": [
+            "ENV-034",
+            "ENV-036"
+          ],
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

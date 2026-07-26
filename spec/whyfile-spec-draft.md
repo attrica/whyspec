@@ -571,6 +571,35 @@ construction.
 <recommendation>
 ```
 
+**[REC-135]** **Emitter completeness.** An emitter **MUST** be able to render every field a
+parser yields (§4.5–§4.17). A field that can be parsed and cannot be rendered is a defect in this
+section, not an accepted limitation, and adding a parseable field without a corresponding
+rendering **MUST** be treated as an incomplete change.
+
+**[REC-136]** **Status provenance.** The value rendered on the `**Status:**` line **MUST** be the
+record's own status. Where a record has no status ([REC-125], *unstated*), the line **MUST** be
+omitted entirely. An emitter **MUST NOT** substitute a default, and in particular **MUST NOT**
+emit `accepted` for a record whose status is absent or is anything else.
+
+> **These two rules exist because their absence was measured, not imagined.** An audit built an
+> emitter and a parser from this document and round-tripped the corpus: **not one of 86 decision
+> records survived byte-identically.**
+>
+> [REC-136] addresses the most severe result. This section told an emitter to render a status
+> line and never said *which* status — and every worked example shows `Accepted`, so a conformant
+> implementer hard-codes it. Executed against real records, a `rejected` record round-tripped to
+> `accepted`: **one save turns "we decided against this" into "we do this."** That is the exact
+> inversion [REC-032] and [REC-104] exist to prevent, produced by an emitter obeying the
+> specification as written. Forty-four of the eighty-six records in the conformance corpus carry
+> a status other than `accepted`.
+>
+> [REC-135] addresses the cause rather than the instance. This rendering section was written
+> against the sections that existed at the time, and four sections added later — attribution,
+> declared scope, relations, and assumptions — have no rendering at all. The format can therefore
+> read records it cannot write, and every future extension inherits the same defect by default
+> unless a rule forbids it. Stating emitter completeness as a requirement makes the omission a
+> conformance failure instead of an oversight nobody is responsible for noticing.
+
 **[REC-047]** The `**Status:**` and `**Date:**` lines **MUST** be emitted on adjacent lines
 immediately after a single blank line following the H1, with no blank line between them.
 
@@ -592,6 +621,34 @@ not a record ([REC-008]).
 order supplied.
 
 **[REC-053]** The document **MUST** end with a single trailing newline.
+
+**[REC-137]** Where a record carries the corresponding field, an emitter **MUST** render each of
+these sections, in this order, after `## Decision` and before `## Alternatives considered`:
+
+| Section | Rendered when | One item per line, as |
+|---|---|---|
+| `## Governs` | `governs` is non-empty | `- <artifact reference verbatim>` |
+| `## Relations` | `relations` is non-empty | `- <relation> <identifier>` |
+| `## Attribution` | `attribution` is non-empty | `- <role> <kind>:<id>[ on <date>]` |
+| `## Assumptions` | `assumptions` is non-empty | `- <claim>[ (review by <date>)][ (expires: <condition>)]` |
+| `## Evidence` | `evidence` is non-empty | `- <method>[: <qualifier>]` |
+
+**[REC-138]** An emitter **MUST** omit any of these sections entirely when its field is absent or
+empty, and **MUST NOT** emit a placeholder for it ([REC-054]).
+
+**[REC-139]** An emitter **MUST** render the `**Id:**` line, adjacent to `**Status:**` and
+`**Date:**`, when the record carries an identifier. Dropping it would defeat [REC-076] and
+[REC-077], whose whole purpose is an identifier that survives revision.
+
+> These renderings were missing. Attribution, declared scope, relations and assumptions were all
+> added as *parseable* sections while this rendering section continued to describe the six that
+> existed before them, so a conforming emitter could read a record it was unable to write — and a
+> round trip through such an emitter silently deleted every one of those fields. The identifier
+> was lost the same way.
+>
+> [REC-135] is what makes this class of omission visible in future: the gap existed for as long
+> as it did because nothing said the two halves had to stay in step, so nobody was wrong when
+> they drifted.
 
 #### 4.10.1 The placeholder rule
 
@@ -1332,7 +1389,7 @@ over the **whole scored field**, not only the returned rows. This is what makes 
 above a flat tail" machine-detectable by the consumer rather than a judgement only the implementation
 can make.
 
-**[ENV-015]** Each entry in `results` **MUST** carry: `score`, `id`, `label`, `intent_kind`,
+**[ENV-015]** Each entry in `results` **MUST** carry: `disposition`, `score`, `id`, `label`, `intent_kind`,
 `claim`, `rationale`, `alternatives`, `source_file`, `source_location`, `provenance`,
 `matched_terms`, `distinctive_matches`, `matched_coverage`.
 
@@ -1772,6 +1829,11 @@ Every normative rule, with its one-line statement.
 | REC-124 | Only the label component is normalized (REC-072). |
 | REC-125 | An absent status (REC-031) is unstated — neither open nor resolved. |
 | REC-126 | Where the question is absent, empty, or reduces to an empty slug, the slug MUST be the literal decision. |
+| REC-135 | Emitter completeness. An emitter MUST be able to render every field a parser yields (§4.5–§4.17). |
+| REC-136 | Status provenance. The value rendered on the Status: line MUST be the record's own status. |
+| REC-137 | Where a record carries the corresponding field, an emitter MUST render each of these sections, in this order, after ## Decision and before ##…. |
+| REC-138 | An emitter MUST omit any of these sections entirely when its field is absent or empty, and MUST NOT emit a placeholder for it (REC-054). |
+| REC-139 | An emitter MUST render the Id: line, adjacent to Status: and Date:, when the record carries an identifier. |
 
 #### Provenance
 
@@ -1817,7 +1879,7 @@ Every normative rule, with its one-line statement.
 | ENV-012 | A consumer MUST NOT assume a variant-specific key is present merely because command names a variant that normally has it. |
 | ENV-013 | The why envelope MUST carry: query (the question as asked), count (number of results returned), cutoff (the strong-match score threshold in effect)…. |
 | ENV-014 | score_stats MUST be an object with top, runner_up, and median — computed over the whole scored field, not only the returned rows. |
-| ENV-015 | Each entry in results MUST carry: score, id, label, intent_kind, claim, rationale, alternatives, source_file, source_location, provenance…. |
+| ENV-015 | Each entry in results MUST carry: disposition, score, id, label, intent_kind, claim, rationale, alternatives, source_file, source_location…. |
 | ENV-016 | alternatives MUST be a list of strings. |
 | ENV-017 | The three evidence fields have fixed meanings, and an implementation MUST NOT redefine them:. |
 | ENV-018 | matched_coverage MUST be in 0, 1 inclusive. |
