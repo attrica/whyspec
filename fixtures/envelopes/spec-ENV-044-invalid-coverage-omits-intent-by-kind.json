@@ -1,0 +1,38 @@
+{
+  "authored_anchored_files": 5,
+  "authored_anchored_symbols": 11,
+  "code_files": 34,
+  "code_symbols": 289,
+  "command": "coverage",
+  "dark_files": [
+    "src/example/legacy_shim.py",
+    "src/example/report_cache.py"
+  ],
+  "file_coverage_pct": 56,
+  "files_with_intent": 19,
+  "golden": {
+    "by_provenance": {
+      "attested": 2,
+      "authored": 8,
+      "captured": 6,
+      "reconstructed": 33
+    },
+    "golden_count": 16,
+    "golden_fraction_pct": 33,
+    "golden_tiers": [
+      "attested",
+      "authored",
+      "captured"
+    ],
+    "total_intent": 49
+  },
+  "intent_debt": {
+    "dark_files": 2,
+    "orphaned_intent": 9,
+    "stale_decisions": null,
+    "unresolved_disputes": null
+  },
+  "status": "ok",
+  "symbol_coverage_pct": 22,
+  "symbols_with_intent": 63
+}

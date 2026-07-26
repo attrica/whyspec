@@ -1,0 +1,86 @@
+{
+  "command": "why",
+  "count": 3,
+  "cutoff": 60,
+  "query": "what bounds the export window",
+  "results": [
+    {
+      "alternatives": [
+        "Keep the nightly export window",
+        "Export continuously"
+      ],
+      "claim": "Exports run only inside the nightly window",
+      "disposition": "adopted",
+      "distinctive_matches": [
+        "export"
+      ],
+      "id": "intent_a1b2c3d4e5f6",
+      "intent_kind": "constraint",
+      "label": "Exports run only inside the nightly window",
+      "matched_coverage": 0.5,
+      "matched_terms": [
+        "export",
+        "window"
+      ],
+      "provenance": "captured",
+      "rationale": "The reporting replica has spare IO only overnight.",
+      "score": 74,
+      "source_file": "docs/decisions/2026-05-19-when-should-the-export-run.md",
+      "source_location": "Exports run only inside the nightly window"
+    },
+    {
+      "alternatives": [
+        "Add a second queue",
+        "Batch writes on the client"
+      ],
+      "claim": "The export drains through a single queue",
+      "disposition": "adopted",
+      "distinctive_matches": [
+        "export"
+      ],
+      "id": "intent_b2c3d4e5f6a1",
+      "intent_kind": "mechanism",
+      "label": "The export drains through a single queue",
+      "matched_coverage": 0.5,
+      "matched_terms": [
+        "export",
+        "window"
+      ],
+      "provenance": "captured",
+      "rationale": "One queue keeps the ordering guarantee the report depends on.",
+      "score": 74,
+      "source_file": "docs/decisions/2026-04-02-how-should-the-export-drain.md",
+      "source_location": "The export drains through a single queue"
+    },
+    {
+      "alternatives": [
+        "Serve reads from a replica",
+        "Shard the primary"
+      ],
+      "claim": "Freshness is traded for replica headroom",
+      "disposition": "adopted",
+      "distinctive_matches": [
+        "export"
+      ],
+      "id": "intent_c3d4e5f6a1b2",
+      "intent_kind": "tradeoff",
+      "label": "Freshness is traded for replica headroom",
+      "matched_coverage": 0.5,
+      "matched_terms": [
+        "export",
+        "window"
+      ],
+      "provenance": "captured",
+      "rationale": "A stale report is cheaper than a saturated replica.",
+      "score": 74,
+      "source_file": "docs/decisions/2026-04-02-should-reads-hit-a-replica.md",
+      "source_location": "Freshness is traded for replica headroom"
+    }
+  ],
+  "score_stats": {
+    "median": 22,
+    "runner_up": 41,
+    "top": 74
+  },
+  "status": "ok"
+}

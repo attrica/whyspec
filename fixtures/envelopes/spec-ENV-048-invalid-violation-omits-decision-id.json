@@ -1,0 +1,19 @@
+{
+  "command": "check",
+  "files_checked": 17,
+  "rules": 4,
+  "status": "conformance_failed",
+  "violations": [
+    {
+      "decision_id": "intent_a1b2c3d4e5f6",
+      "file": "src/example/client.py",
+      "message": "Retry loop has no attempt cap.",
+      "rule": "no-unbounded-retry"
+    },
+    {
+      "file": "src/example/export.py",
+      "message": "Export is scheduled outside the nightly window.",
+      "rule": "export-window-only"
+    }
+  ]
+}

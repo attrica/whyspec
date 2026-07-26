@@ -9,9 +9,11 @@
       "Shard the primary"
     ],
     "rationale": "   \n  \n",
-    "date": "2026-04-02"
+    "date": "2026-04-02",
+    "status": "Accepted"
   },
   "expected_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nServe reads from a replica\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
   "non_conformant_output": "## Decision\n\n\n\n## Alternatives considered",
-  "note": "The rationale is WHITESPACE-ONLY, not the empty string. It MUST still render the chosen option as the Decision body. An emitter that tests `rationale == ''` rather than testing the TRIMMED value writes a blank Decision body -- and a record with an empty Decision section does not parse as a record at all (REC-008), so the emitter produces a file its own parser rejects."
+  "note": "The rationale is WHITESPACE-ONLY, not the empty string. It MUST still render the chosen option as the Decision body. An emitter that tests `rationale == ''` rather than testing the TRIMMED value writes a blank Decision body -- and a record with an empty Decision section does not parse as a record at all (REC-008), so the emitter produces a file its own parser rejects.",
+  "_rec136_note": "status supplied explicitly: REC-136 forbids an emitter defaulting an absent status, and this fixture tests rendering shape rather than status handling. expected_output is unchanged."
 }

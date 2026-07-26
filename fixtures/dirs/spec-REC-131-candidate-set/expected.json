@@ -1,0 +1,22 @@
+{
+  "rule": "REC-131",
+  "statement": "A directory ingest MUST consider exactly those entries whose name ends in `.md` and does not begin with `.`.",
+  "files": [
+    "2026-04-02-should-reads-hit-a-replica.md",
+    "2026-04-05-when-should-the-export-run.md",
+    "Whyfile",
+    "notes.txt",
+    ".2026-04-06-hidden-draft.md"
+  ],
+  "candidates": [
+    "2026-04-02-should-reads-hit-a-replica.md",
+    "2026-04-05-when-should-the-export-run.md"
+  ],
+  "expected_decision_count": 2,
+  "expected_surviving_titles": [
+    "Serve reads from a replica",
+    "Keep the nightly export window"
+  ],
+  "expected_ingest_errors": 0,
+  "note": "Three of the five entries hold a syntactically perfect decision record and none of the three is a candidate: `Whyfile` is the reserved bare root name (REC-001), `notes.txt` does not end in `.md`, and the dotted file begins with `.`. An implementation that feeds every file to the parser produces 5 nodes where 2 are correct."
+}

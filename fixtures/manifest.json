@@ -9190,6 +9190,1364 @@
         }
       },
       "notes": "The ENV-002 half of the same hole: the corpus's only ENV-002 counter-example omits `command` entirely. Here `command` is present as `[\"why\"]`, so an implementation that checks presence but not type is caught. `status` is a valid snake_case token, isolating `command` as the single variable. No `command` key in `expect` -- the document's command is deliberately not a string, so asserting equality against a string would be incoherent."
+    },
+    {
+      "id": "spec-REC-135-valid-every-parsed-field-round-trips",
+      "rule_id": "REC-135",
+      "family": "REC",
+      "rule_statement": "Emitter completeness: an emitter MUST be able to render every field a parser yields (§4.5-§4.17); a parseable field with no rendering is a defect.",
+      "spec_rule_ids": [
+        "REC-135",
+        "REC-047",
+        "REC-048"
+      ],
+      "valid": true,
+      "kind": "render_scenario",
+      "path": "rendering/spec-REC-135-valid-every-parsed-field-round-trips.json",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "output": "# Decision: Serve reads from a replica\n\n**Status:** Rejected\n**Date:** 2026-04-02\n**Id:** dec-4b21c7\n\n## Context\n\nShould read traffic be served from a replica?\n\n## Decision\n\nThe lag budget cannot be met while the reporting workload shares the replica.\n\n## Governs\n\n- src/reads/**/*.py\n\n## Relations\n\n- refines dec-19aa30\n\n## Attribution\n\n- drafted agent:assistant-7\n- decided human:maintainer-a on 2026-04-02\n\n## Assumptions\n\n- Read volume keeps growing at the current rate (review by 2026-10-01)\n\n## Evidence\n\n- executed: the read-path load test, once\n\n## Alternatives considered\n\n1. Add a cache tier — deferred: revisit after the next capacity review\n2. Shard the primary\n\n## Recommendation\n\nAdd a cache tier\n",
+        "rendered_sections": [
+          "Context",
+          "Decision",
+          "Governs",
+          "Relations",
+          "Attribution",
+          "Assumptions",
+          "Evidence",
+          "Alternatives considered",
+          "Recommendation"
+        ],
+        "round_trip": {
+          "title": "Serve reads from a replica",
+          "status": "rejected",
+          "identifier": "dec-4b21c7",
+          "question": "Should read traffic be served from a replica?",
+          "rationale": "The lag budget cannot be met while the reporting workload shares the replica.",
+          "alternative_options": [
+            "Add a cache tier",
+            "Shard the primary"
+          ],
+          "alternative_dispositions": [
+            "deferred",
+            null
+          ],
+          "alternative_rationales": [
+            "revisit after the next capacity review",
+            null
+          ],
+          "recommendation": "Add a cache tier",
+          "governs": [
+            "src/reads//*.py"
+          ],
+          "relations": [
+            {
+              "relation": "refines",
+              "target": "dec-19aa30"
+            }
+          ],
+          "attribution": [
+            {
+              "role": "drafted",
+              "kind": "agent",
+              "id": "assistant-7",
+              "provenance": "captured"
+            },
+            {
+              "role": "decided",
+              "kind": "human",
+              "id": "maintainer-a",
+              "provenance": "captured",
+              "date": "2026-04-02"
+            }
+          ],
+          "assumptions": [
+            {
+              "review_by": "2026-10-01",
+              "claim": "Read volume keeps growing at the current rate"
+            }
+          ],
+          "evidence": [
+            {
+              "method": "executed",
+              "qualifier": "the read-path load test, once"
+            }
+          ]
+        },
+        "fields_lost_in_round_trip": []
+      },
+      "notes": "The control: a do-nothing emitter -- one that renders only the six pre-REC-137 sections -- produces `fields_lost_in_round_trip` of ['identifier','governs','relations','attribution','assumptions','evidence'] and fails this fixture. Relations are compared as parsed; REC-090's corpus-level target resolution is a separate step and is not part of this round trip."
+    },
+    {
+      "id": "spec-REC-135-invalid-parseable-field-with-no-rendering",
+      "rule_id": "REC-135",
+      "family": "REC",
+      "rule_statement": "Emitter completeness: an emitter MUST be able to render every field a parser yields (§4.5-§4.17); a parseable field with no rendering is a defect.",
+      "spec_rule_ids": [
+        "REC-135",
+        "REC-137",
+        "REC-139"
+      ],
+      "valid": false,
+      "kind": "render_scenario",
+      "path": "rendering/spec-REC-135-invalid-parseable-field-with-no-rendering.json",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "output": "# Decision: Serve reads from a replica\n\n**Status:** Rejected\n**Date:** 2026-04-02\n**Id:** dec-4b21c7\n\n## Context\n\nShould read traffic be served from a replica?\n\n## Decision\n\nThe lag budget cannot be met while the reporting workload shares the replica.\n\n## Governs\n\n- src/reads/**/*.py\n\n## Relations\n\n- refines dec-19aa30\n\n## Attribution\n\n- drafted agent:assistant-7\n- decided human:maintainer-a on 2026-04-02\n\n## Assumptions\n\n- Read volume keeps growing at the current rate (review by 2026-10-01)\n\n## Evidence\n\n- executed: the read-path load test, once\n\n## Alternatives considered\n\n1. Add a cache tier — deferred: revisit after the next capacity review\n2. Shard the primary\n\n## Recommendation\n\nAdd a cache tier\n",
+        "fields_lost_in_round_trip": [],
+        "round_trip_fields_that_must_survive": [
+          "identifier",
+          "governs",
+          "relations",
+          "attribution",
+          "assumptions",
+          "evidence"
+        ],
+        "output_must_not_equal": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nShould read traffic be served from a replica?\n\n## Decision\n\nThe lag budget cannot be met while the reporting workload shares the replica.\n\n## Alternatives considered\n\n1. Add a cache tier — deferred: revisit after the next capacity review\n2. Shard the primary\n\n## Recommendation\n\nAdd a cache tier\n"
+      },
+      "notes": "Counter-example. The record is unchanged; only the emitter is reduced to the sections §4.10 described before this rule. Six fields vanish on one save."
+    },
+    {
+      "id": "spec-REC-136-valid-rejected-status-round-trips",
+      "rule_id": "REC-136",
+      "family": "REC",
+      "rule_statement": "Status provenance: the value rendered on the `**Status:**` line MUST be the record's own status; where the record has no status the line MUST be omitted entirely, and an emitter MUST NOT substitute a default.",
+      "spec_rule_ids": [
+        "REC-136",
+        "REC-032",
+        "REC-104"
+      ],
+      "valid": true,
+      "kind": "render_scenario",
+      "path": "rendering/spec-REC-136-valid-rejected-status-round-trips.json",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "output": "# Decision: Adopt a second message broker\n\n**Status:** Rejected\n**Date:** 2026-05-19\n\n## Context\n\nShould a second message broker be introduced?\n\n## Decision\n\nThe on-call rota cannot absorb another broker.\n\n## Alternatives considered\n\n1. Adopt a second message broker\n2. Raise the partition count on the existing broker\n",
+        "status_line_present": true,
+        "status_line": "**Status:** Rejected",
+        "round_trip": {
+          "status": "rejected",
+          "title": "Adopt a second message broker"
+        },
+        "round_trip_status_must_not_equal": "accepted"
+      },
+      "notes": "The control: an emitter that hard-codes `Accepted` -- the value every worked example in §4.10 shows -- round-trips this record to `accepted` and fails both `status_line` and `round_trip.status`. Casing is not asserted beyond the normalized round-trip value (REC-030 normalizes the parsed status), which is why `round_trip.status` is the load-bearing assertion."
+    },
+    {
+      "id": "spec-REC-136-invalid-unstated-status-defaulted-to-accepted",
+      "rule_id": "REC-136",
+      "family": "REC",
+      "rule_statement": "Status provenance: the value rendered on the `**Status:**` line MUST be the record's own status; where the record has no status the line MUST be omitted entirely, and an emitter MUST NOT substitute a default.",
+      "spec_rule_ids": [
+        "REC-136",
+        "REC-125"
+      ],
+      "valid": false,
+      "kind": "render_scenario",
+      "path": "rendering/spec-REC-136-invalid-unstated-status-defaulted-to-accepted.json",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "output": "# Decision: Adopt a second message broker\n\n**Date:** 2026-05-19\n\n## Context\n\nShould a second message broker be introduced?\n\n## Decision\n\nThe on-call rota cannot absorb another broker.\n\n## Alternatives considered\n\n1. Adopt a second message broker\n2. Raise the partition count on the existing broker\n",
+        "status_line_present": false,
+        "round_trip": {
+          "status": null
+        },
+        "output_must_not_contain": [
+          "**Status:**"
+        ],
+        "output_must_not_equal": "# Decision: Adopt a second message broker\n\n**Status:** Accepted\n**Date:** 2026-05-19\n\n## Context\n\nShould a second message broker be introduced?\n\n## Decision\n\nThe on-call rota cannot absorb another broker.\n\n## Alternatives considered\n\n1. Adopt a second message broker\n2. Raise the partition count on the existing broker\n"
+      },
+      "notes": "Counter-example, and the polarity matters: the CORRECT output has no status line at all. Do not 'fix' this fixture by adding one."
+    },
+    {
+      "id": "spec-REC-137-valid-extension-sections-in-order",
+      "rule_id": "REC-137",
+      "family": "REC",
+      "rule_statement": "Where a record carries the field, an emitter MUST render `Governs`, `Relations`, `Attribution`, `Assumptions` and `Evidence`, in that order, after `## Decision` and before `## Alternatives considered`.",
+      "spec_rule_ids": [
+        "REC-137",
+        "REC-048"
+      ],
+      "valid": true,
+      "kind": "render_scenario",
+      "path": "rendering/spec-REC-137-valid-extension-sections-in-order.json",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "output": "# Decision: Serve reads from a replica\n\n**Status:** Rejected\n**Date:** 2026-04-02\n**Id:** dec-4b21c7\n\n## Context\n\nShould read traffic be served from a replica?\n\n## Decision\n\nThe lag budget cannot be met while the reporting workload shares the replica.\n\n## Governs\n\n- src/reads/**/*.py\n\n## Relations\n\n- refines dec-19aa30\n\n## Attribution\n\n- drafted agent:assistant-7\n- decided human:maintainer-a on 2026-04-02\n\n## Assumptions\n\n- Read volume keeps growing at the current rate (review by 2026-10-01)\n\n## Evidence\n\n- executed: the read-path load test, once\n\n## Alternatives considered\n\n1. Add a cache tier — deferred: revisit after the next capacity review\n2. Shard the primary\n\n## Recommendation\n\nAdd a cache tier\n",
+        "section_order": [
+          "Context",
+          "Decision",
+          "Governs",
+          "Relations",
+          "Attribution",
+          "Assumptions",
+          "Evidence",
+          "Alternatives considered",
+          "Recommendation"
+        ],
+        "sections_between_decision_and_alternatives": [
+          "Governs",
+          "Relations",
+          "Attribution",
+          "Assumptions",
+          "Evidence"
+        ],
+        "item_lines": {
+          "Governs": [
+            "- src/reads/**/*.py"
+          ],
+          "Relations": [
+            "- refines dec-19aa30"
+          ],
+          "Attribution": [
+            "- drafted agent:assistant-7",
+            "- decided human:maintainer-a on 2026-04-02"
+          ],
+          "Assumptions": [
+            "- Read volume keeps growing at the current rate (review by 2026-10-01)"
+          ],
+          "Evidence": [
+            "- executed: the read-path load test, once"
+          ]
+        }
+      },
+      "notes": "The control: an emitter that renders none of these sections (the pre-REC-137 behaviour) fails `section_order` outright, and one that appends them after `## Alternatives considered` fails it too -- the order is fixed, not input order."
+    },
+    {
+      "id": "spec-REC-137-invalid-extension-sections-after-alternatives",
+      "rule_id": "REC-137",
+      "family": "REC",
+      "rule_statement": "Where a record carries the field, an emitter MUST render `Governs`, `Relations`, `Attribution`, `Assumptions` and `Evidence`, in that order, after `## Decision` and before `## Alternatives considered`.",
+      "spec_rule_ids": [
+        "REC-137",
+        "REC-048"
+      ],
+      "valid": false,
+      "kind": "render_scenario",
+      "path": "rendering/spec-REC-137-invalid-extension-sections-after-alternatives.json",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "output": "# Decision: Serve reads from a replica\n\n**Status:** Rejected\n**Date:** 2026-04-02\n**Id:** dec-4b21c7\n\n## Context\n\nShould read traffic be served from a replica?\n\n## Decision\n\nThe lag budget cannot be met while the reporting workload shares the replica.\n\n## Governs\n\n- src/reads/**/*.py\n\n## Relations\n\n- refines dec-19aa30\n\n## Attribution\n\n- drafted agent:assistant-7\n- decided human:maintainer-a on 2026-04-02\n\n## Assumptions\n\n- Read volume keeps growing at the current rate (review by 2026-10-01)\n\n## Evidence\n\n- executed: the read-path load test, once\n\n## Alternatives considered\n\n1. Add a cache tier — deferred: revisit after the next capacity review\n2. Shard the primary\n\n## Recommendation\n\nAdd a cache tier\n",
+        "section_order": [
+          "Context",
+          "Decision",
+          "Governs",
+          "Relations",
+          "Attribution",
+          "Assumptions",
+          "Evidence",
+          "Alternatives considered",
+          "Recommendation"
+        ],
+        "section_order_must_not_equal": [
+          "Context",
+          "Decision",
+          "Alternatives considered",
+          "Recommendation",
+          "Governs",
+          "Relations",
+          "Attribution",
+          "Assumptions",
+          "Evidence"
+        ],
+        "output_must_not_equal": "# Decision: Serve reads from a replica\n\n**Status:** Rejected\n**Date:** 2026-04-02\n**Id:** dec-4b21c7\n\n## Context\n\nShould read traffic be served from a replica?\n\n## Decision\n\nThe lag budget cannot be met while the reporting workload shares the replica.\n\n## Alternatives considered\n\n1. Add a cache tier — deferred: revisit after the next capacity review\n2. Shard the primary\n\n## Recommendation\n\nAdd a cache tier\n## Governs\n\n- src/reads/**/*.py\n\n## Relations\n\n- refines dec-19aa30\n\n## Attribution\n\n- drafted agent:assistant-7\n- decided human:maintainer-a on 2026-04-02\n\n## Assumptions\n\n- Read volume keeps growing at the current rate (review by 2026-10-01)\n\n## Evidence\n\n- executed: the read-path load test, once\n"
+      },
+      "notes": "Counter-example for the ORDER half of REC-137. REC-048 fixes the order of the four original sections; REC-137 fixes where these five sit relative to them."
+    },
+    {
+      "id": "spec-REC-138-valid-empty-extension-sections-omitted",
+      "rule_id": "REC-138",
+      "family": "REC",
+      "rule_statement": "An emitter MUST omit any of REC-137's sections entirely when its field is absent or empty, and MUST NOT emit a placeholder for it (REC-054).",
+      "spec_rule_ids": [
+        "REC-138",
+        "REC-054"
+      ],
+      "valid": true,
+      "kind": "render_scenario",
+      "path": "rendering/spec-REC-138-valid-empty-extension-sections-omitted.json",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "output": "# Decision: Keep the nightly export window\n\n**Status:** Accepted\n**Date:** 2026-05-19\n\n## Context\n\nWhen should the bulk export run?\n\n## Decision\n\nThe nightly window is the only period with spare IO on the reporting replica.\n\n## Governs\n\n- src/export/**/*.py\n\n## Alternatives considered\n\n1. Keep the nightly export window\n2. Export continuously\n",
+        "section_order": [
+          "Context",
+          "Decision",
+          "Governs",
+          "Alternatives considered"
+        ],
+        "section_order_must_not_contain": [
+          "Relations",
+          "Attribution",
+          "Assumptions",
+          "Evidence"
+        ],
+        "placeholder_count": 0,
+        "output_must_not_contain": [
+          "## Relations",
+          "## Attribution",
+          "## Assumptions",
+          "## Evidence"
+        ]
+      },
+      "notes": "The control: this record DOES carry `governs`, so an emitter that omits all five sections unconditionally fails `section_order` (it is missing `## Governs`), while one that placeholders the empty four fails `placeholder_count`. Both halves of the rule are load-bearing here."
+    },
+    {
+      "id": "spec-REC-138-invalid-placeholder-for-an-empty-extension-section",
+      "rule_id": "REC-138",
+      "family": "REC",
+      "rule_statement": "An emitter MUST omit any of REC-137's sections entirely when its field is absent or empty, and MUST NOT emit a placeholder for it (REC-054).",
+      "spec_rule_ids": [
+        "REC-138",
+        "REC-054",
+        "REC-055"
+      ],
+      "valid": false,
+      "kind": "render_scenario",
+      "path": "rendering/spec-REC-138-invalid-placeholder-for-an-empty-extension-section.json",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "output": "# Decision: Keep the nightly export window\n\n**Status:** Accepted\n**Date:** 2026-05-19\n\n## Context\n\nWhen should the bulk export run?\n\n## Decision\n\nThe nightly window is the only period with spare IO on the reporting replica.\n\n## Governs\n\n- src/export/**/*.py\n\n## Alternatives considered\n\n1. Keep the nightly export window\n2. Export continuously\n",
+        "placeholder_count": 0,
+        "section_order_must_not_contain": [
+          "Relations",
+          "Attribution",
+          "Assumptions",
+          "Evidence"
+        ],
+        "output_must_not_equal": "# Decision: Keep the nightly export window\n\n**Status:** Accepted\n**Date:** 2026-05-19\n\n## Context\n\nWhen should the bulk export run?\n\n## Decision\n\nThe nightly window is the only period with spare IO on the reporting replica.\n\n## Governs\n\n- src/export/**/*.py\n\n## Relations\n\n(none recorded)\n\n## Attribution\n\n(none recorded)\n\n## Assumptions\n\n(none recorded)\n\n## Evidence\n\n(none recorded)\n\n## Alternatives considered\n\n1. Keep the nightly export window\n2. Export continuously\n"
+      },
+      "notes": "Counter-example. Note the polarity: the conformant output is the SHORTER one. The two `(none recorded)` bodies that remain in it (Context, Alternatives) are REC-050's and are correct."
+    },
+    {
+      "id": "spec-REC-139-valid-id-line-adjacent-to-status-and-date",
+      "rule_id": "REC-139",
+      "family": "REC",
+      "rule_statement": "An emitter MUST render the `**Id:**` line, adjacent to `**Status:**` and `**Date:**`, when the record carries an identifier.",
+      "spec_rule_ids": [
+        "REC-139",
+        "REC-047",
+        "REC-076",
+        "REC-077"
+      ],
+      "valid": true,
+      "kind": "render_scenario",
+      "path": "rendering/spec-REC-139-valid-id-line-adjacent-to-status-and-date.json",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "output": "# Decision: Serve reads from a replica\n\n**Status:** Rejected\n**Date:** 2026-04-02\n**Id:** dec-4b21c7\n\n## Context\n\nShould read traffic be served from a replica?\n\n## Decision\n\nThe lag budget cannot be met while the reporting workload shares the replica.\n\n## Governs\n\n- src/reads/**/*.py\n\n## Relations\n\n- refines dec-19aa30\n\n## Attribution\n\n- drafted agent:assistant-7\n- decided human:maintainer-a on 2026-04-02\n\n## Assumptions\n\n- Read volume keeps growing at the current rate (review by 2026-10-01)\n\n## Evidence\n\n- executed: the read-path load test, once\n\n## Alternatives considered\n\n1. Add a cache tier — deferred: revisit after the next capacity review\n2. Shard the primary\n\n## Recommendation\n\nAdd a cache tier\n",
+        "header_block_lines": [
+          "**Status:** Rejected",
+          "**Date:** 2026-04-02",
+          "**Id:** dec-4b21c7"
+        ],
+        "blank_lines_within_header_block": 0,
+        "round_trip": {
+          "identifier": "dec-4b21c7"
+        },
+        "output_must_contain": [
+          "**Id:** dec-4b21c7"
+        ]
+      },
+      "notes": "The control: an emitter that does not know about `**Id:**` at all -- the pre-REC-139 behaviour -- produces a two-line header block and fails both `header_block_lines` and `round_trip.identifier`."
+    },
+    {
+      "id": "spec-REC-139-invalid-id-line-dropped-on-render",
+      "rule_id": "REC-139",
+      "family": "REC",
+      "rule_statement": "An emitter MUST render the `**Id:**` line, adjacent to `**Status:**` and `**Date:**`, when the record carries an identifier.",
+      "spec_rule_ids": [
+        "REC-139",
+        "REC-076",
+        "REC-077"
+      ],
+      "valid": false,
+      "kind": "render_scenario",
+      "path": "rendering/spec-REC-139-invalid-id-line-dropped-on-render.json",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "output": "# Decision: Serve reads from a replica\n\n**Status:** Rejected\n**Date:** 2026-04-02\n**Id:** dec-4b21c7\n\n## Context\n\nShould read traffic be served from a replica?\n\n## Decision\n\nThe lag budget cannot be met while the reporting workload shares the replica.\n\n## Governs\n\n- src/reads/**/*.py\n\n## Relations\n\n- refines dec-19aa30\n\n## Attribution\n\n- drafted agent:assistant-7\n- decided human:maintainer-a on 2026-04-02\n\n## Assumptions\n\n- Read volume keeps growing at the current rate (review by 2026-10-01)\n\n## Evidence\n\n- executed: the read-path load test, once\n\n## Alternatives considered\n\n1. Add a cache tier — deferred: revisit after the next capacity review\n2. Shard the primary\n\n## Recommendation\n\nAdd a cache tier\n",
+        "round_trip": {
+          "identifier": "dec-4b21c7"
+        },
+        "round_trip_identifier_must_not_be_absent": true,
+        "output_must_not_equal": "# Decision: Serve reads from a replica\n\n**Status:** Rejected\n**Date:** 2026-04-02\n\n## Context\n\nShould read traffic be served from a replica?\n\n## Decision\n\nThe lag budget cannot be met while the reporting workload shares the replica.\n\n## Governs\n\n- src/reads/**/*.py\n\n## Relations\n\n- refines dec-19aa30\n\n## Attribution\n\n- drafted agent:assistant-7\n- decided human:maintainer-a on 2026-04-02\n\n## Assumptions\n\n- Read volume keeps growing at the current rate (review by 2026-10-01)\n\n## Evidence\n\n- executed: the read-path load test, once\n\n## Alternatives considered\n\n1. Add a cache tier — deferred: revisit after the next capacity review\n2. Shard the primary\n\n## Recommendation\n\nAdd a cache tier\n"
+      },
+      "notes": "Counter-example. This is the instance of the REC-135 class the audit found alongside the four missing sections."
+    },
+    {
+      "id": "spec-REC-128-valid-actor-is-the-kind-id-pair",
+      "rule_id": "REC-128",
+      "family": "REC",
+      "rule_statement": "An actor is the ordered pair (kind, id) taken from an attribution's <kind>:<id> term; two actors are the same actor if and only if both components are equal, compared as written, and REC-118's self-ratification check MUST compare the pair.",
+      "spec_rule_ids": [
+        "REC-128",
+        "REC-118",
+        "REC-141"
+      ],
+      "valid": true,
+      "kind": "record_scenario",
+      "path": "models/spec-REC-128-actor-pair-scenario.json",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses_each_record": [
+          true,
+          true
+        ],
+        "self_ratification_each_record": [
+          true,
+          false
+        ],
+        "actors_each_record": [
+          [
+            [
+              "human",
+              "operator-a"
+            ],
+            [
+              "human",
+              "operator-a"
+            ]
+          ],
+          [
+            [
+              "agent",
+              "operator-a"
+            ],
+            [
+              "human",
+              "operator-a"
+            ]
+          ]
+        ],
+        "distinct_actor_count_each_record": [
+          1,
+          2
+        ]
+      },
+      "notes": "Two records and one spec-mandated boolean (REC-141's `self_ratification`) decide this between three implementations. A do-nothing implementation that never computes the mark yields [false, false] and fails on the first record. One that compares BARE IDS yields [true, true] and fails on the second -- `agent:operator-a` and `human:operator-a` are the common machine-assisted shape §4.14 describes, a person and the agent acting for them, and reporting it as self-ratification is a false positive on the only entitlement check the format can make from the record alone. Only pair comparison yields [true, false]."
+    },
+    {
+      "id": "spec-REC-128-invalid-case-folded-actor-comparison",
+      "rule_id": "REC-128",
+      "family": "REC",
+      "rule_statement": "An actor is the ordered pair (kind, id) taken from an attribution's <kind>:<id> term; two actors are the same actor if and only if both components are equal, compared as written, and REC-118's self-ratification check MUST compare the pair.",
+      "spec_rule_ids": [
+        "REC-128",
+        "REC-118"
+      ],
+      "valid": false,
+      "kind": "record",
+      "path": "models/spec-REC-128-invalid-case-folded-actor-comparison.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "attribution_count": 2,
+        "actors": [
+          [
+            "human",
+            "Operator-A"
+          ],
+          [
+            "human",
+            "operator-a"
+          ]
+        ],
+        "distinct_actor_count": 2,
+        "self_ratification": false,
+        "self_ratification_must_not_equal": true,
+        "actor_ids_must_not_equal": [
+          "operator-a",
+          "operator-a"
+        ]
+      },
+      "notes": "Counter-example. `human:Operator-A` and `human:operator-a` are compared AS WRITTEN, so they are two actors and there is no self-ratification here. An implementation that lowercases before comparing reports one -- and REC-128's own reasoning is that a false positive on the format's only entitlement check is worse than no check."
+    },
+    {
+      "id": "spec-REC-129-valid-malformed-date-dropped-attribution-kept",
+      "rule_id": "REC-129",
+      "family": "REC",
+      "rule_statement": "An attribution whose date is present but is not a full ISO-8601 calendar date MUST be yielded with its date absent; the malformed value MUST NOT be yielded, widened or repaired, and the attribution itself MUST NOT be dropped.",
+      "spec_rule_ids": [
+        "REC-129",
+        "REC-117",
+        "REC-120"
+      ],
+      "valid": true,
+      "kind": "record",
+      "path": "models/spec-REC-129-attribution-with-malformed-date.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "attribution_count": 3,
+        "attribution_roles": [
+          "drafted",
+          "decided",
+          "ratified"
+        ],
+        "attribution_ids": [
+          "maintainer-a",
+          "maintainer-b",
+          "reviewer-c"
+        ],
+        "attribution_dates": [
+          "2026-03-04",
+          null,
+          null
+        ],
+        "attribution_dates_must_not_contain": [
+          "2026-03",
+          "2026-03-01",
+          "last Tuesday",
+          "2026-01-01"
+        ]
+      },
+      "notes": "Three attributions, one well-formed date and two malformed ones. The control is `attribution_count`: an implementation that drops an attribution because its date is mistyped yields 1 and fails, and one that repairs `2026-03` to `2026-03-01` or carries the raw text fails `attribution_dates_must_not_contain`. Only dropping the DATE while keeping the attribution passes."
+    },
+    {
+      "id": "spec-REC-129-invalid-attribution-dropped-with-its-bad-date",
+      "rule_id": "REC-129",
+      "family": "REC",
+      "rule_statement": "An attribution whose date is present but is not a full ISO-8601 calendar date MUST be yielded with its date absent; the malformed value MUST NOT be yielded, widened or repaired, and the attribution itself MUST NOT be dropped.",
+      "spec_rule_ids": [
+        "REC-129",
+        "REC-117",
+        "REC-120"
+      ],
+      "valid": false,
+      "kind": "record",
+      "path": "models/spec-REC-129-attribution-with-malformed-date.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "attribution_count": 3,
+        "attribution_count_must_not_equal": [
+          1,
+          2
+        ],
+        "attribution_ids_must_contain": [
+          "maintainer-b",
+          "reviewer-c"
+        ],
+        "attribution_dates": [
+          "2026-03-04",
+          null,
+          null
+        ]
+      },
+      "notes": "Counter-example on the same record. The tempting reading of REC-117 -- a date MUST be a full ISO-8601 date, therefore an item with a bad one is malformed -- discards *who did what* because *when* was mistyped. REC-120 already settles that a weak attribution is retained rather than deleted."
+    },
+    {
+      "id": "spec-REC-130-valid-unknown-method-entry-dropped",
+      "rule_id": "REC-130",
+      "family": "REC",
+      "rule_statement": "A parser reading a record whose ## Evidence entry names a method outside REC-094's set MUST drop that entry and MUST NOT yield the value as a method; other entries parse unchanged and the record still parses.",
+      "spec_rule_ids": [
+        "REC-130",
+        "REC-094"
+      ],
+      "valid": true,
+      "kind": "record",
+      "path": "models/spec-REC-130-valid-unknown-method-entry-dropped.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "kind": "decision",
+        "evidence_declared": true,
+        "evidence_count": 2,
+        "evidence_methods": [
+          "grep",
+          "read"
+        ],
+        "evidence_methods_must_not_contain": [
+          "benchmarked"
+        ],
+        "evidence_qualifiers": [
+          "retry call sites across the service",
+          "the upstream client documentation"
+        ],
+        "evidence_qualifiers_must_not_contain": [
+          "the queue under sustained load"
+        ]
+      },
+      "notes": "Three entries, the middle one naming a method outside the closed set. The control is `evidence_count`: a parser that widens the set yields 3 and fails, a parser that rejects the record fails `parses`, and a parser that drops the whole SECTION yields 0 and fails. Note the cost REC-130 names: the dropped entry's qualifier goes with it."
+    },
+    {
+      "id": "spec-REC-130-invalid-unknown-method-fails-the-record",
+      "rule_id": "REC-130",
+      "family": "REC",
+      "rule_statement": "A parser reading a record whose ## Evidence entry names a method outside REC-094's set MUST drop that entry and MUST NOT yield the value as a method; other entries parse unchanged and the record still parses.",
+      "spec_rule_ids": [
+        "REC-130",
+        "REC-094",
+        "REC-008"
+      ],
+      "valid": false,
+      "kind": "record",
+      "path": "models/spec-REC-130-invalid-unknown-method-fails-the-record.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "parses_must_not_equal": false,
+        "evidence_declared": true,
+        "evidence_count": 0,
+        "evidence_methods": [],
+        "evidence_methods_must_not_contain": [
+          "benchmarked"
+        ]
+      },
+      "notes": "Counter-example. The record's ONLY evidence entry names an unrecognized method. REC-094 states its failure mode for the write path -- a validation error at capture time -- and a parser that carries that over to the read path rejects a perfectly good record. An evidence defect is not a record-gate defect (REC-008): the record parses, with no evidence entries."
+    },
+    {
+      "id": "spec-REC-131-valid-candidate-set-is-md-and-not-dotted",
+      "rule_id": "REC-131",
+      "family": "REC",
+      "rule_statement": "A directory ingest MUST consider exactly those entries in the directory whose name ends in .md and does not begin with . ; every other entry, including the reserved bare `Whyfile`, is not a candidate and contributes nothing.",
+      "spec_rule_ids": [
+        "REC-131",
+        "REC-001"
+      ],
+      "valid": true,
+      "kind": "record_dir",
+      "path": "dirs/spec-REC-131-candidate-set",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "decision_count": 2,
+        "surviving_titles": [
+          "Serve reads from a replica",
+          "Keep the nightly export window"
+        ],
+        "ingest_errors": 0,
+        "surviving_titles_must_not_contain": [
+          "Adopt the staging mirror"
+        ],
+        "decision_count_must_not_equal": [
+          5,
+          3,
+          1
+        ]
+      },
+      "notes": "The control is `decision_count` against real records: the directory holds two genuine records AND three non-candidates that each parse as a record if offered to the parser, so a do-nothing filter yields 5 and an over-strict one yields fewer than 2. Only the stated candidate set yields exactly 2. `Adopt the staging mirror` is the title carried by all three non-candidates, so it names the failure precisely."
+    },
+    {
+      "id": "spec-REC-131-invalid-gate-failure-raised-as-an-error",
+      "rule_id": "REC-131",
+      "family": "REC",
+      "rule_statement": "A directory ingest MUST consider exactly those entries in the directory whose name ends in .md and does not begin with . ; every other entry, including the reserved bare `Whyfile`, is not a candidate and contributes nothing.",
+      "spec_rule_ids": [
+        "REC-131",
+        "REC-007",
+        "REC-008"
+      ],
+      "valid": false,
+      "kind": "record_dir",
+      "path": "dirs/spec-REC-131-invalid-gate-failure-is-not-an-error",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "decision_count": 1,
+        "ingest_errors": 0,
+        "ingest_errors_must_not_exceed": 0,
+        "decision_count_must_not_equal": [
+          2,
+          0
+        ],
+        "surviving_titles_must_not_contain": [
+          "Adopt the staging mirror",
+          "Decisions in this directory"
+        ]
+      },
+      "notes": "Counter-example covering both directions at once. Raising on `README.md` fails `ingest_errors`; ingesting `.template.md` fails `decision_count` and `surviving_titles_must_not_contain`."
+    },
+    {
+      "id": "spec-REC-132-valid-front-matter-removed-before-any-rule",
+      "rule_id": "REC-132",
+      "family": "REC",
+      "rule_statement": "Where a document's first line is exactly ---, the bytes from that line through the next line that is exactly ---, inclusive, are YAML front matter and MUST be removed before any other rule in §3 or §4 is applied; where no closing --- exists the document has no front matter and is scanned whole.",
+      "spec_rule_ids": [
+        "REC-132",
+        "REC-006",
+        "REC-010",
+        "REC-029"
+      ],
+      "valid": true,
+      "kind": "record",
+      "path": "records/spec-REC-132-valid-front-matter-removed-before-any-rule.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "kind": "decision",
+        "title": "Serve reads from a replica",
+        "status": "accepted",
+        "alternatives": 2,
+        "title_must_not_equal": "Adopt the staging mirror",
+        "status_must_not_equal": "rejected"
+      },
+      "notes": "The front matter carries a decoy H1 and a decoy inline status line, both of which are structural under the leave-it-alone reading. The control is that BOTH decoys win under a do-nothing implementation: REC-010 takes the first matching H1 (`Adopt the staging mirror`) and REC-029 searches the whole document for the first inline status (`rejected`, which excludes the record from ingest). Removing the front matter first is the only way to get `Serve reads from a replica` / `accepted`."
+    },
+    {
+      "id": "spec-REC-132-invalid-unterminated-front-matter-scanned-whole",
+      "rule_id": "REC-132",
+      "family": "REC",
+      "rule_statement": "Where a document's first line is exactly ---, the bytes from that line through the next line that is exactly ---, inclusive, are YAML front matter and MUST be removed before any other rule in §3 or §4 is applied; where no closing --- exists the document has no front matter and is scanned whole.",
+      "spec_rule_ids": [
+        "REC-132",
+        "REC-008",
+        "REC-010"
+      ],
+      "valid": false,
+      "kind": "record",
+      "path": "records/spec-REC-132-invalid-unterminated-front-matter-scanned-whole.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "parses_must_not_equal": false,
+        "kind": "decision",
+        "title": "Serve reads from a replica",
+        "status": "rejected",
+        "alternatives": 2
+      },
+      "notes": "Counter-example. The document opens with `---` and never closes it, so it has NO front matter and is scanned whole -- the H1 and the status line inside it are structural. An implementation that strips from the opening fence to end-of-file, or that hunts for a closing fence and gives up on the document when it finds none, sees no H1 and reports `not a record`. Note the polarity: the `Rejected` status is the CORRECT parse here, not a defect to be corrected."
+    },
+    {
+      "id": "spec-REC-133-valid-separator-set-and-case-folding",
+      "rule_id": "REC-133",
+      "family": "REC",
+      "rule_statement": "In REC-097's form the separator is exactly one of em dash, en dash or hyphen-minus with at least one whitespace character on EACH side; the disposition token is matched case-insensitively and yielded lowercased; a token outside REC-098's closed set carries no disposition and the whole item, separator included, is the option text.",
+      "spec_rule_ids": [
+        "REC-133",
+        "REC-097",
+        "REC-098",
+        "REC-099"
+      ],
+      "valid": true,
+      "kind": "record",
+      "path": "models/spec-REC-133-valid-separator-set-and-case-folding.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "alternatives_count": 5,
+        "alternative_options": [
+          "Add a second queue",
+          "Batch writes on the client",
+          "Cache read paths only",
+          "Move to a blue-green deploy pipeline",
+          "Keep the retry-deferred fallback path"
+        ],
+        "alternative_dispositions": [
+          "rejected",
+          "deferred",
+          "partially-adopted",
+          null,
+          null
+        ],
+        "alternative_rationales": [
+          "the on-call rota cannot absorb another broker",
+          "revisit after the next capacity review",
+          "taken for the report endpoints only",
+          null,
+          null
+        ]
+      },
+      "notes": "All three separators appear (em dash, en dash, hyphen-minus) and the three disposition tokens are written `Rejected`, `DEFERRED` and `Partially-Adopted`, all of which MUST yield lowercased. The control is item 4: `blue-green` contains a hyphen with NO whitespace around it, so an implementation that splits on a bare hyphen produces the option `Move to a blue` and fails `alternative_options`. A case-sensitive matcher fails `alternative_dispositions` on all three."
+    },
+    {
+      "id": "spec-REC-133-invalid-separator-without-whitespace",
+      "rule_id": "REC-133",
+      "family": "REC",
+      "rule_statement": "In REC-097's form the separator is exactly one of em dash, en dash or hyphen-minus with at least one whitespace character on EACH side; the disposition token is matched case-insensitively and yielded lowercased; a token outside REC-098's closed set carries no disposition and the whole item, separator included, is the option text.",
+      "spec_rule_ids": [
+        "REC-133",
+        "REC-098",
+        "REC-099"
+      ],
+      "valid": false,
+      "kind": "record",
+      "path": "models/spec-REC-133-invalid-separator-without-whitespace.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "alternatives_count": 2,
+        "alternative_options": [
+          "Blue-green deploy—rejected: no second environment exists",
+          "Keep the current pipeline — discarded: superseded by the new build"
+        ],
+        "alternative_dispositions": [
+          null,
+          null
+        ],
+        "alternative_options_must_not_contain": [
+          "Blue-green deploy",
+          "Keep the current pipeline"
+        ],
+        "alternative_dispositions_must_not_contain": [
+          "rejected",
+          "discarded"
+        ]
+      },
+      "notes": "Counter-example carrying both of REC-133's near-misses. Item 1 has an em dash with no whitespace on either side, so it is not a separator and the whole item is option text -- including the word `rejected`, which MUST NOT become a disposition. Item 2 has a well-formed separator but a token outside REC-098's closed set, so REC-099 applies unchanged and the whole item, separator included, is the option text."
+    },
+    {
+      "id": "spec-REC-134-valid-alternatives-are-objects",
+      "rule_id": "REC-134",
+      "family": "REC",
+      "rule_statement": "The alternatives a parser yields are OBJECTS, each carrying option and, where recorded, disposition and rationale; REC-018's earlier 'ordered list of strings' is superseded. ENV-016 continues to govern the ENVELOPE field, which projects each alternative's option text only.",
+      "spec_rule_ids": [
+        "REC-134",
+        "REC-097",
+        "REC-099",
+        "ENV-016"
+      ],
+      "valid": true,
+      "kind": "record",
+      "path": "models/spec-REC-134-valid-alternatives-are-objects.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "alternatives_item_type": "object",
+        "alternatives_item_type_must_not_equal": "string",
+        "alternatives_count": 2,
+        "alternative_item_keys": [
+          [
+            "option",
+            "disposition",
+            "rationale"
+          ],
+          [
+            "option"
+          ]
+        ],
+        "alternative_options": [
+          "Shard the primary",
+          "Add a cache tier"
+        ],
+        "alternative_dispositions": [
+          "rejected",
+          null
+        ],
+        "alternative_rationales": [
+          "the resharding window does not fit this quarter",
+          null
+        ],
+        "envelope_projection_alternatives": [
+          "Shard the primary",
+          "Add a cache tier"
+        ]
+      },
+      "notes": "The control is `alternative_item_keys`: a parser still yielding REC-018's list of strings cannot carry the disposition or the rationale at all, so it fails on item 1 whatever else it gets right. The second item records no disposition, so its object carries `option` only -- absence means NOT RECORDED, never that no disposition existed. `envelope_projection_alternatives` is what ENV-016 still requires the envelope to carry for this same record: option text, flat strings."
+    },
+    {
+      "id": "spec-REC-140-valid-empty-decision-yields-empty-string",
+      "rule_id": "REC-140",
+      "family": "REC",
+      "rule_statement": "A Decision section whose body is empty MUST yield rationale as an EMPTY STRING, not an absent key.",
+      "spec_rule_ids": [
+        "REC-140",
+        "REC-008",
+        "REC-018"
+      ],
+      "valid": true,
+      "kind": "record",
+      "path": "records/spec-REC-140-valid-empty-decision-yields-empty-string.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "kind": "decision",
+        "title": "Keep the current scheduler",
+        "rationale": "",
+        "rationale_present": true,
+        "rationale_must_not_be_absent": true,
+        "rationale_must_not_equal": null,
+        "alternatives": 2
+      },
+      "notes": "The control is the pair `rationale` == \"\" AND `rationale_present` == true: an implementation that omits the key (the treatment REC-107 gives `question`) fails the second, one that yields null fails `rationale_must_not_equal`, and one that treats an empty Decision body as a missing section fails `parses`. The section's PRESENCE is what REC-008 tests; its emptiness is a fact about the record, not an absence of one."
+    },
+    {
+      "id": "spec-REC-140-invalid-whitespace-only-decision-must-not-be-absent",
+      "rule_id": "REC-140",
+      "family": "REC",
+      "rule_statement": "A Decision section whose body is empty MUST yield rationale as an EMPTY STRING, not an absent key.",
+      "spec_rule_ids": [
+        "REC-140",
+        "REC-008",
+        "REC-018"
+      ],
+      "valid": false,
+      "kind": "record",
+      "path": "records/spec-REC-140-invalid-whitespace-only-decision-must-not-be-absent.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "parses_must_not_equal": false,
+        "rationale": "",
+        "rationale_present": true,
+        "rationale_must_not_be_absent": true,
+        "alternatives": 2
+      },
+      "notes": "Counter-example. The Decision body is three spaces, which trims to the empty string (REC-018 trims the body) and therefore lands on exactly REC-140's case. The tempting readings both fail: dropping the key, and treating a whitespace-only body as no section at all and rejecting the record."
+    },
+    {
+      "id": "spec-REC-141-valid-key-spellings-on-record-and-node",
+      "rule_id": "REC-141",
+      "family": "REC",
+      "rule_statement": "REC-101's properties MUST be carried on the parsed record and the intent node as `deliberation`, `offered` and `disposition`; REC-118's mark as `self_ratification` (boolean, on the record) and REC-119's corroboration as `corroborated` (boolean, on the attribution).",
+      "spec_rule_ids": [
+        "REC-141",
+        "REC-101",
+        "REC-118",
+        "REC-119"
+      ],
+      "valid": true,
+      "kind": "record",
+      "path": "status/spec-REC-141-valid-key-spellings-on-record-and-node.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": "rejected",
+        "record_keys_must_contain": [
+          "deliberation",
+          "offered",
+          "disposition",
+          "self_ratification"
+        ],
+        "deliberation": "resolved",
+        "offered": true,
+        "disposition": "declined",
+        "self_ratification": true,
+        "attribution_count": 3,
+        "attribution_keys_must_contain": [
+          "role",
+          "kind",
+          "id",
+          "provenance",
+          "corroborated"
+        ],
+        "ratification_corroborated": false,
+        "provenance": "captured"
+      },
+      "notes": "The control is `record_keys_must_contain`: before this rule only `disposition` had a spelling given by any rule (ENV-022), so an implementation could satisfy REC-101, REC-103, REC-118 and REC-119 and still expose none of the other four fields. A do-nothing implementation carries `status` and nothing else and fails. Values come from REC-101's table and REC-119 (nothing external to corroborate, so the ratification is uncorroborated and the record stays `captured`); this rule assigns spellings only."
+    },
+    {
+      "id": "spec-REC-141-invalid-draft-offered-must-be-false",
+      "rule_id": "REC-141",
+      "family": "REC",
+      "rule_statement": "REC-101's properties MUST be carried on the parsed record and the intent node as `deliberation`, `offered` and `disposition`; REC-118's mark as `self_ratification` (boolean, on the record) and REC-119's corroboration as `corroborated` (boolean, on the attribution).",
+      "spec_rule_ids": [
+        "REC-141",
+        "REC-101",
+        "REC-109"
+      ],
+      "valid": false,
+      "kind": "record",
+      "path": "status/spec-REC-141-invalid-draft-offered-must-be-false.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "status": "draft",
+        "record_keys_must_contain": [
+          "deliberation",
+          "offered",
+          "disposition"
+        ],
+        "deliberation": "open",
+        "offered": false,
+        "offered_must_not_equal": true,
+        "disposition": null,
+        "self_ratification": false
+      },
+      "notes": "Counter-example. `offered` is the ONLY field that distinguishes `draft` from `proposed` (REC-109), and both share a deliberation of `open` -- so an implementation that carries `deliberation` alone, or that sets `offered` from the presence of a status rather than from REC-101's table, reports a draft as offered for deliberation. REC-110 then presents on a review surface a record whose author never offered it."
+    },
+    {
+      "id": "spec-ENV-044-valid-coverage-twelve-keys",
+      "rule_id": "ENV-044",
+      "family": "ENV",
+      "rule_statement": "The summary coverage variant MUST carry exactly twelve coverage-specific keys alongside command and status: code_files, code_symbols, files_with_intent, symbols_with_intent, authored_anchored_files, authored_anchored_symbols, file_coverage_pct, symbol_coverage_pct, dark_files, intent_by_kind, golden, intent_debt.",
+      "spec_rule_ids": [
+        "ENV-044",
+        "ENV-028",
+        "ENV-004"
+      ],
+      "valid": true,
+      "kind": "envelope",
+      "path": "envelopes/spec-ENV-044-valid-coverage-twelve-keys.json",
+      "verdict_kind": "envelope_shape",
+      "expect": {
+        "conformant": true,
+        "command": "coverage",
+        "required_keys": [
+          "command",
+          "status",
+          "code_files",
+          "code_symbols",
+          "files_with_intent",
+          "symbols_with_intent",
+          "authored_anchored_files",
+          "authored_anchored_symbols",
+          "file_coverage_pct",
+          "symbol_coverage_pct",
+          "dark_files",
+          "intent_by_kind",
+          "golden",
+          "intent_debt"
+        ],
+        "exact_key_count": 14,
+        "forbidden_keys": [
+          "explain",
+          "trace_present",
+          "referencing_intent",
+          "counts"
+        ],
+        "constraints": [
+          {
+            "path": "dark_files",
+            "op": "is_list"
+          },
+          {
+            "path": "intent_debt",
+            "op": "has_keys",
+            "value": [
+              "dark_files",
+              "orphaned_intent",
+              "stale_decisions",
+              "unresolved_disputes"
+            ]
+          },
+          {
+            "path": "golden",
+            "op": "has_keys",
+            "value": [
+              "golden_count",
+              "total_intent",
+              "golden_fraction_pct",
+              "golden_tiers",
+              "by_provenance"
+            ]
+          }
+        ]
+      },
+      "notes": "The control is `exact_key_count` together with `required_keys`: §6.1 has always stated the COUNT and never the names, so a validator written from §6.1 alone can accept any twelve keys, and a validator written from ENV-028 alone checks two of them. This fixture fails both. `forbidden_keys` are the explain variant's keys -- ENV-006 makes `explain` the discriminator, and the two shapes share nothing beyond command and status. `dark_files` is a LIST of paths here; the count lives inside intent_debt (ENV-045), so the list reading is the one that adds information."
+    },
+    {
+      "id": "spec-ENV-044-invalid-coverage-omits-intent-by-kind",
+      "rule_id": "ENV-044",
+      "family": "ENV",
+      "rule_statement": "The summary coverage variant MUST carry exactly twelve coverage-specific keys alongside command and status: code_files, code_symbols, files_with_intent, symbols_with_intent, authored_anchored_files, authored_anchored_symbols, file_coverage_pct, symbol_coverage_pct, dark_files, intent_by_kind, golden, intent_debt.",
+      "spec_rule_ids": [
+        "ENV-044",
+        "ENV-028"
+      ],
+      "valid": false,
+      "kind": "envelope",
+      "path": "envelopes/spec-ENV-044-invalid-coverage-omits-intent-by-kind.json",
+      "verdict_kind": "envelope_shape",
+      "expect": {
+        "conformant": false,
+        "command": "coverage",
+        "violates": [
+          "ENV-044"
+        ],
+        "failing_condition": {
+          "path": "intent_by_kind",
+          "op": "absent"
+        }
+      },
+      "notes": "Eleven of the twelve coverage-specific keys are present, so the envelope looks complete to any validator that checks §6.1's count loosely or checks only the two keys ENV-028 names. `intent_by_kind` is the missing one. MUST be rejected."
+    },
+    {
+      "id": "spec-ENV-045-valid-intent-debt-four-components",
+      "rule_id": "ENV-045",
+      "family": "ENV",
+      "rule_statement": "intent_debt MUST carry exactly these four components -- dark_files, orphaned_intent, stale_decisions, unresolved_disputes -- each a non-negative integer or an explicit null where the implementation cannot compute it; a component MUST NOT be omitted.",
+      "spec_rule_ids": [
+        "ENV-045",
+        "ENV-029",
+        "ENV-028"
+      ],
+      "valid": true,
+      "kind": "envelope",
+      "path": "envelopes/spec-ENV-045-valid-intent-debt-four-components.json",
+      "verdict_kind": "envelope_shape",
+      "expect": {
+        "conformant": true,
+        "command": "coverage",
+        "required_keys": [
+          "command",
+          "status",
+          "code_files",
+          "code_symbols",
+          "files_with_intent",
+          "symbols_with_intent",
+          "authored_anchored_files",
+          "authored_anchored_symbols",
+          "file_coverage_pct",
+          "symbol_coverage_pct",
+          "dark_files",
+          "intent_by_kind",
+          "golden",
+          "intent_debt"
+        ],
+        "constraints": [
+          {
+            "path": "intent_debt",
+            "op": "has_keys",
+            "value": [
+              "dark_files",
+              "orphaned_intent",
+              "stale_decisions",
+              "unresolved_disputes"
+            ]
+          },
+          {
+            "path": "intent_debt",
+            "op": "len_eq",
+            "value": 4
+          },
+          {
+            "path": "intent_debt.orphaned_intent",
+            "op": "eq",
+            "value": 0
+          },
+          {
+            "path": "intent_debt.stale_decisions",
+            "op": "is_null"
+          },
+          {
+            "path": "intent_debt.unresolved_disputes",
+            "op": "gte",
+            "value": 0
+          }
+        ]
+      },
+      "notes": "The control is the pair `orphaned_intent` == 0 and `stale_decisions` == null in one block. They are the two readings ENV-029 separates: a measured zero and an unmeasured signal. An implementation that reports what it cannot compute as 0 fails `is_null`; one that satisfies ENV-029 by dropping the uncomputable key instead fails `has_keys` and `len_eq` -- which is the omission the last sentence of ENV-045 exists to close."
+    },
+    {
+      "id": "spec-ENV-045-invalid-intent-debt-omits-stale-decisions",
+      "rule_id": "ENV-045",
+      "family": "ENV",
+      "rule_statement": "intent_debt MUST carry exactly these four components -- dark_files, orphaned_intent, stale_decisions, unresolved_disputes -- each a non-negative integer or an explicit null where the implementation cannot compute it; a component MUST NOT be omitted.",
+      "spec_rule_ids": [
+        "ENV-045",
+        "ENV-029",
+        "ENV-039"
+      ],
+      "valid": false,
+      "kind": "envelope",
+      "path": "envelopes/spec-ENV-045-invalid-intent-debt-omits-stale-decisions.json",
+      "verdict_kind": "envelope_shape",
+      "expect": {
+        "conformant": false,
+        "command": "coverage",
+        "violates": [
+          "ENV-045",
+          "ENV-029"
+        ],
+        "failing_condition": {
+          "path": "intent_debt.stale_decisions",
+          "op": "absent"
+        }
+      },
+      "notes": "`stale_decisions` cannot be computed by this implementation, so it dropped the key. That is precisely the escape ENV-045's last sentence closes: without it, an implementation satisfies ENV-029's never-report-zero rule by reporting nothing, and a consumer cannot tell `not applicable` from `not measured`. MUST be rejected."
+    },
+    {
+      "id": "spec-ENV-047-valid-intent-kind-beyond-the-record-pair",
+      "rule_id": "ENV-047",
+      "family": "ENV",
+      "rule_statement": "The envelope field intent_kind names the kind of the node and is NOT constrained to REC-122's pair; an implementation MUST NOT hash any other value as the identity component and MUST NOT reject an envelope carrying another value in this field.",
+      "spec_rule_ids": [
+        "ENV-047",
+        "ENV-015",
+        "ENV-033",
+        "REC-122"
+      ],
+      "valid": true,
+      "kind": "envelope",
+      "path": "envelopes/spec-ENV-047-valid-intent-kind-beyond-the-record-pair.json",
+      "verdict_kind": "envelope_shape",
+      "expect": {
+        "conformant": true,
+        "command": "why",
+        "required_keys": [
+          "command",
+          "status",
+          "query",
+          "count",
+          "cutoff",
+          "score_stats",
+          "results"
+        ],
+        "forbidden_keys": [
+          "note"
+        ],
+        "constraints": [
+          {
+            "path": "results[0].intent_kind",
+            "op": "eq",
+            "value": "constraint"
+          },
+          {
+            "path": "results[1].intent_kind",
+            "op": "eq",
+            "value": "mechanism"
+          },
+          {
+            "path": "results[2].intent_kind",
+            "op": "eq",
+            "value": "tradeoff"
+          },
+          {
+            "path": "results[*].intent_kind",
+            "op": "not_in",
+            "value": [
+              "decision",
+              "assumption"
+            ]
+          },
+          {
+            "path": "results[*].alternatives",
+            "op": "is_list_of_strings"
+          },
+          {
+            "path": "results[*].id",
+            "op": "is_string"
+          }
+        ]
+      },
+      "notes": "The control is the `not_in` constraint: a validator that enforces REC-122's pair on this ENVELOPE field rejects all three results, and an implementation that 'repairs' an unrecognized kind by coercing it to `decision` fails the three `eq` constraints. REC-122 closes the identity COMPONENT, not this field -- ENV-033 presupposes a `constraint` kind at envelope level and §1.4 puts intent derived from non-record sources out of scope, which is where these three kinds come from. `note` is forbidden because §6.1 admits it when and only when status is `topically_weak`."
+    },
+    {
+      "id": "spec-ENV-047-invalid-unknown-intent-kind-rejected",
+      "rule_id": "ENV-047",
+      "family": "ENV",
+      "rule_statement": "The envelope field intent_kind names the kind of the node and is NOT constrained to REC-122's pair; an implementation MUST NOT hash any other value as the identity component and MUST NOT reject an envelope carrying another value in this field.",
+      "spec_rule_ids": [
+        "ENV-047",
+        "ENV-011"
+      ],
+      "valid": false,
+      "kind": "envelope",
+      "path": "envelopes/spec-ENV-047-invalid-unknown-intent-kind-rejected.json",
+      "verdict_kind": "envelope_shape",
+      "expect": {
+        "conformant": false,
+        "command": "why",
+        "violates": [
+          "ENV-047"
+        ],
+        "failing_condition": [
+          {
+            "path": "status",
+            "op": "eq",
+            "value": "error"
+          },
+          {
+            "path": "message",
+            "op": "contains",
+            "value": "intent_kind"
+          }
+        ]
+      },
+      "notes": "This is the envelope an implementation emits when it enforces REC-122's pair on the envelope field: the same query that produces the valid fixture beside it returns an error instead. The shape is a well-formed error variant (ENV-011) -- what is non-conformant is refusing on this GROUND, which is why the failing condition is the conjunction of the error status and a message citing intent_kind, not the error status alone. An error envelope is otherwise entirely legitimate."
+    },
+    {
+      "id": "spec-ENV-048-valid-violation-entry-four-keys",
+      "rule_id": "ENV-048",
+      "family": "ENV",
+      "rule_statement": "Each entry in a check envelope's violations MUST carry rule, file, message and decision_id -- the last being the identifier ENV-031 requires.",
+      "spec_rule_ids": [
+        "ENV-048",
+        "ENV-031",
+        "ENV-030"
+      ],
+      "valid": true,
+      "kind": "envelope",
+      "path": "envelopes/spec-ENV-048-valid-violation-entry-four-keys.json",
+      "verdict_kind": "envelope_shape",
+      "expect": {
+        "conformant": true,
+        "command": "check",
+        "required_keys": [
+          "command",
+          "status",
+          "rules",
+          "files_checked",
+          "violations"
+        ],
+        "constraints": [
+          {
+            "path": "violations[*]",
+            "op": "has_keys",
+            "value": [
+              "rule",
+              "file",
+              "message",
+              "decision_id"
+            ]
+          },
+          {
+            "path": "violations[0].decision_id",
+            "op": "is_string"
+          },
+          {
+            "path": "violations[1].decision_id",
+            "op": "is_string"
+          }
+        ]
+      },
+      "notes": "The control is the `has_keys` constraint applied to EVERY entry: a lint-shaped violation carries rule, file and message, which is what an implementation produces when it reads ENV-031's obligation and finds no key named. Both entries here cite a decision. ENV-031 states the obligation and names no key; these are the spellings the corpus instantiates."
+    },
+    {
+      "id": "spec-ENV-048-invalid-violation-omits-decision-id",
+      "rule_id": "ENV-048",
+      "family": "ENV",
+      "rule_statement": "Each entry in a check envelope's violations MUST carry rule, file, message and decision_id -- the last being the identifier ENV-031 requires.",
+      "spec_rule_ids": [
+        "ENV-048",
+        "ENV-031"
+      ],
+      "valid": false,
+      "kind": "envelope",
+      "path": "envelopes/spec-ENV-048-invalid-violation-omits-decision-id.json",
+      "verdict_kind": "envelope_shape",
+      "expect": {
+        "conformant": false,
+        "command": "check",
+        "violates": [
+          "ENV-048",
+          "ENV-031"
+        ],
+        "failing_condition": {
+          "path": "violations[1].decision_id",
+          "op": "absent"
+        }
+      },
+      "notes": "The FIRST violation cites a decision and the second does not, so an implementation that checks only `violations[0]` accepts the envelope. A rule whose failure cannot name the decision that motivated it is not a conformance check; it is a lint. MUST be rejected."
+    },
+    {
+      "id": "spec-REC-134-invalid-envelope-alternatives-carry-objects",
+      "rule_id": "REC-134",
+      "family": "REC",
+      "rule_statement": "REC-134: the parser yields alternative OBJECTS, but ENV-016 continues to govern the envelope field `alternatives`, which projects each alternative's option text only -- an implementation MUST NOT emit an object there.",
+      "spec_rule_ids": [
+        "REC-134",
+        "ENV-016",
+        "ENV-015"
+      ],
+      "valid": false,
+      "kind": "envelope",
+      "path": "envelopes/spec-REC-134-invalid-envelope-alternatives-carry-objects.json",
+      "verdict_kind": "envelope_shape",
+      "expect": {
+        "conformant": false,
+        "command": "why",
+        "violates": [
+          "REC-134",
+          "ENV-016"
+        ],
+        "failing_condition": {
+          "path": "results[0].alternatives[0]",
+          "op": "type_is",
+          "value": "object"
+        }
+      },
+      "notes": "Counter-example for the half of REC-134 that is easiest to get wrong in the right direction: having gained structure in the parse, an implementation carries it straight onto the wire. REC-134 is explicit that the projection stays at the envelope so ENV-016 can stand unchanged -- the parse gains structure, the wire format does not. The other two results in this same envelope carry the CORRECT flat string form, so a validator checking one result at random can miss it."
     }
   ]
 }

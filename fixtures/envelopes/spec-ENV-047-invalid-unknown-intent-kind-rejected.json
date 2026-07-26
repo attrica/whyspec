@@ -1,0 +1,5 @@
+{
+  "command": "why",
+  "message": "unsupported intent_kind 'constraint': expected decision or assumption",
+  "status": "error"
+}

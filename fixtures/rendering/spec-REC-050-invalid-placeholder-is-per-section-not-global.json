@@ -9,9 +9,11 @@
       "Shard the primary"
     ],
     "rationale": "A replica absorbs read load without a resharding project.",
-    "date": "2026-04-02"
+    "date": "2026-04-02",
+    "status": "Accepted"
   },
   "expected_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\n(none recorded)\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
   "non_conformant_output": "## Context\n\n(none recorded)\n\n## Alternatives considered\n\n(none recorded)",
-  "note": "The question is empty but TWO options were supplied. The placeholder is decided PER SECTION: Context gets `(none recorded)`, Alternatives considered gets the real numbered list. An emitter that treats the placeholder as a whole-record mode -- or that suppresses the Alternatives list because some other field was empty -- produces the non-conformant output shown, which falsely claims no alternatives were considered."
+  "note": "The question is empty but TWO options were supplied. The placeholder is decided PER SECTION: Context gets `(none recorded)`, Alternatives considered gets the real numbered list. An emitter that treats the placeholder as a whole-record mode -- or that suppresses the Alternatives list because some other field was empty -- produces the non-conformant output shown, which falsely claims no alternatives were considered.",
+  "_rec136_note": "status supplied explicitly: REC-136 forbids an emitter defaulting an absent status, and this fixture tests rendering shape rather than status handling. expected_output is unchanged."
 }

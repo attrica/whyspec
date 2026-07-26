@@ -9,8 +9,10 @@
       "Shard the primary"
     ],
     "rationale": "A replica absorbs read load without a resharding project.",
-    "date": "2026-04-02"
+    "date": "2026-04-02",
+    "status": "Accepted"
   },
   "expected_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
-  "note": "`## Context` is present and carries the question text. The question reaches no parsed field (known gap G3), so the rendered Context section is the ONLY durable home for it -- and it is the field REC-056 derives the filename from and REC-064 matches legacy records on."
+  "note": "`## Context` is present and carries the question text. The question reaches no parsed field (known gap G3), so the rendered Context section is the ONLY durable home for it -- and it is the field REC-056 derives the filename from and REC-064 matches legacy records on.",
+  "_rec136_note": "status supplied explicitly: REC-136 forbids an emitter defaulting an absent status, and this fixture tests rendering shape rather than status handling. expected_output is unchanged."
 }

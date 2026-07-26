@@ -1,0 +1,60 @@
+{
+  "rule": "REC-137",
+  "statement": "Where a record carries the field, an emitter MUST render `Governs`, `Relations`, `Attribution`, `Assumptions` and `Evidence`, in that order, after `## Decision` and before `## Alternatives considered`.",
+  "inputs": {
+    "chosen": "Serve reads from a replica",
+    "question": "Should read traffic be served from a replica?",
+    "rationale": "The lag budget cannot be met while the reporting workload shares the replica.",
+    "status": "rejected",
+    "date": "2026-04-02",
+    "id": "dec-4b21c7",
+    "governs": [
+      "src/reads/**/*.py"
+    ],
+    "relations": [
+      {
+        "relation": "refines",
+        "target": "dec-19aa30"
+      }
+    ],
+    "attribution": [
+      {
+        "role": "drafted",
+        "kind": "agent",
+        "id": "assistant-7"
+      },
+      {
+        "role": "decided",
+        "kind": "human",
+        "id": "maintainer-a",
+        "date": "2026-04-02"
+      }
+    ],
+    "assumptions": [
+      {
+        "claim": "Read volume keeps growing at the current rate",
+        "review_by": "2026-10-01"
+      }
+    ],
+    "evidence": [
+      {
+        "method": "executed",
+        "qualifier": "the read-path load test, once"
+      }
+    ],
+    "alternatives": [
+      {
+        "option": "Add a cache tier",
+        "disposition": "deferred",
+        "rationale": "revisit after the next capacity review"
+      },
+      {
+        "option": "Shard the primary"
+      }
+    ],
+    "recommendation": "Add a cache tier"
+  },
+  "expected_output": "# Decision: Serve reads from a replica\n\n**Status:** Rejected\n**Date:** 2026-04-02\n**Id:** dec-4b21c7\n\n## Context\n\nShould read traffic be served from a replica?\n\n## Decision\n\nThe lag budget cannot be met while the reporting workload shares the replica.\n\n## Governs\n\n- src/reads/**/*.py\n\n## Relations\n\n- refines dec-19aa30\n\n## Attribution\n\n- drafted agent:assistant-7\n- decided human:maintainer-a on 2026-04-02\n\n## Assumptions\n\n- Read volume keeps growing at the current rate (review by 2026-10-01)\n\n## Evidence\n\n- executed: the read-path load test, once\n\n## Alternatives considered\n\n1. Add a cache tier — deferred: revisit after the next capacity review\n2. Shard the primary\n\n## Recommendation\n\nAdd a cache tier\n",
+  "wrong_output_a_non_conformant_implementation_might_return": "# Decision: Serve reads from a replica\n\n**Status:** Rejected\n**Date:** 2026-04-02\n**Id:** dec-4b21c7\n\n## Context\n\nShould read traffic be served from a replica?\n\n## Decision\n\nThe lag budget cannot be met while the reporting workload shares the replica.\n\n## Alternatives considered\n\n1. Add a cache tier — deferred: revisit after the next capacity review\n2. Shard the primary\n\n## Recommendation\n\nAdd a cache tier\n## Governs\n\n- src/reads/**/*.py\n\n## Relations\n\n- refines dec-19aa30\n\n## Attribution\n\n- drafted agent:assistant-7\n- decided human:maintainer-a on 2026-04-02\n\n## Assumptions\n\n- Read volume keeps growing at the current rate (review by 2026-10-01)\n\n## Evidence\n\n- executed: the read-path load test, once\n",
+  "reason": "The five sections are appended after `## Alternatives considered` and `## Recommendation` instead of preceding them. Every field still parses back -- which is exactly why this is worth a fixture: the defect is invisible to a round-trip check and visible only to the stated order, so an emitter drifts here without anything failing."
+}

@@ -1,0 +1,11 @@
+# Decision: Adopt the staging mirror
+
+**Status:** Accepted
+
+## Context
+
+Should a staging mirror be adopted?
+
+## Decision
+
+The staging mirror is adopted for pre-release verification.

@@ -6,8 +6,10 @@
     "question": "",
     "options": [],
     "rationale": "No change is warranted this quarter.",
-    "date": "2026-04-02"
+    "date": "2026-04-02",
+    "status": "Accepted"
   },
   "expected_output": "# Decision: Keep the current scheduler\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\n(none recorded)\n\n## Decision\n\nNo change is warranted this quarter.\n\n## Alternatives considered\n\n(none recorded)\n",
-  "note": "Neither a question nor any options were supplied. BOTH the Context body and the Alternatives considered body MUST be the literal string `(none recorded)`. This is REC-054's permitted case: the absence is itself an answer ('we considered the question and there was nothing to list')."
+  "note": "Neither a question nor any options were supplied. BOTH the Context body and the Alternatives considered body MUST be the literal string `(none recorded)`. This is REC-054's permitted case: the absence is itself an answer ('we considered the question and there was nothing to list').",
+  "_rec136_note": "status supplied explicitly: REC-136 forbids an emitter defaulting an absent status, and this fixture tests rendering shape rather than status handling. expected_output is unchanged."
 }

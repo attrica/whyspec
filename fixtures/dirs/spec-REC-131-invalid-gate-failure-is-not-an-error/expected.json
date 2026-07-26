@@ -1,0 +1,19 @@
+{
+  "rule": "REC-131",
+  "statement": "A candidate that fails REC-008 is ignored WITHOUT ERROR; a dotted `.md` is not a candidate at all.",
+  "files": [
+    "2026-04-02-should-reads-hit-a-replica.md",
+    "README.md",
+    ".template.md"
+  ],
+  "candidates": [
+    "2026-04-02-should-reads-hit-a-replica.md",
+    "README.md"
+  ],
+  "expected_decision_count": 1,
+  "expected_surviving_titles": [
+    "Serve reads from a replica"
+  ],
+  "expected_ingest_errors": 0,
+  "note": "`README.md` IS a candidate -- it ends in `.md` and is not dotted -- and it fails the record gate, which REC-131 says is ignored without error. `.template.md` holds a perfect record and is not a candidate at all. The two failure modes are opposite: erroring on the first, ingesting the second."
+}

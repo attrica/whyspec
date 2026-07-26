@@ -9,8 +9,10 @@
       "Rewrite it"
     ],
     "rationale": "",
-    "date": "2026-04-02"
+    "date": "2026-04-02",
+    "status": "Accepted"
   },
   "expected_output": "# Decision: Keep the current scheduler\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nShould the scheduler change?\n\n## Decision\n\nKeep the current scheduler\n\n## Alternatives considered\n\n1. Keep the current scheduler\n2. Rewrite it\n",
-  "note": "The rationale is empty, so the `## Decision` body is the CHOSEN option. A record must never be emitted without a Decision body: a conforming parser rejects the input when the Decision section is empty, so an emitter that leaves it blank writes a file that is not a record (REC-008) and the write path and read path stop agreeing."
+  "note": "The rationale is empty, so the `## Decision` body is the CHOSEN option. A record must never be emitted without a Decision body: a conforming parser rejects the input when the Decision section is empty, so an emitter that leaves it blank writes a file that is not a record (REC-008) and the write path and read path stop agreeing.",
+  "_rec136_note": "status supplied explicitly: REC-136 forbids an emitter defaulting an absent status, and this fixture tests rendering shape rather than status handling. expected_output is unchanged."
 }

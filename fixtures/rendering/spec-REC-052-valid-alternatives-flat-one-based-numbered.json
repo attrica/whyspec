@@ -10,8 +10,10 @@
       "Add a cache tier"
     ],
     "rationale": "A replica absorbs read load without a resharding project.",
-    "date": "2026-04-02"
+    "date": "2026-04-02",
+    "status": "Accepted"
   },
   "expected_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n3. Add a cache tier\n",
-  "note": "Three options render as `1. `, `2. `, `3. ` in SUPPLIED order -- one-based (not zero-based), flat (no nesting), and unsorted. Zero-based numbering or sorted output MUST be rejected."
+  "note": "Three options render as `1. `, `2. `, `3. ` in SUPPLIED order -- one-based (not zero-based), flat (no nesting), and unsorted. Zero-based numbering or sorted output MUST be rejected.",
+  "_rec136_note": "status supplied explicitly: REC-136 forbids an emitter defaulting an absent status, and this fixture tests rendering shape rather than status handling. expected_output is unchanged."
 }

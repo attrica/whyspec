@@ -1,0 +1,17 @@
+{
+  "rule": "REC-128",
+  "statement": "An actor is the ordered pair (kind, id) taken from an attribution's <kind>:<id> term; two actors are the same actor if and only if both components are equal, compared as written, and REC-118's self-ratification check MUST compare the pair.",
+  "cases": [
+    {
+      "label": "same actor",
+      "record_text": "# Decision: Route retries through one budget\n\n**Status:** Accepted\n\n## Context\n\nHow should retries be bounded across call paths?\n\n## Decision\n\nEvery call path draws from a single shared retry budget.\n\n## Attribution\n\n- drafted human:operator-a\n- ratified human:operator-a\n",
+      "expected_self_ratification": true
+    },
+    {
+      "label": "same id, different kind",
+      "record_text": "# Decision: Cap the export batch size\n\n**Status:** Accepted\n\n## Context\n\nHow large may one export batch be?\n\n## Decision\n\nA batch is capped at the size the reporting replica can absorb in one window.\n\n## Attribution\n\n- drafted agent:operator-a\n- ratified human:operator-a\n",
+      "expected_self_ratification": false
+    }
+  ],
+  "note": "Two records, one boolean each. In the first, `human:operator-a` both drafted and ratified: one actor in two roles, so REC-118's mark applies. In the second, `agent:operator-a` drafted and `human:operator-a` ratified -- the same id under a different kind, which REC-128 says is a DIFFERENT actor, so there is no self-ratification. The pair of records is the point: no single record can distinguish an implementation that compares pairs from one that never computes the mark at all."
+}

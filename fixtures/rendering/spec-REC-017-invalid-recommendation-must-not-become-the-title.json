@@ -10,9 +10,11 @@
     ],
     "rationale": "A replica absorbs read load without a resharding project.",
     "date": "2026-04-02",
-    "recommendation": "Shard the primary"
+    "recommendation": "Shard the primary",
+    "status": "Accepted"
   },
   "expected_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n\n## Recommendation\n\nShard the primary\n",
   "note": "The recommendation ('Shard the primary') DIFFERS from the chosen option. The title MUST still be the CHOSEN option. An emitter that titles the record with the recommendation inverts the record's meaning and makes resolution_delta compare a value against itself.",
-  "non_conformant_output": "# Decision: Shard the primary"
+  "non_conformant_output": "# Decision: Shard the primary",
+  "_rec136_note": "status supplied explicitly: REC-136 forbids an emitter defaulting an absent status, and this fixture tests rendering shape rather than status handling. expected_output is unchanged."
 }

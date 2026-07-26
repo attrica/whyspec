@@ -1,0 +1,21 @@
+{
+  "rule": "REC-136",
+  "statement": "Status provenance: the value rendered on the `**Status:**` line MUST be the record's own status; where the record has no status the line MUST be omitted entirely, and an emitter MUST NOT substitute a default.",
+  "inputs": {
+    "chosen": "Adopt a second message broker",
+    "question": "Should a second message broker be introduced?",
+    "rationale": "The on-call rota cannot absorb another broker.",
+    "date": "2026-05-19",
+    "alternatives": [
+      {
+        "option": "Adopt a second message broker"
+      },
+      {
+        "option": "Raise the partition count on the existing broker"
+      }
+    ]
+  },
+  "expected_output": "# Decision: Adopt a second message broker\n\n**Date:** 2026-05-19\n\n## Context\n\nShould a second message broker be introduced?\n\n## Decision\n\nThe on-call rota cannot absorb another broker.\n\n## Alternatives considered\n\n1. Adopt a second message broker\n2. Raise the partition count on the existing broker\n",
+  "wrong_output_a_non_conformant_implementation_might_return": "# Decision: Adopt a second message broker\n\n**Status:** Accepted\n**Date:** 2026-05-19\n\n## Context\n\nShould a second message broker be introduced?\n\n## Decision\n\nThe on-call rota cannot absorb another broker.\n\n## Alternatives considered\n\n1. Adopt a second message broker\n2. Raise the partition count on the existing broker\n",
+  "reason": "No status was supplied, so the record is *unstated* (REC-125) and the `**Status:**` line MUST be omitted entirely. Emitting `Accepted` invents a claim the author never made, and the next parse reads it as ground truth. REC-125 is explicit that absence is no claim at all."
+}

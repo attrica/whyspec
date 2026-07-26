@@ -8,9 +8,11 @@
       "Serve reads from a replica"
     ],
     "rationale": "A replica absorbs read load without a resharding project.",
-    "date": "2026-04-02"
+    "date": "2026-04-02",
+    "status": "Accepted"
   },
   "expected_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n",
   "non_conformant_output": "## Alternatives considered\n\n0. Serve reads from a replica",
-  "note": "A single option renders as `1. `, never `0. `. Zero-based numbering is the natural bug when the list index is used directly; it also breaks round-tripping, because a reader comparing the emitted list against a re-captured one sees every item renumbered."
+  "note": "A single option renders as `1. `, never `0. `. Zero-based numbering is the natural bug when the list index is used directly; it also breaks round-tripping, because a reader comparing the emitted list against a re-captured one sees every item renumbered.",
+  "_rec136_note": "status supplied explicitly: REC-136 forbids an emitter defaulting an absent status, and this fixture tests rendering shape rather than status handling. expected_output is unchanged."
 }
