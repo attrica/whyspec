@@ -381,24 +381,44 @@ behaviour to it beyond [REC-032] and the unrecognized-status rule of [REC-125].
 Status carries **two independent properties**, and collapsing them onto one axis is what makes
 `rejected` look like an unfinished thought rather than the most settled state a record can reach.
 
-**[REC-101]** A status **MUST** determine a **deliberation state** — `open` or `resolved` — and,
-when resolved, a **disposition** — `adopted` or `declined`:
+**[REC-101]** A record's normalized status ([REC-030]) **MUST** determine every one of the
+following, by lookup in this table and by no other means. **This table is the sole normative
+source for the behaviour of a status**; where any other rule appears to assign one of these
+columns, this table governs.
 
-| Status | Deliberation | Offered | Disposition | Yields |
-|---|---|---|---|---|
-| `draft` | open | **no** | — | provisional intent, marked open and unoffered |
-| `proposed` | open | **yes** | — | provisional intent, marked open |
-| `accepted` | resolved | yes | adopted | ground-truth intent |
-| `rejected` | resolved | yes | **declined** | **foreclosure intent** |
+| Normalized status | Deliberation | Offered | Disposition | Yields | Counted in trust metrics | Currency defined |
+|---|---|---|---|---|---|---|
+| `draft` | open | **no** | — | provisional intent, marked open and unoffered | no | no |
+| `proposed` | open | yes | — | provisional intent, marked open | no | no |
+| `accepted` | resolved | yes | **adopted** | ground-truth intent | yes | **yes** |
+| `rejected` | resolved | yes | **declined** | **foreclosure intent** | no | no |
+| *absent* | **unstated** | — | **adopted** | ground-truth intent, tier from record kind | yes | **yes** |
+| *any other value* | **unstated** | — | **adopted** | ground-truth intent, tier from record kind | yes | **yes** |
 
-**[REC-125]** An **absent** status ([REC-031]) is **unstated** — neither open nor resolved.
-A record with an unstated status **MUST** take its tier from its record kind ([PROV-005],
-[PROV-006]) and **MUST** yield ground-truth intent. An *unrecognized* status, by contrast, is
-treated as `open`, unoffered, with no disposition.
+**[REC-125]** An **absent** status and an **unrecognized** status are both **unstated**, and
+**MUST** be treated identically per the table. Neither **MUST** be read as `open`.
 
-The distinction between *unstated* and *open* is the same honest-absence rule the format applies
-everywhere else. `open` is something an author said; absence is something nobody said, and
-reading silence as a claim about deliberation would invent data.
+The two `unstated` rows are the correction that this section most needed, and they follow from
+the format's own honest-absence discipline. `open` is a claim an author made — *this is still
+being decided*. Absence is no claim at all, and an unrecognized token is a claim the format does
+not understand, which conveys exactly as much as silence. Reading either as `open` **invents a
+statement about deliberation the author never made**, and then acts on it.
+
+The cost of getting that wrong was concrete. A record carrying `**Status:** Superseded` — a
+conventional value this format does not define ([REC-108]) — resolved to *open*, therefore to no
+disposition, therefore to no currency at all, while the conformance corpus required it to remain
+current. Routing an unrecognized value to `unstated` resolves the chain: the record takes its
+tier from its kind, is adopted, has currency, and that currency is then derived from the relation
+graph where [REC-108] says it belongs. The status text remains conventional and contributes
+nothing, which is precisely what [REC-033] intends.
+
+**On the single table.** These columns were previously assigned across six rules written at three
+different times, and they drifted into contradiction three separate times — a rule forbidding
+behaviour the next section attached, an index row asserting the inverse of its own body, and the
+`superseded` chain above. Deliberation, disposition, yield, trust and currency are not
+independent decisions that happen to be about status; they are one decision with five outputs,
+and separating them across six rules meant nothing forced them to agree. A lookup table cannot
+disagree with itself.
 
 The direction matters here and runs opposite to the provenance default ([PROV-003]), so it is
 worth being explicit about why. Defaulting an unknown *provenance* to the weakest tier is safe
@@ -420,12 +440,15 @@ exists for the same reason: an author needs somewhere to think without broadcast
 the only way to avoid publishing an unfinished thought is not to write it down — which loses
 precisely the reasoning that is most worth keeping, at the moment it is most recoverable.
 
-**[REC-102]** Only a status that is **resolved** *and* **adopted** **MUST** yield ground-truth
-intent.
+**[REC-102]** A record **MUST** yield the intent named in its status's **Yields** column
+([REC-101]), and no other. This rule adds no condition of its own.
 
-**[REC-103]** A record whose deliberation is `open` **MUST** be ingested, **MUST** be marked
-open on the resulting intent, and **MUST NOT** be counted toward any trusted-evidence metric
-([PROV-010]).
+**[REC-103]** A record whose deliberation is `open` **MUST** still be ingested and **MUST** be
+marked open on the resulting intent. What it yields and whether it counts toward a trusted-
+evidence metric ([PROV-010]) are given by [REC-101], not restated here.
+
+> Marking rather than suppressing is deliberate: excluding open records entirely would hide what
+> a team is actively considering, which is frequently the most urgent information in a corpus.
 
 **[REC-104]** A record whose disposition is `declined` **MUST** yield **foreclosure intent**: it
 **MUST** be retained and queryable, **MUST NOT** be counted toward any trusted-evidence metric,
@@ -1088,9 +1111,10 @@ citation, because it presents as evidence and yields none.
 **[REC-111]** A record's **currency** — whether the decision it carries is still live —
 **MUST** be derived from the relation graph. It **MUST NOT** be authored on the record.
 
-**[REC-112]** A record is **historical** when at least one other record declares a `supersedes`
-relation naming it, and **current** otherwise. Currency is defined only for records whose
-disposition is `adopted`; an open or declined record has no currency.
+**[REC-112]** Where [REC-101]'s **Currency defined** column is *yes*, a record is **historical**
+when at least one other record declares a `supersedes` relation naming it, and **current**
+otherwise. Where that column is *no*, the record has no currency. This rule determines *which*
+value applies; [REC-101] determines *whether* one applies at all.
 
 **[REC-113]** Supersession **MUST** be applied transitively. Where A supersedes B and B
 supersedes C, both B and C are historical.
@@ -1794,7 +1818,7 @@ Every normative rule, with its one-line statement.
 | REC-067 | Existing dated record. |
 | REC-068 | The date portion of the pattern in REC-067 MUST be expressed with digit character classes. Neither *-<slug>.md nor ????-??-??-<slug>.md is acceptable. |
 | REC-069 | Fresh name. Otherwise the destination MUST be <today>-<question-slug>.md. |
-| REC-070 | A record's filename MUST NOT be changed by an implementation once written. |
+| REC-070 | A record's filename MUST NOT be changed by an implementation once written. _(out of scope: action)_ |
 | REC-071 | An intent node's identity MUST be derived from exactly four inputs, joined by :: in this order, and hashed:. |
 | REC-072 | The normalized label MUST be the label lowercased, with every run of characters outside a-z0-9 replaced by _, and leading/trailing _ stripped. |
 | REC-073 | The canonical source path MUST be the repository-relative path in POSIX separator form. |
@@ -1825,9 +1849,9 @@ Every normative rule, with its one-line statement.
 | REC-098 | <disposition> MUST be one of exactly rejected, deferred, partially-adopted, or not-evaluated. |
 | REC-099 | An alternative carrying no disposition MUST yield the whole item as its option text, with disposition and rationale absent. |
 | REC-100 | deferred MUST NOT be treated as equivalent to rejected. A deferred option remains available. |
-| REC-101 | A status MUST determine a deliberation state — open or resolved — and, when resolved, a disposition — adopted or declined:. |
-| REC-102 | Only a status that is resolved *and* adopted MUST yield ground-truth intent. |
-| REC-103 | A record whose deliberation is open MUST be ingested, MUST be marked open on the resulting intent, and MUST NOT be counted toward any…. |
+| REC-101 | A record's normalized status (REC-030) MUST determine every one of the following, by lookup in this table and by no other means. |
+| REC-102 | A record MUST yield the intent named in its status's Yields column (REC-101), and no other. This rule adds no condition of its own. |
+| REC-103 | A record whose deliberation is open MUST still be ingested and MUST be marked open on the resulting intent. |
 | REC-104 | A record whose disposition is declined MUST yield foreclosure intent: it MUST be retained and queryable, MUST NOT be counted toward any…. |
 | REC-105 | A supersession reference that resolves to more than one candidate record MUST be dropped, exactly as REC-044 drops an unresolved one. |
 | REC-106 | A filename MUST NOT be treated as carrying an ADR number when the four-digit run is part of a date. |
@@ -1836,7 +1860,7 @@ Every normative rule, with its one-line statement.
 | REC-109 | draft and proposed MUST NOT be treated as equivalent. |
 | REC-110 | A review surface SHOULD NOT present a draft record, and SHOULD present a proposed one. Both remain queryable on request. |
 | REC-111 | A record's currency — whether the decision it carries is still live — MUST be derived from the relation graph. It MUST NOT be authored on the record. |
-| REC-112 | A record is historical when at least one other record declares a supersedes relation naming it, and current otherwise. |
+| REC-112 | Where REC-101's Currency defined column is *yes*, a record is historical when at least one other record declares a supersedes relation naming it, and…. |
 | REC-113 | Supersession MUST be applied transitively. Where A supersedes B and B supersedes C, both B and C are historical. |
 | REC-114 | A record participating in a supersession cycle MUST be reported as having indeterminate currency. |
 | REC-115 | The roles are distinct and MUST NOT be conflated. |
@@ -1849,7 +1873,7 @@ Every normative rule, with its one-line statement.
 | REC-122 | The intent kind component is the kind of the node, and MUST be exactly decision or assumption. |
 | REC-123 | The identity MUST be intent_ followed by the first 12 characters of the lowercase hexadecimal SHA-1 digest of the joined string encoded as UTF-8. |
 | REC-124 | Only the label component is normalized (REC-072). |
-| REC-125 | An absent status (REC-031) is unstated — neither open nor resolved. |
+| REC-125 | An absent status and an unrecognized status are both unstated, and MUST be treated identically per the table. Neither MUST be read as open. |
 | REC-126 | Where the question is absent, empty, or reduces to an empty slug, the slug MUST be the literal decision. |
 | REC-135 | Emitter completeness. An emitter MUST be able to render every field a parser yields (§4.5–§4.17). |
 | REC-136 | Status provenance. The value rendered on the Status: line MUST be the record's own status. |
@@ -1894,8 +1918,8 @@ Every normative rule, with its one-line statement.
 | ENV-005 | The envelope MUST be modelled as a tagged union discriminated by command, over a small universal core of {command, status}. |
 | ENV-006 | Where a single command value carries more than one disjoint shape, the spec MUST name the secondary discriminator explicitly, and a consumer MUST…. |
 | ENV-007 | Status tokens are per-command, not global. The following are the tokens the reference implementation emits. |
-| ENV-008 | A consumer encountering an unrecognized status token MUST treat it as a failure. |
-| ENV-009 | A status MUST NOT be overloaded to carry data. |
+| ENV-008 | A consumer encountering an unrecognized status token MUST treat it as a failure. _(out of scope: consumer)_ |
+| ENV-009 | A status MUST NOT be overloaded to carry data. _(out of scope: consumer)_ |
 | ENV-010 | A status that reports an honest negative — no_changes, no_strong_match, no_intent_governing_changes, no_references — is a complete answer, not an…. |
 | ENV-011 | An envelope reporting a failure MUST carry command, status, and a human- readable message. It MUST NOT be required to carry any variant-specific key. |
 | ENV-012 | A consumer MUST NOT assume a variant-specific key is present merely because command names a variant that normally has it. |
@@ -1924,25 +1948,25 @@ Every normative rule, with its one-line statement.
 | ENV-035 | record and record_abs MUST both be reported. |
 | ENV-036 | merged MUST report whether the derived view was updated, independently of status. |
 | ENV-037 | resolution_delta MUST be present with an explicit null when there was no delta. |
-| ENV-038 | A key omitted from an envelope or node MUST mean *not applicable to this variant*. |
-| ENV-039 | An implementation MUST NOT use the two interchangeably. |
+| ENV-038 | A key omitted from an envelope or node MUST mean *not applicable to this variant*. _(out of scope: consumer)_ |
+| ENV-039 | An implementation MUST NOT use the two interchangeably. _(out of scope: consumer)_ |
 | ENV-040 | graph_identity — or any equivalent block identifying *which corpus answered* — MUST NOT be treated as a core envelope field. |
 | ENV-041 | A transport that attaches a credential block MUST attach it unconditionally, with an explicit null when nothing resolved. |
 | ENV-042 | A transport-attached key MUST NOT collide with any key this specification assigns to a command variant. |
-| ENV-043 | Transport attachments are NOT governed by this specification's version marker (§7). |
+| ENV-043 | Transport attachments are NOT governed by this specification's version marker (§7). _(out of scope: consumer)_ |
 
 #### Versioning
 
 | Id | Statement |
 |---|---|
-| VER-001 | A version marker and a migration note are REQUIRED exactly when a change alters how an EXISTING field or section is interpreted — a *meaning change*. |
-| VER-002 | A change that adds a new optional field or section — a *vocabulary extension* — MUST NOT require a version marker. |
-| VER-003 | Each of the following is a meaning change and MUST carry a version marker and a migration note:. |
-| VER-004 | Each of the following is a vocabulary extension and MUST NOT carry a version marker:. |
-| VER-005 | A change MUST NOT re-interpret the absence of a field in existing records as a claim. |
-| VER-006 | An implementation MUST NOT retroactively infer a value for a field that a record does not carry. |
-| VER-007 | The version marker governs the record format and the core envelope only. |
-| VER-008 | The record format carries no explicit version marker today. A record is recognized by its H1 shape alone (REC-008). |
+| VER-001 | A version marker and a migration note are REQUIRED exactly when a change alters how an EXISTING field or section is interpreted — a *meaning change*. _(out of scope: governance)_ |
+| VER-002 | A change that adds a new optional field or section — a *vocabulary extension* — MUST NOT require a version marker. _(out of scope: governance)_ |
+| VER-003 | Each of the following is a meaning change and MUST carry a version marker and a migration note:. _(out of scope: governance)_ |
+| VER-004 | Each of the following is a vocabulary extension and MUST NOT carry a version marker:. _(out of scope: governance)_ |
+| VER-005 | A change MUST NOT re-interpret the absence of a field in existing records as a claim. _(out of scope: governance)_ |
+| VER-006 | An implementation MUST NOT retroactively infer a value for a field that a record does not carry. _(out of scope: governance)_ |
+| VER-007 | The version marker governs the record format and the core envelope only. _(out of scope: governance)_ |
+| VER-008 | The record format carries no explicit version marker today. A record is recognized by its H1 shape alone (REC-008). _(out of scope: governance)_ |
 
 ---
 

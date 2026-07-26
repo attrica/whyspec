@@ -17,6 +17,17 @@ from pathlib import Path
 
 SPEC = Path(__file__).resolve().parent.parent / "spec" / "whyfile-spec-draft.md"
 FAMILIES = ("REC", "PROV", "ENV", "VER")
+
+# 9 excludes three classes from the conformance obligation and states that they are
+# marked here. Generating the marks is what makes that sentence true rather than aspirational.
+OUT_OF_SCOPE = {
+    "VER-001": "governance", "VER-002": "governance", "VER-003": "governance",
+    "VER-004": "governance", "VER-005": "governance", "VER-006": "governance",
+    "VER-007": "governance", "VER-008": "governance",
+    "ENV-008": "consumer", "ENV-009": "consumer", "ENV-038": "consumer",
+    "ENV-039": "consumer", "ENV-043": "consumer",
+    "REC-070": "action",
+}
 RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*(.*?)(?=\n\n)", re.M | re.S)
 ROW_RE = re.compile(r"^\| ((?:REC|PROV|ENV|VER)-\d{3}) \| .*$", re.M)
 
@@ -65,7 +76,10 @@ def render(text: str, rules: dict[str, str]) -> str:
     """
     def repl(m: re.Match) -> str:
         rid = m.group(1)
-        return f"| {rid} | {rules[rid]}. |" if rid in rules else ""
+        if rid not in rules:
+            return ""
+        mark = f" _(out of scope: {OUT_OF_SCOPE[rid]})_" if rid in OUT_OF_SCOPE else ""
+        return f"| {rid} | {rules[rid]}.{mark} |"
 
     text = ROW_RE.sub(repl, text)
     text = re.sub(r"\n\n+(?=\| (?:REC|PROV|ENV|VER)-\d{3} \|)", "\n", text)
@@ -77,7 +91,8 @@ def render(text: str, rules: dict[str, str]) -> str:
             continue
         anchor = max((r for r in rows if r < rid), default=rows[0])
         line = next(l for l in text.splitlines() if l.startswith(f"| {anchor} |"))
-        text = text.replace(line, f"{line}\n| {rid} | {rules[rid]}. |", 1)
+        mark = f" _(out of scope: {OUT_OF_SCOPE[rid]})_" if rid in OUT_OF_SCOPE else ""
+        text = text.replace(line, f"{line}\n| {rid} | {rules[rid]}.{mark} |", 1)
     return text
 
 

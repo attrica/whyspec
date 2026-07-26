@@ -333,6 +333,49 @@ def check_tiers(spec: str, schemas: dict[str, dict], rep: Report) -> None:
     rep.check(found > 0, "E no enum cites PROV-001")
 
 
+
+
+def span_of(rule: str) -> str:
+    """Everything from a rule's marker to the next rule marker or heading.
+
+    `RULE_RE` deliberately stops at the first blank line, which is right for a
+    one-paragraph rule and wrong for one whose normative content is a table.
+    """
+    import re as _re
+    text = SPEC.read_text()
+    m = _re.search(
+        r"\*\*\[" + _re.escape(rule) + r"\]\*\*(.*?)(?=\n\*\*\[(?:REC|PROV|ENV|VER)-\d{3}\]|\n#{2,4} )",
+        text, _re.S)
+    return m.group(1) if m else ""
+
+
+def column_values(body: str, header: str) -> list[str]:
+    """Distinct values of a markdown table column, matched by header substring.
+
+    Cells may carry emphasis or an em-dash placeholder; both are stripped, and the
+    placeholder is dropped rather than returned as a vocabulary member.
+    """
+    rows = [r for r in body.splitlines() if r.lstrip().startswith("|")]
+    if len(rows) < 2:
+        return []
+    heads = [c.strip().strip("*`").lower() for c in rows[0].strip("|").split("|")]
+    # match on the header's most specific word, not its first — a trigger phrased
+    # "a disposition" would otherwise match any column containing "a".
+    want = max(header.lower().split(), key=len)
+    idx = next((i for i, h in enumerate(heads) if want in h), None)
+    if idx is None:
+        return []
+    out = []
+    for r in rows[2:]:                       # skip the header separator row
+        cells = [c.strip() for c in r.strip("|").split("|")]
+        if idx >= len(cells):
+            continue
+        v = cells[idx].strip().strip("*`_ ")
+        if v and v not in {"—", "-", "n/a"} and v not in out:
+            out.append(v)
+    return out
+
+
 def check_vocabularies(rules: dict, schemas: dict[Path, dict], rep: Report) -> None:
     """F — closed vocabularies stated in a rule against the enum they constrain."""
     for rule, trigger, occ, path, pointer, take in VOCABULARIES:
@@ -341,6 +384,13 @@ def check_vocabularies(rules: dict, schemas: dict[Path, dict], rep: Report) -> N
             rep.fail.append(f"F {rule} not found in the spec")
             continue
         prose = set(keys_after(body, trigger, occ, take))
+        if not prose:
+            # REC-101 now states its vocabularies as TABLE COLUMNS rather than in a
+            # sentence, because six scattered rules kept drifting apart. A rule body
+            # stops at the first blank line, so the table sits outside it — harvest
+            # from the rule's full span instead. An extractor that silently finds
+            # nothing turns a real check into a vacuous pass, worse than a failure.
+            prose = set(column_values(span_of(rule), trigger))
         node = at(schemas[path], pointer)
         enum = set(node.get("enum", []))
         rep.check(
