@@ -1167,44 +1167,69 @@
         },
         "code_files": {
           "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type.",
-          "x-rule": ["ENV-044"]
+          "x-rule": [
+            "ENV-044"
+          ]
         },
         "code_symbols": {
           "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type.",
-          "x-rule": ["ENV-044"]
+          "x-rule": [
+            "ENV-044"
+          ]
         },
         "files_with_intent": {
           "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type.",
-          "x-rule": ["ENV-044"]
+          "x-rule": [
+            "ENV-044"
+          ]
         },
         "symbols_with_intent": {
           "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type.",
-          "x-rule": ["ENV-044"]
+          "x-rule": [
+            "ENV-044"
+          ]
         },
         "authored_anchored_files": {
           "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type.",
-          "x-rule": ["ENV-044"]
+          "x-rule": [
+            "ENV-044"
+          ]
         },
         "authored_anchored_symbols": {
           "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type.",
-          "x-rule": ["ENV-044"]
+          "x-rule": [
+            "ENV-044"
+          ]
         },
         "file_coverage_pct": {
           "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type or its scale; the corpus writes a percentage, not a fraction.",
-          "x-rule": ["ENV-044"]
+          "x-rule": [
+            "ENV-044"
+          ]
         },
         "symbol_coverage_pct": {
           "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type or its scale; the corpus writes a percentage, not a fraction.",
-          "x-rule": ["ENV-044"]
+          "x-rule": [
+            "ENV-044"
+          ]
         },
         "dark_files": {
-          "description": "[ENV-044] One of the twelve coverage-specific keys. [ENV-045] A `dark_files` COUNT already lives inside `intent_debt`, so a list of paths here adds information and a count duplicates it.",
-          "x-rule": ["ENV-044", "ENV-045"],
-          "x-gap": "No rule states the TYPE, so none is stated here. The two fixtures that instantiate this key once disagreed -- a list of paths in one, an integer count in the other, both labelled valid, which is ENV-009's defect one level down: the same name meaning 'how many' in one file and 'which ones' in another. Every fixture labelled valid now carries the LIST reading, which is also the reading that adds information given ENV-045's count inside `intent_debt`. Typing this as an array of paths is a one-line follow-up once a rule says so; ENV-044 names the key only."
+          "description": "[ENV-049] An array of repository-relative paths — the files carrying no intent. MUST NOT be a count: the count lives in `intent_debt.dark_files` ([ENV-045]), so an array here makes the pair complementary rather than duplicating one number and losing the paths.",
+          "x-rule": [
+            "ENV-044",
+            "ENV-049"
+          ],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "intent_by_kind": {
           "description": "[ENV-044] One of the twelve coverage-specific keys. [ENV-047] Its keys are node kinds and are NOT constrained to REC-122's pair; the corpus carries `constraint`, `mechanism` and `tradeoff` beside `decision` and `assumption`.",
-          "x-rule": ["ENV-044", "ENV-047"]
+          "x-rule": [
+            "ENV-044",
+            "ENV-047"
+          ]
         },
         "golden": {
           "description": "[ENV-028] The trusted-evidence block. [PROV-010] The golden tiers MUST be exactly {authored, captured, attested}. [PROV-012] A trust metric MUST NOT blend tiers into a single scalar without also reporting the per-tier breakdown, so a blended figure here obliges a per-tier breakdown beside it. [PROV-011] `reconstructed` MUST NOT be counted. [PROV-018] Foreclosure intent MUST NOT be counted either, whatever its tier. [REC-103] Nor MUST open intent.",
@@ -1238,26 +1263,50 @@
           "properties": {
             "dark_files": {
               "description": "[ENV-045] A non-negative integer, or an explicit null where it cannot be computed ([ENV-029]). Note this is a COUNT; the top-level `dark_files` key is a separate field whose type is contested.",
-              "x-rule": ["ENV-045", "ENV-029"],
-              "type": ["integer", "null"],
+              "x-rule": [
+                "ENV-045",
+                "ENV-029"
+              ],
+              "type": [
+                "integer",
+                "null"
+              ],
               "minimum": 0
             },
             "orphaned_intent": {
               "description": "[ENV-045] A non-negative integer, or an explicit null where it cannot be computed ([ENV-029]).",
-              "x-rule": ["ENV-045", "ENV-029"],
-              "type": ["integer", "null"],
+              "x-rule": [
+                "ENV-045",
+                "ENV-029"
+              ],
+              "type": [
+                "integer",
+                "null"
+              ],
               "minimum": 0
             },
             "stale_decisions": {
               "description": "[ENV-045] A non-negative integer, or an explicit null where it cannot be computed ([ENV-029]).",
-              "x-rule": ["ENV-045", "ENV-029"],
-              "type": ["integer", "null"],
+              "x-rule": [
+                "ENV-045",
+                "ENV-029"
+              ],
+              "type": [
+                "integer",
+                "null"
+              ],
               "minimum": 0
             },
             "unresolved_disputes": {
               "description": "[ENV-045] A non-negative integer, or an explicit null where it cannot be computed ([ENV-029]).",
-              "x-rule": ["ENV-045", "ENV-029"],
-              "type": ["integer", "null"],
+              "x-rule": [
+                "ENV-045",
+                "ENV-029"
+              ],
+              "type": [
+                "integer",
+                "null"
+              ],
               "minimum": 0
             }
           }
@@ -1388,17 +1437,23 @@
       "properties": {
         "rule": {
           "description": "[ENV-048] The identifier of the rule that was evaluated.",
-          "x-rule": ["ENV-048"],
+          "x-rule": [
+            "ENV-048"
+          ],
           "type": "string"
         },
         "file": {
           "description": "[ENV-048] The file the violation was found in.",
-          "x-rule": ["ENV-048"],
+          "x-rule": [
+            "ENV-048"
+          ],
           "type": "string"
         },
         "message": {
           "description": "[ENV-048] The human-readable description of the violation.",
-          "x-rule": ["ENV-048"],
+          "x-rule": [
+            "ENV-048"
+          ],
           "type": "string"
         },
         "decision_id": {

@@ -1670,6 +1670,22 @@ keys alongside `command` and `status`: `code_files`, `code_symbols`, `files_with
 `symbols_with_intent`, `authored_anchored_files`, `authored_anchored_symbols`, `file_coverage_pct`,
 `symbol_coverage_pct`, `dark_files`, `intent_by_kind`, `golden`, `intent_debt`.
 
+**[ENV-049]** The summary `coverage` variant's top-level `dark_files` **MUST** be an **array of
+repository-relative paths**, and **MUST NOT** be a count. The `dark_files` inside `intent_debt`
+([ENV-045]) remains an **integer** count. An implementation **MUST NOT** use the same shape for
+both.
+
+> The two keys share a name and answer different questions — *which files* against *how many* —
+> and leaving the outer one untyped let a corpus carry both readings under one name, in fixtures
+> that were each individually labelled valid. That is the confusion [ENV-009] warns about, one
+> level down: a consumer reading `dark_files` had no way to know whether it would receive a length
+> or a list.
+>
+> The array is the right shape for the outer key precisely *because* the count already exists
+> inside `intent_debt`. Typing it as a count would make the envelope carry the same number twice
+> and lose the paths entirely; typing it as an array makes the pair complementary, and a consumer
+> wanting the number can take the length.
+
 > §6.1 has always stated the count and never the names, and [ENV-028] names two of the twelve. A
 > required count that no rule lets a validator satisfy is not a requirement; it is a number. The
 > names are those the conformance corpus instantiates.
@@ -2152,6 +2168,7 @@ Every normative rule, with its one-line statement.
 | ENV-045 | intent_debt MUST carry exactly these four components: dark_files, orphaned_intent, stale_decisions, unresolved_disputes. |
 | ENV-047 | The envelope field intent_kind names the kind of the node and is not constrained to REC-122's pair. |
 | ENV-048 | Each entry in a check envelope's violations MUST carry rule, file, message, and decision_id — the last being the identifier ENV-031 requires. |
+| ENV-049 | The summary coverage variant's top-level dark_files MUST be an array of repository-relative paths, and MUST NOT be a count. |
 
 #### Versioning
 

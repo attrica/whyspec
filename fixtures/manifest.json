@@ -10548,6 +10548,56 @@
         }
       },
       "notes": "Counter-example for the half of REC-134 that is easiest to get wrong in the right direction: having gained structure in the parse, an implementation carries it straight onto the wire. REC-134 is explicit that the projection stays at the envelope so ENV-016 can stand unchanged -- the parse gains structure, the wire format does not. The other two results in this same envelope carry the CORRECT flat string form, so a validator checking one result at random can miss it."
+    },
+    {
+      "id": "spec-ENV-049-valid-dark-files-array-outer-count-inner",
+      "rule_id": "ENV-049",
+      "family": "ENV",
+      "spec_rule_ids": [
+        "ENV-049"
+      ],
+      "rule_statement": "Top-level `dark_files` is an array of paths; `intent_debt.dark_files` is an integer count.",
+      "kind": "envelope",
+      "verdict_kind": "envelope_shape",
+      "path": "envelopes/spec-ENV-049-valid-dark-files-array-outer-count-inner.json",
+      "valid": true,
+      "expect": {
+        "conformant": true,
+        "command": "coverage",
+        "constraints": [
+          {
+            "path": "dark_files",
+            "op": "is_list"
+          },
+          {
+            "path": "intent_debt.dark_files",
+            "op": "is_int"
+          }
+        ]
+      },
+      "notes": "The two are deliberately consistent (3 paths, count 3) so agreement cannot substitute for a type check."
+    },
+    {
+      "id": "spec-ENV-049-invalid-dark-files-shapes-swapped",
+      "rule_id": "ENV-049",
+      "family": "ENV",
+      "spec_rule_ids": [
+        "ENV-049"
+      ],
+      "rule_statement": "An implementation MUST NOT swap the two `dark_files` shapes.",
+      "kind": "envelope",
+      "verdict_kind": "envelope_shape",
+      "path": "envelopes/spec-ENV-049-invalid-dark-files-shapes-swapped.json",
+      "valid": false,
+      "expect": {
+        "conformant": false,
+        "command": "coverage",
+        "violates": [
+          "ENV-049"
+        ],
+        "failing_condition": "dark_files is an integer and intent_debt.dark_files is an array — the shapes transposed"
+      },
+      "notes": "Every ENV-044 key present and every count internally consistent; only the shapes differ."
     }
   ]
 }

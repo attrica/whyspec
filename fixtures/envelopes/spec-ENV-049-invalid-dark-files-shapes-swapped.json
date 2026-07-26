@@ -1,0 +1,45 @@
+{
+  "rule": "ENV-049",
+  "statement": "An implementation MUST NOT emit the top-level `dark_files` as a count, nor the `intent_debt` one as an array.",
+  "conformant": false,
+  "violates": ["ENV-049"],
+  "failing_condition": "top-level `dark_files` is an integer where ENV-049 requires an array, and `intent_debt.dark_files` is an array where ENV-045 requires an integer — the two shapes swapped.",
+  "envelope": {
+    "command": "coverage",
+    "status": "ok",
+    "code_files": 48,
+    "code_symbols": 612,
+    "files_with_intent": 45,
+    "symbols_with_intent": 501,
+    "authored_anchored_files": 31,
+    "authored_anchored_symbols": 288,
+    "file_coverage_pct": 93.8,
+    "symbol_coverage_pct": 81.9,
+    "dark_files": 3,
+    "intent_by_kind": {
+      "decision": 22,
+      "assumption": 9,
+      "constraint": 4
+    },
+    "golden": {
+      "fraction": 0.71,
+      "by_tier": { "authored": 12, "captured": 18, "attested": 5, "reconstructed": 14 }
+    },
+    "intent_debt": {
+      "dark_files": [
+        "src/reporting/exporters.py",
+        "src/reporting/formatters.py",
+        "src/legacy/shim.py"
+      ],
+      "stale_decisions": 2,
+      "orphaned_intent": 0,
+      "unresolved_disputes": null
+    }
+  },
+  "conformant_envelope_differs_only_in": [
+    "dark_files becomes the array of three paths",
+    "intent_debt.dark_files becomes the integer 3"
+  ],
+  "why_this_is_the_dangerous_case": "Every key required by ENV-044 is present, every count is internally consistent, and the envelope carries exactly the same information as its conformant twin. Only the shapes are transposed. A consumer written against the specification asks the outer key for paths and receives a number, or asks the inner one for a number and receives a list — and a validator checking presence rather than type reports the envelope as fine.",
+  "note": "This is the concrete form of one name meaning 'how many' in one place and 'which ones' in another. It is why the type had to be stated rather than left to convention, even though every valid fixture already agreed."
+}

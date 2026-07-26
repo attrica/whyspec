@@ -1,0 +1,39 @@
+{
+  "rule": "ENV-049",
+  "statement": "The top-level `dark_files` MUST be an array of repository-relative paths; the `dark_files` inside `intent_debt` remains an integer count. The two MUST NOT share a shape.",
+  "conformant": true,
+  "envelope": {
+    "command": "coverage",
+    "status": "ok",
+    "code_files": 48,
+    "code_symbols": 612,
+    "files_with_intent": 45,
+    "symbols_with_intent": 501,
+    "authored_anchored_files": 31,
+    "authored_anchored_symbols": 288,
+    "file_coverage_pct": 93.8,
+    "symbol_coverage_pct": 81.9,
+    "dark_files": [
+      "src/reporting/exporters.py",
+      "src/reporting/formatters.py",
+      "src/legacy/shim.py"
+    ],
+    "intent_by_kind": {
+      "decision": 22,
+      "assumption": 9,
+      "constraint": 4
+    },
+    "golden": {
+      "fraction": 0.71,
+      "by_tier": { "authored": 12, "captured": 18, "attested": 5, "reconstructed": 14 }
+    },
+    "intent_debt": {
+      "dark_files": 3,
+      "stale_decisions": 2,
+      "orphaned_intent": 0,
+      "unresolved_disputes": null
+    }
+  },
+  "control": "The two `dark_files` are deliberately CONSISTENT here — the array has three members and the count is 3 — so a validator that merely compares them passes both a conformant envelope and one that swapped the shapes. What must be asserted is the TYPE of each, not their agreement.",
+  "note": "A consumer wanting the number takes the array's length. A consumer wanting the paths cannot recover them from a count, which is why the outer key is the array and not the other way round."
+}
