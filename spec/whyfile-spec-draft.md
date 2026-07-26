@@ -155,6 +155,24 @@ section a heading names.
 Front matter is human and external-tooling metadata. A record's meaning **MUST** be fully
 determined by its markdown body.
 
+**[REC-132]** Where a document's first line is exactly `---`, the bytes from that line through the
+next line that is exactly `---`, inclusive, are **YAML front matter** and **MUST** be removed before
+any other rule in §3 or §4 is applied. A heading, status line, or section appearing inside front
+matter is therefore not structural. Where no closing `---` exists, the document has **no** front
+matter and is scanned whole.
+
+> [REC-006] says front matter is not *interpreted* and does not say whether it is *removed*, and §3
+> defines a body only for a section ([REC-004]), never for a document — so the two readings are
+> observably different and neither is decided. A `# Decision: X` line inside front matter is a
+> level-1 heading under the leave-it-alone reading and nothing at all under the removal reading; a
+> `**Status:** Rejected` line inside front matter excludes the record from ingest under one reading
+> and not the other, because [REC-029] deliberately searches the whole document.
+>
+> Removal is the smaller rule because it needs no exception anywhere else: [REC-029]'s
+> whole-document search, [REC-040]'s whole-document supersession scan and [REC-010]'s
+> first-matching-H1 rule all stay exactly as written. [REC-003]'s leading-BOM tolerance composes —
+> the BOM is stripped first, so a BOM followed by `---` opens front matter.
+
 **[REC-007]** A parser **MUST NOT** require any section not named in §4. Unrecognized sections
 **MUST** be ignored without error. This is what makes §7's vocabulary-extension rule safe.
 
@@ -234,7 +252,7 @@ case-insensitively against the full trimmed heading text:
 |---|---|---|
 | `Decision` | **yes** | `rationale` — the section body, trimmed |
 | `Context` | no | see [REC-021] |
-| `Alternatives considered` *or* `Alternatives` | no | `alternatives` — an ordered list of strings |
+| `Alternatives considered` *or* `Alternatives` | no | `alternatives` — an ordered list (item shape per [REC-134]) |
 | `Recommendation` | no | `recommendation` — the section body, trimmed |
 | `Assumptions` | no | `assumptions` — a list of structured claims (§4.7) |
 | `Status` | no | fallback status source (§4.6) |
@@ -272,6 +290,15 @@ record, and it **MUST** reach the intent node. An empty or absent `Context` yiel
 > It is also the retrieval key. A reader's query is almost always shaped like the question, while
 > a record without one can only be matched against its answer.
 
+**[REC-140]** A `Decision` section whose body is empty **MUST** yield `rationale` as an **empty
+string**, not an absent key.
+
+> Stated the opposite way from `question` ([REC-107]) on purpose. The section's presence is what
+> [REC-008] tests; its emptiness is a fact about the record, not an absence of one. A record with no
+> Decision section is not a record at all, so an absent `rationale` key could never be observed, and
+> giving it a second meaning would draw a distinction nobody can act on. [REC-051] governs the same
+> case on the write path and is unaffected.
+
 ### 4.5.1 Alternatives
 
 **[REC-022]** The alternatives section body **MUST** be parsed as a flat list. A list item begins at
@@ -306,6 +333,33 @@ string remains a valid alternative.
 **[REC-100]** `deferred` **MUST NOT** be treated as equivalent to `rejected`. A deferred option
 remains available.
 
+**[REC-133]** In [REC-097]'s form the separator is exactly one of em dash `—` (U+2014), en dash `–`
+(U+2013), or hyphen-minus `-`, with at least one whitespace character on **each** side. The
+disposition token **MUST** be matched case-insensitively and yielded lowercased. An item whose token
+is not in [REC-098]'s closed set carries **no** disposition: [REC-099] applies unchanged and the
+whole item, separator included, is the option text.
+
+> The separator set is [REC-011]'s less the colon, which [REC-097] already spends on introducing the
+> rationale — the same question answered in one place and not the other. Requiring whitespace on both
+> sides is what keeps a hyphenated option name (`blue-green deploy`) from being read as a separator.
+> The last sentence makes the unrecognized-token case additive rather than lossy, for the reason
+> [REC-099] gives: absence of a disposition means *not recorded*, never that none existed.
+
+**[REC-134]** The `alternatives` a parser yields are **objects**, each carrying `option` and, where
+recorded, `disposition` and `rationale` ([REC-097]–[REC-099]). [REC-018]'s earlier "ordered list of
+strings" is **superseded** by this rule. [ENV-016] continues to govern the **envelope** field
+`alternatives`, which projects each alternative's `option` text only; an implementation **MUST NOT**
+emit an object there.
+
+> This is a report of a contradiction, not a design preference. [REC-018] and [ENV-016] both said
+> *list of strings* while [REC-097]–[REC-099] required each alternative to carry three parts, which a
+> string cannot hold — and the conformance corpus instantiated both sides, so no implementation could
+> satisfy every fixture. Keeping the projection at the envelope is what lets the envelope rule stand
+> unchanged: the parse gains structure, the wire format does not.
+>
+> This crosses [VER-001]. It changes how an existing section's body is parsed ([VER-003], fourth
+> bullet) and therefore requires a version marker and a migration note; §7.5 records the working.
+
 This is the format's answer to its own central question. A decision that records only what was
 chosen has recorded a commitment; a decision that records why the alternatives *lost* has
 recorded a belief. Two teams that chose the same option for opposite reasons — one rejecting the
@@ -316,9 +370,11 @@ The distinction [REC-100] draws is the one most often lost. "We ruled this out" 
 still do this" are different states of the world, and a corpus that conflates them cannot answer
 what it has left on the table.
 
-The rule is additive by construction ([REC-099]): every existing record continues to parse
-unchanged, with disposition simply absent. Absence means *not recorded*, never *no disposition
-existed*.
+The **record syntax** is additive by construction ([REC-099]): every existing record continues to
+parse without error, with disposition simply absent. Absence means *not recorded*, never *no
+disposition existed*. The **parse result** is not additive — [REC-134] changes the item shape a
+parser yields for every record, including records written before this section existed, which is why
+that rule and not this one carries the version marker.
 
 ### 4.6 Status
 
@@ -349,7 +405,7 @@ normalize to `rejected`. A value containing no alphabetic characters normalizes 
 
 **[REC-031]** When no status can be determined, the parsed record's status **MUST** be absent. An
 implementation **MUST NOT** substitute a default, and **MUST NOT** serialize an explicit null in
-place of the field on the resulting intent node — the key is omitted entirely. See [ENV-026] for
+place of the field on the resulting intent node — the key is omitted entirely. See [ENV-038] for
 the general absent-versus-null convention.
 
 **[REC-032]** A record whose normalized status is `rejected` **MUST NOT** become ground-truth intent
@@ -483,6 +539,23 @@ record without revisiting the record it replaces, and nothing can then determine
 correct. Deriving currency keeps one authority. It also matches how version control already
 works: a reverted commit is not flagged, it is referenced by the commit that reverts it, and
 whether its effect is current is computed from the history rather than stored on it.
+
+**[REC-141]** The properties [REC-101] determines **MUST** be carried on the parsed record and the
+intent node under these key spellings: `deliberation`, `offered`, and `disposition`, each taking the
+value of the correspondingly named column. The mark [REC-118] requires **MUST** be carried as
+`self_ratification`, a boolean on the record; the corroboration [REC-119] requires **MUST** be
+carried as `corroborated`, a boolean on the attribution. This rule assigns spellings only — the
+values, and the conditions under which each holds, are [REC-101]'s and are not restated here.
+
+> [REC-101] determines three properties, [REC-103] requires an open record to be "marked open",
+> [REC-118] requires a self-ratification to be "marked" and [REC-119] requires an uncorroborated
+> ratification to be marked — and until this rule, **only `disposition` had a key spelling given by
+> any rule** ([ENV-022]). The rest were obligations with no field, so two conforming implementations
+> could both satisfy them and share nothing.
+>
+> This is §8's gap G7 in its smallest concrete form: no stated principle for which fields reach the
+> output, and no spelling for the ones that must. G7 is what produced the [ENV-022] defect; these
+> were the remaining fields it could still produce one from.
 
 ### 4.7 Assumptions
 
@@ -717,6 +790,21 @@ back to the chosen option will reintroduce it.
 directory it is pointed at, and **MUST NOT** infer a record's kind from its directory. Kind comes
 from the H1 ([REC-009]) and nothing else.
 
+**[REC-131]** A directory ingest **MUST** consider exactly those entries in the directory whose name
+ends in `.md` and does not begin with `.`. Every other entry — including the reserved bare `Whyfile`
+([REC-001]) — is **not a candidate** and contributes nothing. An implementation **MAY** descend into
+subdirectories, and where it does it **MUST** apply this same rule at every level. A candidate that
+fails [REC-008] is ignored without error ([REC-007]).
+
+> Nothing previously bounded the candidate set, and the consequence is testable rather than
+> theoretical: an extensionless `Whyfile` whose body is a syntactically valid decision record parses
+> as one, so an implementation that feeds every file to the parser produces two nodes where one is
+> correct — and [REC-001] requires that file to mean nothing.
+>
+> The `.md` filter is what makes [REC-001]'s reservation self-enforcing rather than a special case an
+> implementer has to remember. Recursion is left a MAY because [REC-057] already forbids inferring
+> anything from a record's location, so depth cannot change a parse.
+
 #### 4.11.1 Slug derivation
 
 **[REC-058]** A slug **MUST** be derived from its source text by:
@@ -785,12 +873,12 @@ from the chosen option.
 The fallback [REC-126] forbids is not hypothetical — it is the natural thing to reach for, and it
 reintroduces exactly the collision the dated scheme exists to prevent. Chosen text repeats
 constantly across unrelated decisions ("keep it", "document only", "adopt the library"), which is
-why [REC-062] derives the slug from the question in the first place. A chosen-derived fallback
+why [REC-056] derives the slug from the question in the first place. A chosen-derived fallback
 puts two unrelated decisions on the same destination on the same day, and the second silently
 overwrites the first.
 
 The literal `decision` collides too, of course — but it collides *visibly and identically*, and
-[REC-064]'s existing-record lookup will find and update the earlier file rather than clobber it,
+[REC-067]'s existing-record lookup will find and update the earlier file rather than clobber it,
 because both records genuinely share an empty question. A degenerate name that behaves
 predictably is preferable to a plausible-looking one that loses data.
 
@@ -825,6 +913,17 @@ without normalization.
 
 For a decision node, source location and label are both the record title, and intent kind is
 `decision`. For an assumption node they are derived from the claim, and the kind is `assumption`.
+
+**[REC-127]** For an **assumption node**, the source location and the normalized label are both
+derived from the **claim as [REC-038] yields it** — the claim after the review-date and expiry
+strippings, whitespace-collapsed and trimmed of spaces and periods. Both components take that text
+verbatim; [REC-124] then normalizes only the label. `review_by` and `expiry` are **not** identity
+inputs.
+
+> This is the exact analogue of the decision node, where source location and label are both the
+> record title. The last sentence is load-bearing: if the stripped fields were inputs, editing a
+> review date would fork the node — the harm [REC-073] and [REC-077] exist to prevent, reached
+> through a field whose whole purpose is to be revised.
 
 [REC-121]–[REC-124] exist because an earlier draft specified an identity that was **derived,
 exact, and load-bearing** — and then left the digest itself undefined. It named the four inputs
@@ -907,6 +1006,25 @@ version marker (§7).
 **[REC-081]** A record **MAY** carry any number of attributions, including several sharing a
 role. An absent attribution **MUST** be read as *unrecorded*. It **MUST NOT** be defaulted to
 `human`, and **MUST NOT** be inferred from any other field.
+
+**[REC-128]** An **actor** is the ordered pair `(kind, id)` taken from an attribution's `<kind>:<id>`
+term. Two actors are the same actor **if and only if** both components are equal, compared as
+written — no case folding, and no trimming beyond [REC-079]'s parse. [REC-118]'s self-ratification
+check **MUST** compare the pair.
+
+> The pair rather than the bare id, because `human:alex` and `agent:alex` are the common
+> machine-assisted shape §4.14 describes — a person and the agent working on their behalf. Comparing
+> bare ids would report a self-ratification that did not occur, and [REC-118] is the only entitlement
+> check the format can make from the record alone. A false positive there is worse than none.
+
+**[REC-129]** An attribution whose date is present but is not a full ISO-8601 calendar date
+([REC-117]) **MUST** be yielded with its date **absent**. The malformed value **MUST NOT** be
+yielded, widened to a valid date, or repaired, and the attribution itself **MUST NOT** be dropped.
+
+> Dropping the attribution would discard *who did what* because *when* was mistyped, and [REC-120]
+> already establishes that a weak attribution is retained rather than deleted. Absence of the date
+> then means what absence means everywhere else in this format — not recorded ([REC-081],
+> [VER-005]).
 
 **[REC-115]** The roles are distinct and **MUST NOT** be conflated. `drafted` names who composed
 the record; `decided` names who chose among the alternatives; `ratified` names who accepted it
@@ -1078,6 +1196,22 @@ form `<method>: <qualifier>`, where the qualifier is optional.
 **[REC-094]** `<method>` **MUST** be one of exactly `grep`, `diff`, `executed`, `read`, or
 `traced`. The set is closed; an unrecognized method is a validation error at capture time, not a
 silently unflagged value.
+
+**[REC-130]** A parser reading a record whose `## Evidence` entry names a method outside [REC-094]'s
+set **MUST** drop that entry and **MUST NOT** yield the value as a method. Other entries in the
+section parse unchanged, and the record still parses: an evidence defect is not a record-gate defect
+([REC-008]).
+
+> [REC-094] states its failure mode for the **write** path only — a validation error at capture time
+> — which left an implementer reading an existing file to choose between yielding a fifth method
+> (silently widening a closed set that [VER-003] says needs a version marker) and dropping it.
+>
+> The alternative — retaining the entry with its method marked unrecognized — is defensible and
+> preserves more information, but it needs a second field, a rule for what consumers do with it, and
+> an answer to what happens when that value is later admitted to the set. Drop is the smaller rule.
+> Note what it costs: the qualifier text is lost with the entry, and a record whose author used a
+> near-miss spelling reads as having recorded nothing about method, which [REC-096] then forbids
+> anyone from flagging.
 
 **[REC-095]** An entry **MAY** cite the deliberation that produced the decision, as a reference
 to where that deliberation occurred. A citation **MUST** be a reference. An implementation
@@ -1443,6 +1577,20 @@ can make.
 **MUST** coerce it to a single-element list, and **MUST NOT** iterate a bare string character by
 character.
 
+**[ENV-047]** The envelope field `intent_kind` names the kind of the node and is **not** constrained
+to [REC-122]'s pair. [REC-122] governs the third component of node identity ([REC-071]) for a node
+derived from a record, where the only kinds are `decision` and `assumption`. An implementation
+**MUST NOT** hash any other value as that component, and **MUST NOT** reject an envelope carrying
+another value in this field. This rule governs the field wherever it appears, not only on a `why`
+result.
+
+> The two readings were reconcilable but never reconciled, and the field carries the same name in
+> both places. [ENV-033] requires `intent-diff` and `review-context` to distinguish *governed by a
+> decision* from *governed by a **constraint***, and the conformance corpus carries `intent_kind`
+> values of `constraint`, `mechanism` and `tradeoff` — so a schema enforcing [REC-122] on the
+> envelope field rejects fixtures labelled valid. §1.4 puts intent derived from non-record sources
+> out of scope, which is exactly where those kinds come from.
+
 **[ENV-017]** The three evidence fields have fixed meanings, and an implementation **MUST NOT**
 redefine them:
 
@@ -1517,10 +1665,36 @@ that basename resolves to more than one path. A basename match that could mean s
 **[ENV-028]** The summary variant **MUST** carry a trusted-evidence block (`golden`) and a debt
 block (`intent_debt`) alongside its coverage counts.
 
+**[ENV-044]** The summary `coverage` variant **MUST** carry exactly these twelve coverage-specific
+keys alongside `command` and `status`: `code_files`, `code_symbols`, `files_with_intent`,
+`symbols_with_intent`, `authored_anchored_files`, `authored_anchored_symbols`, `file_coverage_pct`,
+`symbol_coverage_pct`, `dark_files`, `intent_by_kind`, `golden`, `intent_debt`.
+
+> §6.1 has always stated the count and never the names, and [ENV-028] names two of the twelve. A
+> required count that no rule lets a validator satisfy is not a requirement; it is a number. The
+> names are those the conformance corpus instantiates.
+>
+> **Open: the type of `dark_files` at this level.** Two corpus fixtures both labelled valid once
+> disagreed — one carrying a list of paths, the other an integer count — which is the [ENV-009]
+> defect one level down, the same name meaning *how many* in one file and *which ones* in the other.
+> This rule names the key and does not settle the type. [ENV-045] already puts a `dark_files`
+> **count** inside `intent_debt`, so the list reading is the one that adds information here rather
+> than duplicating it, and it is the reading every valid fixture now takes.
+
 **[ENV-029]** A component of `intent_debt` that the implementation cannot compute **MUST** be
 reported as explicit `null`, never as `0`. A zero claims "we measured and found none"; a null
 honestly says "not measured". Reporting an unmeasured signal as zero is the same class of lie as
 [REC-054]'s placeholder.
+
+**[ENV-045]** `intent_debt` **MUST** carry exactly these four components: `dark_files`,
+`orphaned_intent`, `stale_decisions`, `unresolved_disputes`. Each **MUST** be a non-negative
+integer, or an explicit `null` where the implementation cannot compute it ([ENV-029]). A component
+**MUST NOT** be omitted.
+
+> The last sentence is what makes [ENV-029] enforceable. Without it, an implementation that cannot
+> compute `stale_decisions` satisfies the rule by dropping the key — which re-introduces the very
+> ambiguity between *not applicable* and *not measured* that [ENV-038] draws, and leaves [ENV-029]
+> naming no field a validator can check in either direction.
 
 #### 6.5.7 `check`
 
@@ -1529,6 +1703,11 @@ honestly says "not measured". Reporting an unmeasured signal as zero is the same
 
 **[ENV-031]** Each violation **MUST** carry the identifier of the decision it cites. A rule whose
 failure cannot name the decision that motivated it is not a conformance check; it is a lint.
+
+**[ENV-048]** Each entry in a `check` envelope's `violations` **MUST** carry `rule`, `file`,
+`message`, and `decision_id` — the last being the identifier [ENV-031] requires. [ENV-031] states the
+obligation and names no key, so nothing could be validated; the spellings are those the conformance
+corpus instantiates.
 
 **[ENV-032]** A rule of a type the checker does not implement **MUST** be skipped — never counted as
 a pass and never counted as a failure. Silence about an unimplementable rule is honest; a pass is
@@ -1661,17 +1840,23 @@ hypothetical.
 This revision is the first occasion the versioning rule has had to adjudicate real changes, so
 the working is shown.
 
-**Vocabulary extensions — no version marker.** The record identifier (§4.13), actor (§4.14),
-declared scope (§4.15), relations (§4.16), evidence (§4.17), alternative disposition (§4.5.2),
-and the question field ([REC-107]) are all new optional sections or fields. Every existing record
-parses unchanged, and in each case absence means *not recorded* rather than a claim. Edge
+**Vocabulary extensions — no version marker.** The record identifier (§4.13), attribution (§4.14),
+declared scope (§4.15), relations (§4.16), evidence (§4.17), the alternative-disposition *syntax*
+(§4.5.2), and the question field ([REC-107]) are all new optional sections or fields. Every existing
+record parses without error, and in each case absence means *not recorded* rather than a claim. Edge
 provenance (§5.5) constrains a structure the format did not previously describe at all.
 
-**A meaning change — version marker required.** Settled and unsettled status (§4.6.1) alters how
+**Two meaning changes — version marker required.** Settled and unsettled status (§4.6.1) alters how
 an existing field is interpreted: a status of `proposed` previously yielded ground-truth intent
 and now does not. Records do not change, but their *meaning* does, and a consumer written against
 the earlier reading would silently disagree with one written against this. That is exactly the
 line [VER-001] draws, and this change sits on the far side of it.
+
+The second is [REC-134], and it is the reason the alternative-disposition entry above is qualified.
+The *syntax* is additive — an older record still parses — but [REC-134] changes what the parse
+**yields** for every record, an item shape rather than a string, which is [VER-003]'s fourth bullet.
+The distinction is worth keeping in view: a change can be invisible on the read side of the document
+and still be a meaning change on the output side, and only the second half is what [VER-001] tests.
 
 **The ambiguity rules are a defect fix, not a change of meaning** ([REC-105], [REC-106]). They
 narrow behaviour that produced demonstrably wrong output — a reference resolving to an unrelated
@@ -1679,9 +1864,8 @@ record that merely shared a year. No conforming implementation could have relied
 behaviour, because the previous behaviour was not deterministic with respect to anything a reader
 could see.
 
-That one change of the eight requires a marker is the rule working as designed: additive
-extension is cheap and meaning change is expensive, so the format grows freely and reinterprets
-rarely.
+That two changes of the nine require a marker is the rule working as designed: additive extension is
+cheap and meaning change is expensive, so the format grows freely and reinterprets rarely.
 
 ## 8. Known gaps
 
@@ -1696,7 +1880,7 @@ gap: implementers build on it, and it becomes real without ever having been deci
 | ~~G3~~ | **RESOLVED by [REC-107].** The `Context` body is now parsed as `question` and reaches the intent node. The question is what identifies a decision — it is why the filename derives from it and why re-deciding updates rather than forks — so a representation omitting it could not recognise two answers to the same question. |
 | **G4** | **`resolution_delta` is not queryable.** Set on the node and reported at capture, but projected into no query result envelope ([REC-045]). The highest-signal field in the format is write-only from a consumer's point of view. |
 | **G5** | **Assumption provenance does not inherit.** Every assumption is minted `authored` regardless of its record's kind ([PROV-007]). |
-| **G6** | **`command` is not universal on every transport.** Four failure paths on the tool-call transport omit it ([ENV-012]). |
+| **G6** | **`command` is not universal on every transport.** Four failure paths on the tool-call transport omit it, breaking [ENV-002]; [ENV-012] is the consumer-side corollary. |
 | **G7** | **Result field sets are not uniform across variants.** `list-intent` entries carry `confidence_score`; `why` result entries do not, though both describe the same nodes. Neither carries `resolution_delta`. There is no stated principle governing which node fields a given variant projects. |
 | **G8** | **Multiple `## Decision` sections are first-wins with no diagnostic** ([REC-019]). A record with two Decision sections silently loses the second. Whether that should be an error is undecided. |
 | **G9** | **No rule governs a record whose title is duplicated** within the same directory. Identity ([REC-071]) includes the source path, so two records with the same title in different files are distinct nodes; two records with the same title in the *same* file are not addressable separately. |
@@ -1875,11 +2059,21 @@ Every normative rule, with its one-line statement.
 | REC-124 | Only the label component is normalized (REC-072). |
 | REC-125 | An absent status and an unrecognized status are both unstated, and MUST be treated identically per the table. Neither MUST be read as open. |
 | REC-126 | Where the question is absent, empty, or reduces to an empty slug, the slug MUST be the literal decision. |
+| REC-127 | For an assumption node, the source location and the normalized label are both derived from the claim as REC-038 yields it — the claim after the…. |
+| REC-128 | An actor is the ordered pair (kind, id) taken from an attribution's <kind>:<id> term. |
+| REC-129 | An attribution whose date is present but is not a full ISO-8601 calendar date (REC-117) MUST be yielded with its date absent. |
+| REC-130 | A parser reading a record whose ## Evidence entry names a method outside REC-094's set MUST drop that entry and MUST NOT yield the value as a method. |
+| REC-131 | A directory ingest MUST consider exactly those entries in the directory whose name ends in .md and does not begin with . |
+| REC-132 | Where a document's first line is exactly ---, the bytes from that line through the next line that is exactly ---, inclusive, are YAML front matter…. |
+| REC-133 | In REC-097's form the separator is exactly one of em dash — (U+2014), en dash – (U+2013), or hyphen-minus -, with at least one whitespace character…. |
+| REC-134 | The alternatives a parser yields are objects, each carrying option and, where recorded, disposition and rationale (REC-097–REC-099). |
 | REC-135 | Emitter completeness. An emitter MUST be able to render every field a parser yields (§4.5–§4.17). |
 | REC-136 | Status provenance. The value rendered on the Status: line MUST be the record's own status. |
 | REC-137 | Where a record carries the corresponding field, an emitter MUST render each of these sections, in this order, after ## Decision and before ##…. |
 | REC-138 | An emitter MUST omit any of these sections entirely when its field is absent or empty, and MUST NOT emit a placeholder for it (REC-054). |
 | REC-139 | An emitter MUST render the Id: line, adjacent to Status: and Date:, when the record carries an identifier. |
+| REC-140 | A Decision section whose body is empty MUST yield rationale as an empty string, not an absent key. |
+| REC-141 | The properties REC-101 determines MUST be carried on the parsed record and the intent node under these key spellings: deliberation, offered, and…. |
 
 #### Provenance
 
@@ -1954,6 +2148,10 @@ Every normative rule, with its one-line statement.
 | ENV-041 | A transport that attaches a credential block MUST attach it unconditionally, with an explicit null when nothing resolved. |
 | ENV-042 | A transport-attached key MUST NOT collide with any key this specification assigns to a command variant. |
 | ENV-043 | Transport attachments are NOT governed by this specification's version marker (§7). _(out of scope: consumer)_ |
+| ENV-044 | The summary coverage variant MUST carry exactly these twelve coverage-specific keys alongside command and status: code_files, code_symbols…. |
+| ENV-045 | intent_debt MUST carry exactly these four components: dark_files, orphaned_intent, stale_decisions, unresolved_disputes. |
+| ENV-047 | The envelope field intent_kind names the kind of the node and is not constrained to REC-122's pair. |
+| ENV-048 | Each entry in a check envelope's violations MUST carry rule, file, message, and decision_id — the last being the identifier ENV-031 requires. |
 
 #### Versioning
 

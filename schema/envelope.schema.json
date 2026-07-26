@@ -438,7 +438,7 @@
     },
     "why_result": {
       "title": "why result entry",
-      "description": "[ENV-015] Each entry in `results` MUST carry `score`, `id`, `label`, `intent_kind`, `claim`, `rationale`, `alternatives`, `source_file`, `source_location`, `provenance`, `matched_terms`, `distinctive_matches`, `matched_coverage`.",
+      "description": "[ENV-015] Each entry in `results` MUST carry `disposition`, `score`, `id`, `label`, `intent_kind`, `claim`, `rationale`, `alternatives`, `source_file`, `source_location`, `provenance`, `matched_terms`, `distinctive_matches`, `matched_coverage`. [PROV-019] `disposition` is there because a result containing intent MUST expose it.",
       "x-rule": [
         "ENV-015"
       ],
@@ -485,13 +485,13 @@
           "type": "string"
         },
         "intent_kind": {
-          "description": "[ENV-015] The kind of the node. [REC-122] closes the intent-kind IDENTITY COMPONENT at exactly `decision` or `assumption` for a node derived from a record, and forbids `adr`. No enum is stated here: [ENV-033] itself presupposes a `constraint` kind at envelope level, and §1.4 puts intent derived from non-record sources out of scope, so no rule closes this field.",
+          "description": "[ENV-015] The kind of the node. [ENV-047] This ENVELOPE field is NOT constrained to REC-122's pair, so no enum is stated here. [REC-122] closes the intent-kind IDENTITY COMPONENT at exactly `decision` or `assumption` for a node derived from a record, and forbids `adr`; an implementation MUST NOT hash any other value as that component, and MUST NOT reject an envelope carrying another value here. [ENV-033] presupposes a `constraint` kind at envelope level, and §1.4 puts intent derived from non-record sources out of scope.",
           "x-rule": [
             "ENV-015",
+            "ENV-047",
             "REC-122",
             "ENV-033"
           ],
-          "x-incomplete": "REC-122's closed pair and ENV-033's `constraint` cannot both describe this field. See PROPOSED-RULES.md, ENV-047.",
           "type": "string"
         },
         "claim": {
@@ -701,13 +701,13 @@
           "type": "string"
         },
         "intent_kind": {
-          "description": "[ENV-022] The kind of the node. [REC-122] closes the intent-kind IDENTITY COMPONENT at exactly `decision` or `assumption` for a node derived from a record. No enum is stated here, for the reason given on the `why` result entry: [ENV-033] presupposes a `constraint` kind and §1.4 puts non-record intent out of scope.",
+          "description": "[ENV-022] The kind of the node. [ENV-047] This envelope field is NOT constrained to REC-122's pair, so no enum is stated here; the rule governs the field wherever it appears, not only on a `why` result. [REC-122] closes the intent-kind IDENTITY COMPONENT for a node derived from a record. [ENV-033] presupposes a `constraint` kind and §1.4 puts non-record intent out of scope.",
           "x-rule": [
             "ENV-022",
+            "ENV-047",
             "REC-122",
             "ENV-033"
           ],
-          "x-incomplete": "See PROPOSED-RULES.md, ENV-047.",
           "type": "string"
         },
         "claim": {
@@ -1125,16 +1125,27 @@
     },
     "coverage_summary": {
       "title": "coverage (corpus-wide summary)",
-      "description": "[ENV-028] The summary variant MUST carry a trusted-evidence block (`golden`) and a debt block (`intent_debt`) alongside its coverage counts. [ENV-006] The discriminator against the explain variant is the ABSENCE of the `explain` key; the two shapes share no keys beyond `command` and `status`.",
+      "description": "[ENV-044] The summary variant MUST carry exactly twelve coverage-specific keys alongside `command` and `status`; the `required` list below is that rule and nothing else. [ENV-028] Two of the twelve are the trusted-evidence block (`golden`) and the debt block (`intent_debt`). [ENV-006] The discriminator against the explain variant is the ABSENCE of the `explain` key; the two shapes share no keys beyond `command` and `status`.",
       "x-rule": [
+        "ENV-044",
         "ENV-028",
         "ENV-006"
       ],
-      "x-incomplete": "§6.1 states this variant carries `command`, `status` + TWELVE coverage-specific keys. Only two of the twelve are named by any rule (`golden`, `intent_debt` in ENV-028). The remaining ten are unnamed, so this schema requires only what a rule names and asserts the count via minProperties. See PROPOSED-RULES.md, ENV-044.",
+      "x-incomplete": "The KEY SET is closed by ENV-044; what remains open is (a) the TYPE of top-level `dark_files`, which two fixtures both labelled valid disagree about -- see the x-gap on that property -- and (b) tools/check_schema.py's check B, whose ENUMERATIONS table still maps this node to ENV-028 alone. ENV-028 names two of the twelve, so that check compares a partial rule against a complete schema and will report a spurious mismatch until ENV-044 is wired in beside it.",
       "type": "object",
       "required": [
         "command",
         "status",
+        "code_files",
+        "code_symbols",
+        "files_with_intent",
+        "symbols_with_intent",
+        "authored_anchored_files",
+        "authored_anchored_symbols",
+        "file_coverage_pct",
+        "symbol_coverage_pct",
+        "dark_files",
+        "intent_by_kind",
         "golden",
         "intent_debt"
       ],
@@ -1154,6 +1165,47 @@
             "ok"
           ]
         },
+        "code_files": {
+          "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type.",
+          "x-rule": ["ENV-044"]
+        },
+        "code_symbols": {
+          "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type.",
+          "x-rule": ["ENV-044"]
+        },
+        "files_with_intent": {
+          "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type.",
+          "x-rule": ["ENV-044"]
+        },
+        "symbols_with_intent": {
+          "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type.",
+          "x-rule": ["ENV-044"]
+        },
+        "authored_anchored_files": {
+          "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type.",
+          "x-rule": ["ENV-044"]
+        },
+        "authored_anchored_symbols": {
+          "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type.",
+          "x-rule": ["ENV-044"]
+        },
+        "file_coverage_pct": {
+          "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type or its scale; the corpus writes a percentage, not a fraction.",
+          "x-rule": ["ENV-044"]
+        },
+        "symbol_coverage_pct": {
+          "description": "[ENV-044] One of the twelve coverage-specific keys. No rule states its type or its scale; the corpus writes a percentage, not a fraction.",
+          "x-rule": ["ENV-044"]
+        },
+        "dark_files": {
+          "description": "[ENV-044] One of the twelve coverage-specific keys. [ENV-045] A `dark_files` COUNT already lives inside `intent_debt`, so a list of paths here adds information and a count duplicates it.",
+          "x-rule": ["ENV-044", "ENV-045"],
+          "x-gap": "No rule states the TYPE, so none is stated here. The two fixtures that instantiate this key once disagreed -- a list of paths in one, an integer count in the other, both labelled valid, which is ENV-009's defect one level down: the same name meaning 'how many' in one file and 'which ones' in another. Every fixture labelled valid now carries the LIST reading, which is also the reading that adds information given ENV-045's count inside `intent_debt`. Typing this as an array of paths is a one-line follow-up once a rule says so; ENV-044 names the key only."
+        },
+        "intent_by_kind": {
+          "description": "[ENV-044] One of the twelve coverage-specific keys. [ENV-047] Its keys are node kinds and are NOT constrained to REC-122's pair; the corpus carries `constraint`, `mechanism` and `tradeoff` beside `decision` and `assumption`.",
+          "x-rule": ["ENV-044", "ENV-047"]
+        },
         "golden": {
           "description": "[ENV-028] The trusted-evidence block. [PROV-010] The golden tiers MUST be exactly {authored, captured, attested}. [PROV-012] A trust metric MUST NOT blend tiers into a single scalar without also reporting the per-tier breakdown, so a blended figure here obliges a per-tier breakdown beside it. [PROV-011] `reconstructed` MUST NOT be counted. [PROV-018] Foreclosure intent MUST NOT be counted either, whatever its tier. [REC-103] Nor MUST open intent.",
           "x-rule": [
@@ -1168,19 +1220,46 @@
           "type": "object"
         },
         "intent_debt": {
-          "description": "[ENV-028] The debt block. [ENV-029] A component the implementation CANNOT COMPUTE MUST be reported as an explicit null, never as 0 -- a zero claims 'we measured and found none', a null honestly says 'not measured'. [ENV-039] Where the spec names a present-with-null field the key MUST be present.",
+          "description": "[ENV-028] The debt block. [ENV-045] It carries EXACTLY four components, each a non-negative integer or an explicit null, and none of them MAY be omitted -- that last clause is what makes ENV-029 enforceable, since an implementation could otherwise satisfy it by dropping the key. [ENV-029] A component the implementation CANNOT COMPUTE MUST be reported as an explicit null, never as 0 -- a zero claims 'we measured and found none', a null honestly says 'not measured'. [ENV-039] Where the spec names a present-with-null field the key MUST be present.",
           "x-rule": [
+            "ENV-045",
             "ENV-028",
             "ENV-029",
             "ENV-039"
           ],
-          "x-incomplete": "ENV-029 constrains the components without enumerating them, so 'a component the implementation cannot compute' names no field a validator can check. See PROPOSED-RULES.md, ENV-045.",
           "type": "object",
-          "additionalProperties": {
-            "type": [
-              "number",
-              "null"
-            ]
+          "required": [
+            "dark_files",
+            "orphaned_intent",
+            "stale_decisions",
+            "unresolved_disputes"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "dark_files": {
+              "description": "[ENV-045] A non-negative integer, or an explicit null where it cannot be computed ([ENV-029]). Note this is a COUNT; the top-level `dark_files` key is a separate field whose type is contested.",
+              "x-rule": ["ENV-045", "ENV-029"],
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "orphaned_intent": {
+              "description": "[ENV-045] A non-negative integer, or an explicit null where it cannot be computed ([ENV-029]).",
+              "x-rule": ["ENV-045", "ENV-029"],
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "stale_decisions": {
+              "description": "[ENV-045] A non-negative integer, or an explicit null where it cannot be computed ([ENV-029]).",
+              "x-rule": ["ENV-045", "ENV-029"],
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "unresolved_disputes": {
+              "description": "[ENV-045] A non-negative integer, or an explicit null where it cannot be computed ([ENV-029]).",
+              "x-rule": ["ENV-045", "ENV-029"],
+              "type": ["integer", "null"],
+              "minimum": 0
+            }
           }
         }
       }
@@ -1300,14 +1379,35 @@
         "ENV-031"
       ],
       "type": "object",
-      "x-incomplete": "ENV-031 mandates the citation without naming the key that carries it, so this schema states no `required` list. The corpus spells it `decision_id`. See PROPOSED-RULES.md, additional gap A2.",
+      "required": [
+        "rule",
+        "file",
+        "message",
+        "decision_id"
+      ],
       "properties": {
+        "rule": {
+          "description": "[ENV-048] The identifier of the rule that was evaluated.",
+          "x-rule": ["ENV-048"],
+          "type": "string"
+        },
+        "file": {
+          "description": "[ENV-048] The file the violation was found in.",
+          "x-rule": ["ENV-048"],
+          "type": "string"
+        },
+        "message": {
+          "description": "[ENV-048] The human-readable description of the violation.",
+          "x-rule": ["ENV-048"],
+          "type": "string"
+        },
         "decision_id": {
-          "description": "[ENV-031] The identifier of the decision this violation cites. Key spelling follows the conformance corpus; ENV-031 names the obligation, not the key.",
+          "description": "[ENV-048] The key that carries the citation. [ENV-031] The identifier of the decision this violation cites -- a rule whose failure cannot name the decision that motivated it is a lint, not a conformance check.",
           "x-rule": [
+            "ENV-048",
             "ENV-031"
           ],
-          "x-name-source": "corpus",
+          "x-name-source": "rule",
           "type": "string"
         }
       }
