@@ -676,6 +676,22 @@ character classes**. Neither `*-<slug>.md` nor `????-??-??-<slug>.md` is accepta
 **[REC-069]** **Fresh name.** Otherwise the destination **MUST** be
 `<today>-<question-slug>.md`.
 
+**[REC-126]** Where the question is absent, empty, or reduces to an empty slug, the slug
+**MUST** be the literal `decision`. An implementation **MUST NOT** fall back to a slug derived
+from the chosen option.
+
+The fallback [REC-126] forbids is not hypothetical — it is the natural thing to reach for, and it
+reintroduces exactly the collision the dated scheme exists to prevent. Chosen text repeats
+constantly across unrelated decisions ("keep it", "document only", "adopt the library"), which is
+why [REC-062] derives the slug from the question in the first place. A chosen-derived fallback
+puts two unrelated decisions on the same destination on the same day, and the second silently
+overwrites the first.
+
+The literal `decision` collides too, of course — but it collides *visibly and identically*, and
+[REC-064]'s existing-record lookup will find and update the earlier file rather than clobber it,
+because both records genuinely share an empty question. A degenerate name that behaves
+predictably is preferable to a plausible-looking one that loses data.
+
 **[REC-070]** A record's filename **MUST NOT** be changed by an implementation once written. Node
 identity derives from the record path ([REC-071]); renaming forks every node's identity and orphans
 every reference to it. This is why legacy names are honoured indefinitely rather than migrated: the
@@ -1718,6 +1734,7 @@ Every normative rule, with its one-line statement.
 | REC-123 | The identity MUST be intent_ followed by the first 12 characters of the lowercase hexadecimal SHA-1 digest of the joined string encoded as UTF-8. |
 | REC-124 | Only the label component is normalized (REC-072). |
 | REC-125 | An absent status (REC-031) is unstated — neither open nor resolved. |
+| REC-126 | Where the question is absent, empty, or reduces to an empty slug, the slug MUST be the literal decision. |
 
 #### Provenance
 
