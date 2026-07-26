@@ -369,7 +369,23 @@ when resolved, a **disposition** — `adopted` or `declined`:
 | `accepted` | resolved | yes | adopted | ground-truth intent |
 | `rejected` | resolved | yes | **declined** | **foreclosure intent** |
 
-A status outside this set **MUST** be treated as `open`, unoffered, with no disposition.
+**[REC-125]** An **absent** status ([REC-031]) is **unstated** — neither open nor resolved.
+A record with an unstated status **MUST** take its tier from its record kind ([PROV-005],
+[PROV-006]) and **MUST** yield ground-truth intent. An *unrecognized* status, by contrast, is
+treated as `open`, unoffered, with no disposition.
+
+The distinction between *unstated* and *open* is the same honest-absence rule the format applies
+everywhere else. `open` is something an author said; absence is something nobody said, and
+reading silence as a claim about deliberation would invent data.
+
+The direction matters here and runs opposite to the provenance default ([PROV-003]), so it is
+worth being explicit about why. Defaulting an unknown *provenance* to the weakest tier is safe
+because the alternative silently promotes unlabelled material into ground truth. Defaulting an
+unknown *status* to `open` would do the reverse damage: it would silently demote every record
+written before status was recorded — which is most records ever written in this format — and
+strip an entire existing corpus of ground truth on upgrade. Absence of a status is the historical
+norm, not a signal, and the conservative reading is the one that leaves such records where they
+already were.
 
 **[REC-109]** `draft` and `proposed` **MUST NOT** be treated as equivalent. A `draft` record has
 not been offered for deliberation; a `proposed` record has been offered and awaits resolution.
@@ -674,8 +690,49 @@ rename is the expensive operation, not the naming scheme.
 <canonical source path> :: <source location> :: <intent kind> :: <normalized label>
 ```
 
+**[REC-121]** The four inputs **MUST** be joined by exactly `::` with **no surrounding
+whitespace**.
+
+**[REC-122]** The **intent kind** component is the kind of the **node**, and **MUST** be exactly
+`decision` or `assumption`. It is **not** the record kind of [REC-009]: a record whose H1 is an
+ADR form still produces a **decision node**, and an implementation **MUST** hash `decision` for
+it. `adr` **MUST NOT** appear in an identity.
+
+**[REC-123]** The identity **MUST** be `intent_` followed by the first **12** characters of the
+**lowercase hexadecimal SHA-1** digest of the joined string encoded as UTF-8.
+
+**[REC-124]** Only the label component is normalized ([REC-072]). The source path is
+canonicalized per [REC-073]–[REC-074]; the source location **MUST** be hashed as it appears,
+without normalization.
+
 For a decision node, source location and label are both the record title, and intent kind is
 `decision`. For an assumption node they are derived from the claim, and the kind is `assumption`.
+
+[REC-121]–[REC-124] exist because an earlier draft specified an identity that was **derived,
+exact, and load-bearing** — and then left the digest itself undefined. It named the four inputs
+and the joiner in prose, showed the joiner with spaces in an adjacent display block, and said
+nothing whatever about which hash function, which encoding, what length, or what prefix. An
+independent implementation of that text chose SHA-256 at full length with no prefix, which is a
+perfectly reasonable reading and produces a completely different id for every record.
+
+That is the failure §4.13 warns about, arriving through the front door. The argument there is
+that a forked identity dangles every reference silently; [REC-073]'s rationale is that hashing
+the wrong *spelling* of a path forks the node. Hashing with a different *algorithm* forks every
+node in the corpus, and the specification supplied no way to get it right.
+
+[REC-122] resolves the genuine ambiguity in the same rule. The contrast the prose draws is
+between node types — decision versus assumption — while [REC-009]'s table presents `adr` and
+`decision` under a column headed "Kind". An implementer who reads that table first will
+reasonably hash `adr` for an ADR-headed record, and produce a different identity from one who
+reads §4.12 first. Both readings were available; only one can be correct.
+
+> **On SHA-1.** It is specified here because it is what existing corpora already contain, and
+> changing it would fork every identity in every deployed record — precisely the harm these rules
+> exist to prevent. It is used as a **content identifier, never as a security primitive**:
+> nothing in this format relies on collision resistance, and an identity is not a signature. The
+> 12-character truncation gives 48 bits, which is ample where corpora hold thousands of nodes
+> rather than millions; an implementation encountering a collision **MUST** report it rather than
+> silently merge the nodes.
 
 **[REC-072]** The **normalized label** **MUST** be the label lowercased, with every run of
 characters outside `[a-z0-9]` replaced by `_`, and leading/trailing `_` stripped.
@@ -1536,213 +1593,218 @@ Every normative rule, with its one-line statement.
 
 | Id | Statement |
 |---|---|
-| REC-001 | The bare root filename `Whyfile` is RESERVED and explicitly unclaimed; implementations MUST NOT assign it a meaning. |
-| REC-002 | A record MUST be a UTF-8 markdown document. |
-| REC-003 | A parser MUST tolerate a leading BOM without changing the parse. |
-| REC-004 | Headings match `^(#{1,6})\s+(.+)$`; a section body runs to the next heading of any level. |
-| REC-005 | Section heading text MUST be matched case-insensitively. |
-| REC-006 | YAML front matter MUST NOT be interpreted. |
-| REC-007 | Unrecognized sections MUST be ignored without error. |
-| REC-008 | A document is a record iff it has a matching H1 and a `Decision` section. |
-| REC-009 | Record kind comes from the H1 form: ADR heading → `adr`, Decision heading → `decision`. |
-| REC-010 | The first *matching* H1 wins; a non-matching H1 MUST NOT disqualify the document. |
-| REC-011 | ADR heading grammar: `ADR-<digits>` + separator (em dash / en dash / colon / hyphen) + title, case-insensitive. |
-| REC-012 | The ADR separator is REQUIRED; `# ADR-0007 Title` is not an ADR heading. |
-| REC-013 | Heading recognition MUST NOT require a zero-padded or fixed-width digit run. |
-| REC-014 | Decision heading grammar: `Decision:` + title, case-insensitive. |
-| REC-015 | The title is the heading with its prefix removed and trimmed. |
-| REC-016 | The title MUST be non-empty. |
-| REC-017 | For a decision record the title is the chosen option. |
-| REC-018 | Recognized sections: `Decision` (required), `Context`, `Alternatives considered`/`Alternatives`, `Recommendation`, `Assumptions`, `Status`. |
-| REC-019 | When a heading appears more than once the first occurrence wins. |
-| REC-020 | Records SHOULD write recognized sections at level 2 (parsers accept any level). |
-| REC-021 | `Context` carries the question; emitters MUST render it, parsers MAY ignore it. |
-| REC-022 | The alternatives body MUST be parsed as a flat list on `\d+.` / `-` / `*` markers. |
-| REC-023 | Alternative text MUST be whitespace-collapsed, trimmed, and stripped of `**`; empty items dropped. |
+| REC-001 | The bare, extensionless filename Whyfile at a repository root is RESERVED by this specification and is explicitly unclaimed. |
+| REC-002 | A record MUST be a UTF-8 encoded markdown document. |
+| REC-003 | A parser MUST tolerate a leading UTF-8 byte-order mark (U+FEFF) and MUST NOT let its presence change the parse. |
+| REC-004 | A parser MUST treat a line matching ^(#{1,6})\s+(.+)$ as a heading, where the count of # characters is the heading level and the remainder, trimmed…. |
+| REC-005 | Heading text MUST be matched case-insensitively when a parser is deciding which section a heading names. |
+| REC-006 | YAML front matter, if present, MUST NOT be interpreted by a conforming parser. Front matter is human and external-tooling metadata. |
+| REC-007 | A parser MUST NOT require any section not named in §4. Unrecognized sections MUST be ignored without error. |
+| REC-008 | A markdown document is a record if and only if both of the following hold:. |
+| REC-009 | The record kind is determined by which level-1 form matched:. |
+| REC-010 | A parser MUST use the first level-1 heading that matches either form as the record's title heading, and MUST ignore any later level-1 heading. |
+| REC-011 | An ADR heading MUST match, case-insensitively:. |
+| REC-012 | The separator is REQUIRED. |
+| REC-013 | The digit run MUST NOT be required to be zero-padded or of any fixed width for *heading recognition*. # ADR-7: Title is a valid ADR heading. |
+| REC-014 | A decision heading MUST match, case-insensitively:. |
+| REC-015 | The record's title is the matched heading text with its prefix (the ADR-… run and separator, or the Decision: literal) removed, and surrounding…. |
+| REC-016 | The title MUST be non-empty. A record whose title reduces to the empty string MUST NOT be treated as a record. |
+| REC-017 | For a decision record the title is, by construction, the chosen option. |
+| REC-018 | A parser MUST recognize the following section headings, matched case-insensitively against the full trimmed heading text:. |
+| REC-019 | When more than one section matches the Decision heading, the parser MUST use the first and ignore the rest. |
+| REC-020 | Records SHOULD write all sections in REC-018 at heading level 2. |
+| REC-021 | The Context section carries the question the record answers. Emitters MUST render it (§4.10). |
+| REC-022 | The alternatives section body MUST be parsed as a flat list. |
+| REC-023 | Each item's text MUST be normalized by collapsing all whitespace runs to a single space, trimming, and removing every  sequence. |
 | REC-024 | Alternatives MUST be yielded in document order. |
-| REC-025 | A prose alternatives section MUST yield an empty list, not an error. |
-| REC-026 | Records SHOULD NOT nest list items under an alternative; nesting is flattened. |
-| REC-027 | Status MAY be given inline (`**Status:** X`) or as a `Status` section. |
-| REC-028 | When both status forms are present, the inline form MUST win. |
-| REC-029 | The inline status search spans the whole document; the first line-anchored match wins. |
-| REC-030 | A status value MUST normalize to its first run of lowercase alphabetic characters. |
-| REC-031 | An undeterminable status MUST be absent — no default, no explicit null. |
-| REC-032 | A record whose status is `rejected` MUST NOT become ground truth, nor may its assumptions. |
-| REC-033 | No status value other than `rejected` is normative. |
-| REC-034 | Each assumption list item yields a `claim` plus two optional fields. |
-| REC-035 | `(review by YYYY-MM-DD)` / `(review-by: …)` MUST be captured as `review_by` and stripped from the claim. |
-| REC-036 | `review_by` MUST be a full ISO-8601 calendar date. |
-| REC-037 | `(expires: …)` MUST be captured as free-text `expiry` and stripped from the claim. |
-| REC-038 | Claim text MUST be whitespace-collapsed and trimmed of spaces and periods. |
-| REC-039 | `review_by` / `expiry` MUST be omitted when absent, not null. |
-| REC-040 | Supersession is collected from `supersedes ADR-N` over the whole document. |
-| REC-041 | The passive form "superseded by ADR-N" MUST NOT be read as a supersession claim. |
-| REC-042 | Supersession refs MUST be uppercased, de-duplicated, first-seen order. |
-| REC-043 | A supersession target resolves by the first four-digit run in the target's filename. |
-| REC-044 | An unresolvable supersession reference MUST be dropped silently. |
-| REC-045 | A `Recommendation` differing from the title MUST yield `resolution_delta {recommended, chosen}`. |
-| REC-046 | An absent, empty, or title-equal recommendation MUST yield no `resolution_delta` key. |
-| REC-047 | `**Status:**` and `**Date:**` MUST be emitted on adjacent lines after the H1. |
-| REC-048 | Emitted section order MUST be Context, Decision, Alternatives considered, Recommendation. |
-| REC-049 | `Recommendation` MUST be emitted only when a non-empty recommendation was supplied. |
-| REC-050 | Empty Context and empty Alternatives MUST render the literal `(none recorded)`. |
-| REC-051 | An empty rationale MUST render the chosen option as the Decision body. |
-| REC-052 | Alternatives MUST be emitted as a flat one-based `N. ` numbered list in supplied order. |
-| REC-053 | An emitted record MUST end with a single trailing newline. |
-| REC-054 | `(none recorded)` MUST be used only where absence is itself an answer, never where it means "nobody was asked". |
-| REC-055 | A future optional section MUST be omitted entirely when empty, unless REC-054's first condition applies. |
-| REC-056 | Filenames SHOULD be `YYYY-MM-DD-<question-slug>.md`, slugged from the question, not the chosen option. |
-| REC-057 | Directory location is conventional, never normative; kind MUST NOT be inferred from it. |
-| REC-058 | Slug derivation: lowercase, non-`[a-z0-9]` runs → single `-`, strip edges. |
+| REC-025 | A prose (list-free) alternatives section MUST yield an empty alternatives list, not an error and not the prose. |
+| REC-026 | Records SHOULD NOT nest list items under an alternative. |
+| REC-027 | A record's status MAY be given in either of two forms:. |
+| REC-028 | When both forms are present the inline form MUST win. |
+| REC-029 | The inline form MUST be searched over the whole document, and the first line-anchored match MUST win. It is not scoped to any section. |
+| REC-030 | A status value MUST be normalized to its first run of lowercase alphabetic characters. |
+| REC-031 | When no status can be determined, the parsed record's status MUST be absent. |
+| REC-032 | A record whose normalized status is rejected MUST NOT become ground-truth intent of any tier, and its assumptions MUST NOT either. |
+| REC-033 | No other status value is normative. |
+| REC-034 | Each list item in the Assumptions section (parsed per REC-022–REC-025) MUST yield one assumption with a claim, plus two optional fields. |
+| REC-035 | An item MAY carry a review date matching, case-insensitively, \(?\s*review -by:?\s*(\d{4}-\d{2}-\d{2})\s*\)? — accepting (review by 2027-01-31) and…. |
+| REC-036 | review_by MUST be a full ISO-8601 calendar date, YYYY-MM-DD. |
+| REC-037 | An item MAY carry an expiry condition matching, case-insensitively, \(\s*expires?:?\s*(^)+?)\s*\). |
+| REC-038 | After both strippings, the claim MUST be normalized by collapsing whitespace and trimming spaces and periods from both ends. |
+| REC-039 | review_by and expiry MUST be omitted entirely when not present, not serialized as null. |
+| REC-040 | A record declares supersession in prose. A parser MUST collect every match of \bsupersedes?\s+(ADR-\d+), case-insensitively, over the whole document. |
+| REC-041 | The passive form — "superseded by ADR-N" — MUST NOT be read as a supersession claim. |
+| REC-042 | Collected references MUST be uppercased, de-duplicated, and yielded in first-seen order. |
+| REC-043 | Resolving a reference to a target record MUST be done by the ADR number in the target's filename, taken as the first run of exactly four digits. |
+| REC-044 | A supersession reference that resolves to no known record MUST be dropped silently, not reported as a violation. |
+| REC-045 | When a record carries a Recommendation section whose trimmed body differs from the record's trimmed title, the resulting intent node MUST carry a…. |
+| REC-046 | When the recommendation is absent, empty, or equal to the title, resolution_delta MUST be omitted from the node entirely. |
+| REC-047 | The Status: and Date: lines MUST be emitted on adjacent lines immediately after a single blank line following the H1, with no blank line between them. |
+| REC-048 | Section order MUST be: Context, Decision, Alternatives considered, then Recommendation. |
+| REC-049 | The Recommendation section MUST be emitted only when a non-empty recommendation was supplied, and MUST be omitted entirely otherwise. |
+| REC-050 | When no question was supplied, the Context body MUST be the literal (none recorded). |
+| REC-051 | When the rationale is empty, the Decision body MUST be the chosen option (the title). |
+| REC-052 | Alternatives MUST be emitted as a flat, one-based, N. numbered list in the order supplied. |
+| REC-053 | The document MUST end with a single trailing newline. |
+| REC-054 | A (none recorded) placeholder MUST be emitted only for a section where the absence of content is itself an answer — "we considered the question and…. |
+| REC-055 | Accordingly, an optional section added by a future vocabulary extension (§7) MUST be omitted entirely when it has no content, unless REC-054's first…. |
+| REC-056 | A record's filename SHOULD be YYYY-MM-DD-<question-slug>.md, where the date is the UTC calendar date of capture and the slug derives from the…. |
+| REC-057 | Records SHOULD live under docs/decisions/; ADR records SHOULD live under docs/adr/. |
+| REC-058 | A slug MUST be derived from its source text by:. |
 | REC-059 | A slug MUST be bounded at 60 characters. |
-| REC-060 | Truncation MUST land on a word boundary. |
-| REC-061 | A first word exceeding the bound MUST be hard-cut — the only permitted mid-word cut. |
-| REC-062 | An empty slug MUST become the literal `decision`. |
-| REC-063 | A slug MUST NOT be able to contain a glob metacharacter. |
-| REC-064 | A legacy `<slug-of-chosen>.md` MUST be reused when its `## Context` equals the question. |
-| REC-065 | A legacy file MUST NOT be claimed on filename alone, nor when unreadable or unrecognized. |
-| REC-066 | An empty question matches only a recorded context of `(none recorded)`. |
-| REC-067 | Otherwise reuse the lexicographically first existing dated record for the same question slug, whatever its date. |
-| REC-068 | The dated-record glob MUST use digit character classes; `*` and `?` forms are forbidden. |
-| REC-069 | Otherwise the destination MUST be `<today>-<question-slug>.md`. |
-| REC-070 | An implementation MUST NOT rename an existing record; identity derives from the path. |
-| REC-071 | Node identity MUST hash `path :: location :: kind :: normalized-label`. |
-| REC-072 | Normalized label: lowercase, non-`[a-z0-9]` runs → `_`, strip edge `_`. |
-| REC-073 | The source path in identity MUST be repository-relative, POSIX-separated. |
-| REC-074 | A path outside a repository falls back to POSIX absolute; canonicalization MUST NOT raise. |
+| REC-060 | Truncation MUST land on a word boundary: truncate to the bound, then, if the result contains a -, drop everything from the last - onward, then strip…. |
+| REC-061 | If the first word alone exceeds the bound, the slug MUST be hard-cut. A slug must be bounded; this is the only case where a mid-word cut is permitted. |
+| REC-062 | A slug that reduces to the empty string MUST become the literal decision. |
+| REC-063 | Because slug output is restricted to a-z0-9- by REC-058, a slug MUST NOT be able to contain a glob metacharacter. |
+| REC-064 | Legacy name. |
+| REC-065 | A legacy file MUST NOT be claimed on filename alone. |
+| REC-066 | A question that is empty MUST be treated as matching a recorded context of (none recorded), and only that. |
+| REC-067 | Existing dated record. |
+| REC-068 | The date portion of the pattern in REC-067 MUST be expressed with digit character classes. Neither *-<slug>.md nor ????-??-??-<slug>.md is acceptable. |
+| REC-069 | Fresh name. Otherwise the destination MUST be <today>-<question-slug>.md. |
+| REC-070 | A record's filename MUST NOT be changed by an implementation once written. |
+| REC-071 | An intent node's identity MUST be derived from exactly four inputs, joined by :: in this order, and hashed:. |
+| REC-072 | The normalized label MUST be the label lowercased, with every run of characters outside a-z0-9 replaced by _, and leading/trailing _ stripped. |
+| REC-073 | The canonical source path MUST be the repository-relative path in POSIX separator form. |
+| REC-074 | A path outside any repository MUST fall back to a POSIX-normalized absolute spelling. Path canonicalization MUST NOT raise. |
 | REC-075 | A record MAY carry an identifier in the inline field form, Id: <value>, placed with Status and Date. |
 | REC-076 | An identifier, once written, MUST NOT be regenerated, and MUST NOT be derived from any mutable part of the record. |
-| REC-077 | An identifier MUST be stable across an edit to any other part of the record. |
-| REC-078 | An identifier MUST be unique within a corpus. |
-| REC-079 | A record MAY carry an `## Attribution` section, one `<role> <kind>:<id> [on <date>]` per item. |
-| REC-080 | `<kind>` is `human` or `agent`; `<role>` is `drafted`, `decided` or `ratified`. Both closed. |
-| REC-081 | A record MAY carry any number of attributions; absence means unrecorded, never `human`. |
-| REC-082 | A record MAY carry a ## Governs section listing the artifacts the decision governs, one per list item, parsed per [REC…. |
-| REC-083 | Each item MUST be an artifact reference. |
-| REC-084 | An absent ## Governs section MUST be read as *scope not declared*. |
+| REC-077 | An identifier MUST be stable across an edit to any other part of the record. A record whose title is corrected retains its identifier. |
+| REC-078 | An identifier MUST be unique within a corpus. Two records sharing an identifier is an error; neither MUST be treated as the referent. |
+| REC-079 | A record MAY carry an ## Attribution section, one attribution per list item, in the form <role> <kind>:<id> on <date>. |
+| REC-080 | <kind> MUST be one of exactly human or agent. <role> MUST be one of exactly drafted, decided, or ratified. |
+| REC-081 | A record MAY carry any number of attributions, including several sharing a role. An absent attribution MUST be read as *unrecorded*. |
+| REC-082 | A record MAY carry a ## Governs section listing the artifacts the decision governs, one per list item, parsed per REC-022–REC-025. |
+| REC-083 | Each item MUST be an artifact reference. This version defines exactly one kind of artifact reference: a repository-relative path glob. |
+| REC-084 | An absent ## Governs section MUST be read as *scope not declared*. It MUST NOT be read as *governs nothing*. |
 | REC-085 | A declared scope MUST inherit the provenance of the record that declares it. |
-| REC-086 | An artifact reference that resolves to zero artifacts MUST be reported as a distinct, named state — neither silently d…. |
+| REC-086 | An artifact reference that resolves to zero artifacts MUST be reported as a distinct, named state — neither silently dropped nor treated as an error. |
 | REC-087 | A record MAY carry a ## Relations section, one relation per list item, in the form <relation> <identifier>. |
 | REC-088 | <relation> MUST be one of exactly supersedes, refines, constrains, motivated_by, trade_off_against, or contradicts. |
-| REC-089 | <identifier> MUST be a record identifier ([REC-075]) or an ADR number. |
-| REC-090 | A relation whose target cannot be resolved MUST be dropped silently, per the same reasoning as [REC-044] — a corpus ma…. |
-| REC-091 | A relation whose target is ambiguous — resolving to more than one candidate record — MUST be dropped, and MUST NOT be …. |
-| REC-092 | A declared relation MUST carry the provenance of the record declaring it (§5.5). |
-| REC-093 | A record MAY carry an ## Evidence section, one entry per list item, in the form <method>: <qualifier>, where the quali…. |
+| REC-089 | <identifier> MUST be a record identifier (REC-075) or an ADR number. |
+| REC-090 | A relation whose target cannot be resolved MUST be dropped silently, per the same reasoning as REC-044 — a corpus may be partial. |
+| REC-091 | A relation whose target is ambiguous — resolving to more than one candidate record — MUST be dropped, and MUST NOT be resolved to any one of them. |
+| REC-092 | A declared relation MUST carry the provenance of the record declaring it (§5.5). An inferred relation MUST NOT be presented as a declared one. |
+| REC-093 | A record MAY carry an ## Evidence section, one entry per list item, in the form <method>: <qualifier>, where the qualifier is optional. |
 | REC-094 | <method> MUST be one of exactly grep, diff, executed, read, or traced. |
-| REC-095 | An entry MAY cite the deliberation that produced the decision, as a reference to where that deliberation occurred. |
-| REC-096 | A record with no ## Evidence section records nothing about method. |
-| REC-097 | An alternative item MAY carry a disposition and a rejection rationale, in the form <option> — <disposition>: <rational…. |
+| REC-095 | An entry MAY cite the deliberation that produced the decision, as a reference to where that deliberation occurred. A citation MUST be a reference. |
+| REC-096 | A record with no ## Evidence section records nothing about method. It MUST NOT be read as *no evidence existed*, and MUST NOT be flagged on that basis. |
+| REC-097 | An alternative item MAY carry a disposition and a rejection rationale, in the form <option> — <disposition>: <rationale>. |
 | REC-098 | <disposition> MUST be one of exactly rejected, deferred, partially-adopted, or not-evaluated. |
-| REC-099 | An alternative carrying no disposition MUST yield the whole item as its option text, with disposition and rationale ab…. |
-| REC-100 | deferred MUST NOT be treated as equivalent to rejected. |
-| REC-101 | A status MUST be classified as settled or unsettled. |
-| REC-102 | Only a record with a settled status MUST yield ground-truth intent. |
-| REC-103 | A record with an unsettled status other than rejected MUST still be ingested, MUST be marked as unsettled on the resul…. |
-| REC-104 | A record whose status is rejected MUST NOT yield intent of any tier, per [REC-032], and this MUST hold at every layer …. |
-| REC-105 | A supersession reference that resolves to more than one candidate record MUST be dropped, exactly as [REC-044] drops a…. |
+| REC-099 | An alternative carrying no disposition MUST yield the whole item as its option text, with disposition and rationale absent. |
+| REC-100 | deferred MUST NOT be treated as equivalent to rejected. A deferred option remains available. |
+| REC-101 | A status MUST determine a deliberation state — open or resolved — and, when resolved, a disposition — adopted or declined:. |
+| REC-102 | Only a status that is resolved *and* adopted MUST yield ground-truth intent. |
+| REC-103 | A record whose deliberation is open MUST be ingested, MUST be marked open on the resulting intent, and MUST NOT be counted toward any…. |
+| REC-104 | A record whose disposition is declined MUST yield foreclosure intent: it MUST be retained and queryable, MUST NOT be counted toward any…. |
+| REC-105 | A supersession reference that resolves to more than one candidate record MUST be dropped, exactly as REC-044 drops an unresolved one. |
 | REC-106 | A filename MUST NOT be treated as carrying an ADR number when the four-digit run is part of a date. |
 | REC-107 | A parser MUST yield the Context body as a question field on the parsed record, and it MUST reach the intent node. |
-| REC-108 | `superseded` MUST NOT be a status; currency is derived from an incoming `supersedes` relation. |
-| REC-109 | `draft` and `proposed` MUST NOT be treated as equivalent; draft is not offered for deliberation. |
-| REC-110 | A review surface SHOULD NOT present a `draft` record and SHOULD present a `proposed` one. |
-| REC-111 | Currency MUST be derived from the relation graph, never authored on the record. |
-| REC-112 | A record is historical when a `supersedes` relation names it, and current otherwise. |
-| REC-113 | Supersession MUST be applied transitively along a chain. |
-| REC-114 | A record in a supersession cycle MUST be reported as indeterminate, never resolved by tiebreak. |
-| REC-115 | The roles `drafted`, `decided` and `ratified` are distinct and MUST NOT be conflated. |
-| REC-116 | Attribution governs tier when present; kind-based assignment applies only when absent. |
-| REC-117 | Each attribution carries its own provenance and MAY carry an ISO-8601 date. |
-| REC-118 | A ratification by an actor who also drafted or decided is self-ratification: marked, never promoting. |
-| REC-119 | A ratification alone MUST NOT promote; promotion requires corroboration external to the record. |
-| REC-120 | Self-ratifications and uncorroborated ratifications MUST be retained, never discarded. |
+| REC-108 | superseded MUST NOT be a status. A record is superseded when, and only when, another record declares a supersedes relation naming it (§4.16). |
+| REC-109 | draft and proposed MUST NOT be treated as equivalent. |
+| REC-110 | A review surface SHOULD NOT present a draft record, and SHOULD present a proposed one. Both remain queryable on request. |
+| REC-111 | A record's currency — whether the decision it carries is still live — MUST be derived from the relation graph. It MUST NOT be authored on the record. |
+| REC-112 | A record is historical when at least one other record declares a supersedes relation naming it, and current otherwise. |
+| REC-113 | Supersession MUST be applied transitively. Where A supersedes B and B supersedes C, both B and C are historical. |
+| REC-114 | A record participating in a supersession cycle MUST be reported as having indeterminate currency. |
+| REC-115 | The roles are distinct and MUST NOT be conflated. |
+| REC-116 | Where a record carries an ## Attribution section, ratification governs its provenance tier and the kind-based assignment of PROV-005/PROV-006 MUST…. |
+| REC-117 | Each attribution MUST carry its own provenance (§5.5) and MAY carry a date. Where a date is present it MUST be a full ISO-8601 calendar date. |
+| REC-118 | A ratification is self-ratification when the same actor also carries the role drafted or decided on that record. |
+| REC-119 | A ratification alone MUST NOT promote a record to authored. |
+| REC-120 | Neither a self-ratification nor an uncorroborated ratification MUST be discarded. |
+| REC-121 | The four inputs MUST be joined by exactly :: with no surrounding whitespace. |
+| REC-122 | The intent kind component is the kind of the node, and MUST be exactly decision or assumption. |
+| REC-123 | The identity MUST be intent_ followed by the first 12 characters of the lowercase hexadecimal SHA-1 digest of the joined string encoded as UTF-8. |
+| REC-124 | Only the label component is normalized (REC-072). |
+| REC-125 | An absent status (REC-031) is unstated — neither open nor resolved. |
 
 #### Provenance
 
 | Id | Statement |
 |---|---|
-| PROV-001 | Provenance MUST be one of exactly four values; the set is closed. |
-| PROV-002 | The total order MUST be `authored > captured > attested > reconstructed`. |
-| PROV-003 | Absent or unrecognized provenance MUST rank as `reconstructed`. |
-| PROV-004 | Trust ordering MUST use provenance as primary key, numeric confidence as secondary. |
-| PROV-005 | An ADR record MUST yield `authored` intent. |
-| PROV-006 | A decision record MUST yield `captured` intent. |
-| PROV-007 | An assumption SHOULD inherit its record's provenance tier. |
-| PROV-008 | Intent ingested from a record MUST carry confidence `1.0`. |
-| PROV-009 | Provenance MUST NOT be conflated with a numeric or string confidence label. |
-| PROV-010 | The golden (trusted) tiers MUST be exactly `{authored, captured, attested}`. |
-| PROV-011 | `reconstructed` intent MUST NOT count toward any trusted-evidence metric. |
-| PROV-012 | A blended trust metric MUST also report the per-tier breakdown. |
-| PROV-013 | An edge — any relationship between two intent nodes, or between an intent node and an artifact — MUST carry its own pr…. |
-| PROV-014 | A relation declared in a record (§4.16) MUST carry the provenance of the declaring record. |
+| PROV-001 | Provenance MUST be one of exactly four values. The set is closed; an implementation MUST NOT mint a fifth without a version marker (§7, VER-003). |
+| PROV-002 | The tiers MUST be totally ordered, highest trust first:. |
+| PROV-003 | Intent with absent or unrecognized provenance MUST be ranked as reconstructed. |
+| PROV-004 | When results are ordered by trust, provenance MUST be the primary sort key and any numeric confidence the secondary key. |
+| PROV-005 | An ADR record (REC-009) carrying no ## Attribution section MUST yield authored intent. |
+| PROV-006 | A decision record (REC-009) carrying no ## Attribution section MUST yield captured intent. |
+| PROV-007 | An assumption node SHOULD inherit the provenance tier of the record that declared it. |
+| PROV-008 | Intent ingested from a record MUST carry a numeric confidence of 1.0. The record *is* the evidence; there is nothing to be uncertain about at ingest. |
+| PROV-009 | An implementation MUST NOT conflate provenance with a numeric confidence score or with any string confidence label from an extraction pipeline. |
+| PROV-010 | The golden tiers — the evidence classes that count as trusted — MUST be exactly {authored, captured, attested}. |
+| PROV-011 | reconstructed intent MUST NOT be counted toward any trusted-evidence metric. |
+| PROV-012 | A trust metric MUST NOT blend tiers into a single scalar without also reporting the per-tier breakdown. |
+| PROV-013 | An edge — any relationship between two intent nodes, or between an intent node and an artifact — MUST carry its own provenance. |
+| PROV-014 | A relation declared in a record (§4.16) MUST carry the provenance of the declaring record. A relation produced by inference MUST be reconstructed. |
 | PROV-015 | A binding between intent and an artifact MUST be reconstructed unless it was declared (§4.15). |
-| PROV-016 | Ordering and trust rules ([PROV-002], [PROV-004]) apply to edges exactly as they apply to nodes. |
-| PROV-017 | Disposition and provenance are independent axes; neither may override the other. |
-| PROV-018 | Foreclosure intent MUST NOT count toward a trusted-evidence metric at any tier. |
-| PROV-019 | A result containing intent MUST expose disposition so consumers can partition it. |
-| PROV-020 | A consumer MUST NOT present foreclosure intent as what the team does. |
-| PROV-021 | Where attribution is present, tier is determined by ratification and never by record kind. |
+| PROV-016 | Ordering and trust rules (PROV-002, PROV-004) apply to edges exactly as they apply to nodes. |
+| PROV-017 | Disposition (§4.6.1) and provenance MUST be treated as independent axes. |
+| PROV-018 | Foreclosure intent MUST NOT be counted toward any trusted-evidence metric (PROV-010), regardless of its provenance tier. |
+| PROV-019 | A result containing intent MUST expose disposition, so a consumer can partition commitments from foreclosures without inspecting record text. |
+| PROV-020 | A consumer MUST NOT present foreclosure intent as an answer to what the authoring team *does*. |
+| PROV-021 | Where a record carries an ## Attribution section, its tier MUST be determined by ratification (REC-116, REC-119) and MUST NOT be determined by record…. |
 
 #### Envelope
 
 | Id | Statement |
 |---|---|
-| ENV-001 | A result MUST be a single JSON object. |
-| ENV-002 | Every envelope MUST carry `command`. |
-| ENV-003 | Every envelope MUST carry `status`, a lowercase snake_case token. |
-| ENV-004 | `command` and `status` are the ONLY universal keys. |
-| ENV-005 | The envelope MUST be a tagged union discriminated by `command`, not one struct of optionals. |
-| ENV-006 | Where one `command` carries disjoint shapes, the secondary discriminator MUST be named and applied first. |
-| ENV-007 | Status tokens are per-command, not global. |
-| ENV-008 | An unrecognized status MUST be treated as a failure. |
+| ENV-001 | A query result MUST be a single JSON object. Not an array, not a stream of objects, not a bare value. |
+| ENV-002 | Every envelope MUST carry a command key: a stable lowercase string naming the operation that produced it. |
+| ENV-003 | Every envelope MUST carry a status key: a lowercase snake_case token classifying the outcome. |
+| ENV-004 | command and status are the only universal keys. A consumer MUST NOT assume any other key is present without first dispatching on command. |
+| ENV-005 | The envelope MUST be modelled as a tagged union discriminated by command, over a small universal core of {command, status}. |
+| ENV-006 | Where a single command value carries more than one disjoint shape, the spec MUST name the secondary discriminator explicitly, and a consumer MUST…. |
+| ENV-007 | Status tokens are per-command, not global. The following are the tokens the reference implementation emits. |
+| ENV-008 | A consumer encountering an unrecognized status token MUST treat it as a failure. |
 | ENV-009 | A status MUST NOT be overloaded to carry data. |
-| ENV-010 | An honest-negative status is a complete answer, not an error. |
-| ENV-011 | The error variant MUST carry `command`, `status`, and `message`. |
-| ENV-012 | A consumer MUST NOT assume a variant key is present merely because `command` names that variant. |
-| ENV-013 | `why` MUST carry `query`, `count`, `cutoff`, `score_stats`, `results`. |
-| ENV-014 | `score_stats` MUST carry `top`, `runner_up`, `median` over the whole scored field. |
-| ENV-015 | Each `why` result MUST carry the 13 named fields including the three evidence fields. |
-| ENV-016 | `alternatives` MUST be a list of strings; a legacy scalar MUST be coerced, never iterated. |
-| ENV-017 | `matched_terms`, `distinctive_matches`, `matched_coverage` have fixed meanings. |
-| ENV-018 | `matched_coverage` MUST be in `[0, 1]`. |
-| ENV-019 | `topically_weak` MUST mean abstention above the cutoff and MUST NOT be read as `ok`. |
-| ENV-020 | `weak_match` MUST mean a probable answer below the cutoff with a clear margin. |
-| ENV-021 | `list-intent` MUST carry `count`, `filter`, `intent`; `filter` echoes unset criteria as null. |
-| ENV-022 | Each `list-intent` entry MUST carry the nine named fields. |
-| ENV-023 | `explain` `ok` MUST carry `query`, `resolved`, `intent`, `explains`, `relations`. |
-| ENV-024 | `explain` `ambiguous` MUST carry `candidates` and `message` and MUST NOT auto-select. |
-| ENV-025 | `changed` MUST carry `base`, `changed_files`, `files_with_intent`, `results`. |
-| ENV-026 | A basename match resolving to several paths MUST be reported `ambiguous`. |
-| ENV-027 | `digest` MUST carry `since`, `added`, `removed`, `superseded`. |
-| ENV-028 | `coverage` (summary) MUST carry a trusted-evidence block and a debt block. |
-| ENV-029 | An uncomputable debt component MUST be explicit `null`, never `0`. |
-| ENV-030 | `check` MUST carry `rules`, `files_checked`, `violations`. |
-| ENV-031 | Each violation MUST cite the decision it enforces. |
-| ENV-032 | An unimplemented rule type MUST be skipped — never a pass, never a failure. |
-| ENV-033 | Constraint-governed change MUST NOT be reported as a proven violation. |
-| ENV-034 | `capture` MUST carry `record`, `record_abs`, `node_id`, `title`, `provenance`, `resolution_delta`, `merged`. |
-| ENV-035 | Both the as-given and resolved record paths MUST be reported. |
-| ENV-036 | `merged` MUST report derived-view update independently of `status`. |
-| ENV-037 | `resolution_delta` MUST be present with explicit `null` when there is no delta. |
-| ENV-038 | Omitted means "not applicable"; explicit null means "applicable, value unavailable". |
-| ENV-039 | The two MUST NOT be used interchangeably. |
-| ENV-040 | A corpus-identity block MUST NOT be a core envelope field; it is a transport credential block. |
-| ENV-041 | A transport attaching a credential block MUST attach it unconditionally, null when unresolved. |
-| ENV-042 | A transport-attached key MUST NOT collide with any spec-assigned variant key. |
-| ENV-043 | Transport attachments are NOT governed by the spec's version marker. |
+| ENV-010 | A status that reports an honest negative — no_changes, no_strong_match, no_intent_governing_changes, no_references — is a complete answer, not an…. |
+| ENV-011 | An envelope reporting a failure MUST carry command, status, and a human- readable message. It MUST NOT be required to carry any variant-specific key. |
+| ENV-012 | A consumer MUST NOT assume a variant-specific key is present merely because command names a variant that normally has it. |
+| ENV-013 | The why envelope MUST carry: query (the question as asked), count (number of results returned), cutoff (the strong-match score threshold in effect)…. |
+| ENV-014 | score_stats MUST be an object with top, runner_up, and median — computed over the whole scored field, not only the returned rows. |
+| ENV-015 | Each entry in results MUST carry: score, id, label, intent_kind, claim, rationale, alternatives, source_file, source_location, provenance…. |
+| ENV-016 | alternatives MUST be a list of strings. |
+| ENV-017 | The three evidence fields have fixed meanings, and an implementation MUST NOT redefine them:. |
+| ENV-018 | matched_coverage MUST be in 0, 1 inclusive. |
+| ENV-019 | The topically_weak status MUST mean: the top result cleared the score cutoff, but its match evidence does not support treating it as an answer. |
+| ENV-020 | The weak_match status MUST mean: the top result scored *under* the cutoff but stands clearly apart from the runner-up — a probable answer at moderate…. |
+| ENV-021 | The list-intent envelope MUST carry count, filter, and intent. |
+| ENV-022 | Each entry in intent MUST carry: id, label, intent_kind, claim, rationale, source_file, source_location, confidence_score, provenance. |
+| ENV-023 | The ok variant MUST carry query, resolved, intent, explains, and relations. |
+| ENV-024 | The ambiguous variant MUST carry candidates and message and MUST NOT carry resolved. |
+| ENV-025 | The changed envelope MUST carry base (the reference diffed against, or null when files were supplied explicitly), changed_files, files_with_intent…. |
+| ENV-026 | ambiguous on a result MUST be true when the file was matched by basename and that basename resolves to more than one path. |
+| ENV-027 | The digest envelope MUST carry since, added, removed, and superseded. |
+| ENV-028 | The summary variant MUST carry a trusted-evidence block (golden) and a debt block (intent_debt) alongside its coverage counts. |
+| ENV-029 | A component of intent_debt that the implementation cannot compute MUST be reported as explicit null, never as 0. A zero claims "we measured and found…. |
+| ENV-030 | The check envelope MUST carry rules (count of rules evaluated), files_checked, and violations. |
+| ENV-031 | Each violation MUST carry the identifier of the decision it cites. |
+| ENV-032 | A rule of a type the checker does not implement MUST be skipped — never counted as a pass and never counted as a failure. |
+| ENV-033 | Both MUST distinguish *governed by a decision* from *governed by a constraint*. |
+| ENV-034 | The capture envelope MUST carry record (the path as given, from which node identity derives), record_abs (the resolved absolute destination)…. |
+| ENV-035 | record and record_abs MUST both be reported. |
+| ENV-036 | merged MUST report whether the derived view was updated, independently of status. |
+| ENV-037 | resolution_delta MUST be present with an explicit null when there was no delta. |
+| ENV-038 | A key omitted from an envelope or node MUST mean *not applicable to this variant*. |
+| ENV-039 | An implementation MUST NOT use the two interchangeably. |
+| ENV-040 | graph_identity — or any equivalent block identifying *which corpus answered* — MUST NOT be treated as a core envelope field. |
+| ENV-041 | A transport that attaches a credential block MUST attach it unconditionally, with an explicit null when nothing resolved. |
+| ENV-042 | A transport-attached key MUST NOT collide with any key this specification assigns to a command variant. |
+| ENV-043 | Transport attachments are NOT governed by this specification's version marker (§7). |
 
 #### Versioning
 
 | Id | Statement |
 |---|---|
-| VER-001 | A version marker and migration note are REQUIRED exactly when a change alters how an existing field or section is interpreted. |
-| VER-002 | Adding a new optional field or section MUST NOT require a version marker. |
-| VER-003 | Six named changes are meaning changes and MUST carry a marker (including adding a provenance tier). |
-| VER-004 | Four named changes are vocabulary extensions and MUST NOT carry a marker (including adding a command). |
+| VER-001 | A version marker and a migration note are REQUIRED exactly when a change alters how an EXISTING field or section is interpreted — a *meaning change*. |
+| VER-002 | A change that adds a new optional field or section — a *vocabulary extension* — MUST NOT require a version marker. |
+| VER-003 | Each of the following is a meaning change and MUST carry a version marker and a migration note:. |
+| VER-004 | Each of the following is a vocabulary extension and MUST NOT carry a version marker:. |
 | VER-005 | A change MUST NOT re-interpret the absence of a field in existing records as a claim. |
-| VER-006 | An implementation MUST NOT retroactively infer a value for an unrecorded field. |
-| VER-007 | The version marker governs the record format and core envelope only. |
-| VER-008 | The record format carries no explicit version marker today; the marker's format is intentionally unspecified until a meaning change requires one. |
+| VER-006 | An implementation MUST NOT retroactively infer a value for a field that a record does not carry. |
+| VER-007 | The version marker governs the record format and the core envelope only. |
+| VER-008 | The record format carries no explicit version marker today. A record is recognized by its H1 shape alone (REC-008). |
 
 ---
 
