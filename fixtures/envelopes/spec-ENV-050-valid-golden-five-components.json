@@ -1,0 +1,51 @@
+{
+  "rule": "ENV-050",
+  "statement": "The `golden` block MUST carry exactly five components, and a percentage MUST NOT be reported without the per-tier breakdown.",
+  "conformant": true,
+  "envelope": {
+    "command": "coverage",
+    "status": "ok",
+    "code_files": 48,
+    "code_symbols": 612,
+    "files_with_intent": 45,
+    "symbols_with_intent": 501,
+    "authored_anchored_files": 31,
+    "authored_anchored_symbols": 288,
+    "file_coverage_pct": 93.8,
+    "symbol_coverage_pct": 81.9,
+    "dark_files": [
+      "src/reporting/exporters.py",
+      "src/reporting/formatters.py",
+      "src/legacy/shim.py"
+    ],
+    "intent_by_kind": {
+      "decision": 22,
+      "assumption": 9,
+      "constraint": 4
+    },
+    "golden": {
+      "golden_tiers": [
+        "attested",
+        "authored",
+        "captured"
+      ],
+      "by_provenance": {
+        "authored": 12,
+        "captured": 18,
+        "attested": 5,
+        "reconstructed": 14
+      },
+      "golden_count": 35,
+      "total_intent": 49,
+      "golden_fraction_pct": 71
+    },
+    "intent_debt": {
+      "dark_files": 3,
+      "stale_decisions": 2,
+      "orphaned_intent": 0,
+      "unresolved_disputes": null
+    }
+  },
+  "control": "by_provenance sums to 49 and its three golden tiers sum to 35, matching total_intent and golden_count. A validator that only checks presence passes an envelope whose numbers contradict each other, so the components must be asserted individually rather than inferred from one another.",
+  "note": "golden_tiers restates PROV-010's trusted set so a consumer need not hard-code it."
+}

@@ -10598,6 +10598,70 @@
         "failing_condition": "dark_files is an integer and intent_debt.dark_files is an array — the shapes transposed"
       },
       "notes": "Every ENV-044 key present and every count internally consistent; only the shapes differ."
+    },
+    {
+      "id": "spec-ENV-050-valid-golden-five-components",
+      "rule_id": "ENV-050",
+      "family": "ENV",
+      "spec_rule_ids": [
+        "ENV-050"
+      ],
+      "rule_statement": "The golden block carries exactly five named components.",
+      "kind": "envelope",
+      "verdict_kind": "envelope_shape",
+      "path": "envelopes/spec-ENV-050-valid-golden-five-components.json",
+      "valid": true,
+      "expect": {
+        "conformant": true,
+        "command": "coverage",
+        "constraints": [
+          {
+            "path": "golden.by_provenance",
+            "op": "is_object"
+          },
+          {
+            "path": "golden.golden_tiers",
+            "op": "is_list"
+          },
+          {
+            "path": "golden.golden_count",
+            "op": "is_int"
+          },
+          {
+            "path": "golden.total_intent",
+            "op": "is_int"
+          },
+          {
+            "path": "golden.golden_fraction_pct",
+            "op": "is_int"
+          }
+        ]
+      },
+      "notes": "Numbers are internally consistent so presence-only checking cannot substitute for asserting each component."
+    },
+    {
+      "id": "spec-ENV-050-invalid-percentage-without-breakdown",
+      "rule_id": "ENV-050",
+      "family": "ENV",
+      "spec_rule_ids": [
+        "ENV-050",
+        "PROV-012"
+      ],
+      "rule_statement": "A percentage without its per-tier breakdown is non-conformant.",
+      "kind": "envelope",
+      "verdict_kind": "envelope_shape",
+      "path": "envelopes/spec-ENV-050-invalid-percentage-without-breakdown.json",
+      "valid": false,
+      "expect": {
+        "conformant": false,
+        "command": "coverage",
+        "violates": [
+          "ENV-050",
+          "PROV-012"
+        ],
+        "failing_condition": "golden.by_provenance absent while golden.golden_fraction_pct present"
+      },
+      "notes": "POLARITY: the omission IS the test. Never add by_provenance here."
     }
   ]
 }

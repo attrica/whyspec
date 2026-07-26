@@ -1131,7 +1131,6 @@
         "ENV-028",
         "ENV-006"
       ],
-      "x-incomplete": "The KEY SET is closed by ENV-044; what remains open is (a) the TYPE of top-level `dark_files`, which two fixtures both labelled valid disagree about -- see the x-gap on that property -- and (b) tools/check_schema.py's check B, whose ENUMERATIONS table still maps this node to ENV-028 alone. ENV-028 names two of the twelve, so that check compares a partial rule against a complete schema and will report a spurious mismatch until ENV-044 is wired in beside it.",
       "type": "object",
       "required": [
         "command",
@@ -1232,17 +1231,66 @@
           ]
         },
         "golden": {
-          "description": "[ENV-028] The trusted-evidence block. [PROV-010] The golden tiers MUST be exactly {authored, captured, attested}. [PROV-012] A trust metric MUST NOT blend tiers into a single scalar without also reporting the per-tier breakdown, so a blended figure here obliges a per-tier breakdown beside it. [PROV-011] `reconstructed` MUST NOT be counted. [PROV-018] Foreclosure intent MUST NOT be counted either, whatever its tier. [REC-103] Nor MUST open intent.",
+          "description": "[ENV-050] The trusted-evidence block. Five components, all required.",
           "x-rule": [
-            "ENV-028",
+            "ENV-050",
             "PROV-010",
-            "PROV-012",
-            "PROV-011",
-            "PROV-018",
-            "REC-103"
+            "PROV-012"
           ],
-          "x-incomplete": "No rule enumerates this block's components.",
-          "type": "object"
+          "type": "object",
+          "required": [
+            "golden_tiers",
+            "by_provenance",
+            "golden_count",
+            "total_intent",
+            "golden_fraction_pct"
+          ],
+          "properties": {
+            "golden_tiers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "[ENV-050] Tier names counted as trusted ([PROV-010]).",
+              "x-rule": [
+                "ENV-050",
+                "PROV-010"
+              ]
+            },
+            "by_provenance": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer"
+              },
+              "description": "[ENV-050] Every tier mapped to its count; required alongside the percentage by [PROV-012].",
+              "x-rule": [
+                "ENV-050",
+                "PROV-012"
+              ]
+            },
+            "golden_count": {
+              "type": "integer",
+              "description": "[ENV-050] Total across the golden tiers.",
+              "x-rule": [
+                "ENV-050"
+              ]
+            },
+            "total_intent": {
+              "type": "integer",
+              "description": "[ENV-050] Total across all tiers.",
+              "x-rule": [
+                "ENV-050"
+              ]
+            },
+            "golden_fraction_pct": {
+              "type": "integer",
+              "description": "[ENV-050] Integer percentage. MUST NOT be reported without by_provenance ([PROV-012]).",
+              "x-rule": [
+                "ENV-050",
+                "PROV-012"
+              ]
+            }
+          }
         },
         "intent_debt": {
           "description": "[ENV-028] The debt block. [ENV-045] It carries EXACTLY four components, each a non-negative integer or an explicit null, and none of them MAY be omitted -- that last clause is what makes ENV-029 enforceable, since an implementation could otherwise satisfy it by dropping the key. [ENV-029] A component the implementation CANNOT COMPUTE MUST be reported as an explicit null, never as 0 -- a zero claims 'we measured and found none', a null honestly says 'not measured'. [ENV-039] Where the spec names a present-with-null field the key MUST be present.",

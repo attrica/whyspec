@@ -2,7 +2,9 @@
   "rule": "ENV-049",
   "statement": "An implementation MUST NOT emit the top-level `dark_files` as a count, nor the `intent_debt` one as an array.",
   "conformant": false,
-  "violates": ["ENV-049"],
+  "violates": [
+    "ENV-049"
+  ],
   "failing_condition": "top-level `dark_files` is an integer where ENV-049 requires an array, and `intent_debt.dark_files` is an array where ENV-045 requires an integer — the two shapes swapped.",
   "envelope": {
     "command": "coverage",
@@ -22,8 +24,20 @@
       "constraint": 4
     },
     "golden": {
-      "fraction": 0.71,
-      "by_tier": { "authored": 12, "captured": 18, "attested": 5, "reconstructed": 14 }
+      "by_provenance": {
+        "authored": 12,
+        "captured": 18,
+        "attested": 5,
+        "reconstructed": 14
+      },
+      "golden_count": 35,
+      "golden_fraction_pct": 71,
+      "golden_tiers": [
+        "attested",
+        "authored",
+        "captured"
+      ],
+      "total_intent": 49
     },
     "intent_debt": {
       "dark_files": [
@@ -41,5 +55,6 @@
     "intent_debt.dark_files becomes the integer 3"
   ],
   "why_this_is_the_dangerous_case": "Every key required by ENV-044 is present, every count is internally consistent, and the envelope carries exactly the same information as its conformant twin. Only the shapes are transposed. A consumer written against the specification asks the outer key for paths and receives a number, or asks the inner one for a number and receives a list — and a validator checking presence rather than type reports the envelope as fine.",
-  "note": "This is the concrete form of one name meaning 'how many' in one place and 'which ones' in another. It is why the type had to be stated rather than left to convention, even though every valid fixture already agreed."
+  "note": "This is the concrete form of one name meaning 'how many' in one place and 'which ones' in another. It is why the type had to be stated rather than left to convention, even though every valid fixture already agreed.",
+  "_golden_note": "golden uses the corpus's established component set. An earlier draft of this fixture invented `{fraction, by_tier}` because no rule names these components — the exact hazard ENV-050 now closes."
 }

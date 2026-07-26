@@ -1670,6 +1670,23 @@ keys alongside `command` and `status`: `code_files`, `code_symbols`, `files_with
 `symbols_with_intent`, `authored_anchored_files`, `authored_anchored_symbols`, `file_coverage_pct`,
 `symbol_coverage_pct`, `dark_files`, `intent_by_kind`, `golden`, `intent_debt`.
 
+**[ENV-050]** The `golden` block **MUST** carry exactly these five components:
+`golden_tiers` (the array of tier names counted as trusted, per [PROV-010]), `by_provenance` (an
+object mapping every tier to its integer count), `golden_count` (the integer total across the
+golden tiers), `total_intent` (the integer total across all tiers), and `golden_fraction_pct`
+(the integer percentage). A trust metric **MUST NOT** report `golden_fraction_pct` without the
+`by_provenance` breakdown, per [PROV-012].
+
+> This rule exists because its absence caused the exact failure it prevents, in this document's
+> own corpus, hours before it was written. The schema carried an honest marker recording that no
+> rule enumerated these components; fixtures were then authored against `golden` anyway, and —
+> having no rule to consult — **invented a second, incompatible shape**. Two files claimed a
+> `{fraction, by_tier}` block while eight carried the five components above, each set
+> individually labelled valid.
+>
+> Naming the components is what stops the next author guessing. The marker was correct that the
+> gap was real; what it could not do was prevent anyone walking into it.
+
 **[ENV-049]** The summary `coverage` variant's top-level `dark_files` **MUST** be an **array of
 repository-relative paths**, and **MUST NOT** be a count. The `dark_files` inside `intent_debt`
 ([ENV-045]) remains an **integer** count. An implementation **MUST NOT** use the same shape for
@@ -2169,6 +2186,7 @@ Every normative rule, with its one-line statement.
 | ENV-047 | The envelope field intent_kind names the kind of the node and is not constrained to REC-122's pair. |
 | ENV-048 | Each entry in a check envelope's violations MUST carry rule, file, message, and decision_id — the last being the identifier ENV-031 requires. |
 | ENV-049 | The summary coverage variant's top-level dark_files MUST be an array of repository-relative paths, and MUST NOT be a count. |
+| ENV-050 | The golden block MUST carry exactly these five components: golden_tiers (the array of tier names counted as trusted, per PROV-010), by_provenance (an…. |
 
 #### Versioning
 

@@ -1,0 +1,50 @@
+{
+  "rule": "ENV-050",
+  "statement": "A trust metric MUST NOT report golden_fraction_pct without the by_provenance breakdown.",
+  "conformant": false,
+  "violates": [
+    "ENV-050",
+    "PROV-012"
+  ],
+  "failing_condition": "`by_provenance` is absent while `golden_fraction_pct` is reported",
+  "envelope": {
+    "command": "coverage",
+    "status": "ok",
+    "code_files": 48,
+    "code_symbols": 612,
+    "files_with_intent": 45,
+    "symbols_with_intent": 501,
+    "authored_anchored_files": 31,
+    "authored_anchored_symbols": 288,
+    "file_coverage_pct": 93.8,
+    "symbol_coverage_pct": 81.9,
+    "dark_files": [
+      "src/reporting/exporters.py",
+      "src/reporting/formatters.py",
+      "src/legacy/shim.py"
+    ],
+    "intent_by_kind": {
+      "decision": 22,
+      "assumption": 9,
+      "constraint": 4
+    },
+    "golden": {
+      "golden_fraction_pct": 71,
+      "golden_tiers": [
+        "attested",
+        "authored",
+        "captured"
+      ],
+      "golden_count": 35,
+      "total_intent": 49
+    },
+    "intent_debt": {
+      "dark_files": 3,
+      "stale_decisions": 2,
+      "orphaned_intent": 0,
+      "unresolved_disputes": null
+    }
+  },
+  "why_this_is_the_dangerous_case": "Four of five components are present and every number is correct. What is missing is the only one that shows the fraction's composition — so a reader sees 71% trusted and cannot tell whether it rests on twelve reviewed records or on a single one. That is precisely the blended number PROV-012 forbids.",
+  "note": "The omission is the violation; do not add by_provenance to this fixture."
+}

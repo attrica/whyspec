@@ -24,8 +24,20 @@
       "constraint": 4
     },
     "golden": {
-      "fraction": 0.71,
-      "by_tier": { "authored": 12, "captured": 18, "attested": 5, "reconstructed": 14 }
+      "by_provenance": {
+        "authored": 12,
+        "captured": 18,
+        "attested": 5,
+        "reconstructed": 14
+      },
+      "golden_count": 35,
+      "golden_fraction_pct": 71,
+      "golden_tiers": [
+        "attested",
+        "authored",
+        "captured"
+      ],
+      "total_intent": 49
     },
     "intent_debt": {
       "dark_files": 3,
@@ -35,5 +47,6 @@
     }
   },
   "control": "The two `dark_files` are deliberately CONSISTENT here — the array has three members and the count is 3 — so a validator that merely compares them passes both a conformant envelope and one that swapped the shapes. What must be asserted is the TYPE of each, not their agreement.",
-  "note": "A consumer wanting the number takes the array's length. A consumer wanting the paths cannot recover them from a count, which is why the outer key is the array and not the other way round."
+  "note": "A consumer wanting the number takes the array's length. A consumer wanting the paths cannot recover them from a count, which is why the outer key is the array and not the other way round.",
+  "_golden_note": "golden uses the corpus's established component set. An earlier draft of this fixture invented `{fraction, by_tier}` because no rule names these components — the exact hazard ENV-050 now closes."
 }
