@@ -31,7 +31,8 @@
       "distinctive_matches": [
         "logs"
       ],
-      "matched_coverage": 0.67
+      "matched_coverage": 0.67,
+      "disposition": "adopted"
     }
   ]
 }

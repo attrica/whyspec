@@ -333,9 +333,19 @@ existed*.
 **[REC-029]** The inline form **MUST** be searched over the whole document, and the **first**
 line-anchored match **MUST** win. It is not scoped to any section.
 
-**[REC-030]** A status value **MUST** be normalized to its first run of lowercase alphabetic
-characters. `Rejected in favor of ADR-9`, `: Rejected.`, and `REJECTED` all normalize to
-`rejected`. A value containing no alphabetic characters normalizes to absent.
+**[REC-030]** A status value **MUST** be normalized by **lowercasing it and then taking its first
+run of alphabetic characters**. `Rejected in favor of ADR-9`, `: Rejected.`, and `REJECTED` all
+normalize to `rejected`. A value containing no alphabetic characters normalizes to absent.
+
+> **Corrected.** This rule previously said "normalized to its first run of *lowercase* alphabetic
+> characters", which reads as *select* the first lowercase run rather than *lowercase first, then
+> select*. Taken literally it breaks all three of its own examples — `Accepted` yields `ccepted`
+> and `REJECTED` contains no lowercase run at all, so it normalizes to **absent**.
+>
+> That last case is not cosmetic. An absent status is *unstated* ([REC-125]), which takes its tier
+> from the record kind and **yields ground-truth intent** — so a record whose author wrote
+> `**Status:** REJECTED` in capitals would be published as a trusted commitment. It is the same
+> inversion [REC-032] and [REC-104] exist to prevent, reached through capitalization.
 
 **[REC-031]** When no status can be determined, the parsed record's status **MUST** be absent. An
 implementation **MUST NOT** substitute a default, and **MUST NOT** serialize an explicit null in
@@ -1230,8 +1240,20 @@ holds however it ranks.
 ### 5.5 Provenance of relationships
 
 **[PROV-013]** An **edge** — any relationship between two intent nodes, or between an intent node
-and an artifact — **MUST** carry its own provenance. An edge **MUST NOT** inherit provenance from
-either node it connects.
+and an artifact — **MUST** carry its own provenance, determined by **how the edge itself was
+established**: a declared edge takes the provenance of the record that declares it, and an
+inferred edge is `reconstructed`. An edge's provenance **MUST NOT** be assigned from the tier of a
+node merely because the edge connects to that node.
+
+> **Corrected.** This rule previously said an edge "MUST NOT inherit provenance from either node
+> it connects", which forbade exactly what [REC-085] mandates — a declared scope inheriting the
+> provenance of the record that declares it. Since a declared edge's source endpoint is always
+> that record, the two rules could not both be satisfied.
+>
+> The intent was never to sever an edge from its declarer. It was to stop a tier being assigned by
+> *adjacency* — an inferred edge touching an `authored` node reading as authored, which is the
+> live defect [PROV-015] describes. Establishment, not adjacency, is the distinction that matters,
+> and stating it that way keeps the guard while removing the contradiction.
 
 **[PROV-014]** A relation declared in a record (§4.16) **MUST** carry the provenance of the
 declaring record. A relation produced by inference **MUST** be `reconstructed`.
@@ -1732,7 +1754,7 @@ Every normative rule, with its one-line statement.
 | REC-027 | A record's status MAY be given in either of two forms:. |
 | REC-028 | When both forms are present the inline form MUST win. |
 | REC-029 | The inline form MUST be searched over the whole document, and the first line-anchored match MUST win. It is not scoped to any section. |
-| REC-030 | A status value MUST be normalized to its first run of lowercase alphabetic characters. |
+| REC-030 | A status value MUST be normalized by lowercasing it and then taking its first run of alphabetic characters. |
 | REC-031 | When no status can be determined, the parsed record's status MUST be absent. |
 | REC-032 | A record whose normalized status is rejected MUST NOT become ground-truth intent of any tier, and its assumptions MUST NOT either. |
 | REC-033 | The status values carrying normative behaviour are exactly those classified in §4.6.1 — draft, proposed, accepted, rejected — together with the…. |
@@ -1851,7 +1873,7 @@ Every normative rule, with its one-line statement.
 | PROV-010 | The golden tiers — the evidence classes that count as trusted — MUST be exactly {authored, captured, attested}. |
 | PROV-011 | reconstructed intent MUST NOT be counted toward any trusted-evidence metric. |
 | PROV-012 | A trust metric MUST NOT blend tiers into a single scalar without also reporting the per-tier breakdown. |
-| PROV-013 | An edge — any relationship between two intent nodes, or between an intent node and an artifact — MUST carry its own provenance. |
+| PROV-013 | An edge — any relationship between two intent nodes, or between an intent node and an artifact — MUST carry its own provenance, determined by how the…. |
 | PROV-014 | A relation declared in a record (§4.16) MUST carry the provenance of the declaring record. A relation produced by inference MUST be reconstructed. |
 | PROV-015 | A binding between intent and an artifact MUST be reconstructed unless it was declared (§4.15). |
 | PROV-016 | Ordering and trust rules (PROV-002, PROV-004) apply to edges exactly as they apply to nodes. |

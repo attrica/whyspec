@@ -25,7 +25,8 @@
       "rationale": "One warm store beats re-computing the same page on every request.",
       "score": 91,
       "source_file": "docs/decisions/2026-02-11-adopt-a-shared-cache-layer.md",
-      "source_location": "Adopt a shared cache layer for the search path"
+      "source_location": "Adopt a shared cache layer for the search path",
+      "disposition": "adopted"
     }
   ],
   "score_stats": {

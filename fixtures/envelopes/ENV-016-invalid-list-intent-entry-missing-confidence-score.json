@@ -15,7 +15,8 @@
       "provenance": "authored",
       "rationale": "An unbounded retry loop turns a slow dependency into an outage.",
       "source_file": "docs/adr/0031-retry-budgets.md",
-      "source_location": "Retry budgets are capped at three attempts"
+      "source_location": "Retry budgets are capped at three attempts",
+      "disposition": "adopted"
     }
   ],
   "status": "ok"
