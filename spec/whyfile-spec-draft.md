@@ -1973,17 +1973,17 @@ Every normative rule, with its one-line statement.
 | REC-005 | Heading text MUST be matched case-insensitively when a parser is deciding which section a heading names. |
 | REC-006 | YAML front matter, if present, MUST NOT be interpreted by a conforming parser. Front matter is human and external-tooling metadata. |
 | REC-007 | A parser MUST NOT require any section not named in §4. Unrecognized sections MUST be ignored without error. |
-| REC-008 | A markdown document is a record if and only if both of the following hold:. |
-| REC-009 | The record kind is determined by which level-1 form matched:. |
+| REC-008 | A markdown document is a record if and only if both of the following hold: — see the rule body for the enumeration. |
+| REC-009 | The record kind is determined by which level-1 form matched: — see the rule body for the enumeration. |
 | REC-010 | A parser MUST use the first level-1 heading that matches either form as the record's title heading, and MUST ignore any later level-1 heading. |
-| REC-011 | An ADR heading MUST match, case-insensitively:. |
+| REC-011 | An ADR heading MUST match, case-insensitively: — see the rule body for the enumeration. |
 | REC-012 | The separator is REQUIRED. |
 | REC-013 | The digit run MUST NOT be required to be zero-padded or of any fixed width for *heading recognition*. # ADR-7: Title is a valid ADR heading. |
-| REC-014 | A decision heading MUST match, case-insensitively:. |
+| REC-014 | A decision heading MUST match, case-insensitively: — see the rule body for the enumeration. |
 | REC-015 | The record's title is the matched heading text with its prefix (the ADR-… run and separator, or the Decision: literal) removed, and surrounding…. |
 | REC-016 | The title MUST be non-empty. A record whose title reduces to the empty string MUST NOT be treated as a record. |
 | REC-017 | For a decision record the title is, by construction, the chosen option. |
-| REC-018 | A parser MUST recognize the following section headings, matched case-insensitively against the full trimmed heading text:. |
+| REC-018 | A parser MUST recognize the following section headings, matched case-insensitively against the full trimmed heading text: — see the rule body for the enumeration. |
 | REC-019 | When more than one section matches the Decision heading, the parser MUST use the first and ignore the rest. |
 | REC-020 | Records SHOULD write all sections in REC-018 at heading level 2. |
 | REC-021 | The Context section carries the question the record answers. Emitters MUST render it (§4.10). |
@@ -1992,7 +1992,7 @@ Every normative rule, with its one-line statement.
 | REC-024 | Alternatives MUST be yielded in document order. |
 | REC-025 | A prose (list-free) alternatives section MUST yield an empty alternatives list, not an error and not the prose. |
 | REC-026 | Records SHOULD NOT nest list items under an alternative. |
-| REC-027 | A record's status MAY be given in either of two forms:. |
+| REC-027 | A record's status MAY be given in either of two forms: — see the rule body for the enumeration. |
 | REC-028 | When both forms are present the inline form MUST win. |
 | REC-029 | The inline form MUST be searched over the whole document, and the first line-anchored match MUST win. It is not scoped to any section. |
 | REC-030 | A status value MUST be normalized by lowercasing it and then taking its first run of alphabetic characters. |
@@ -2023,7 +2023,7 @@ Every normative rule, with its one-line statement.
 | REC-055 | Accordingly, an optional section added by a future vocabulary extension (§7) MUST be omitted entirely when it has no content, unless REC-054's first…. |
 | REC-056 | A record's filename SHOULD be YYYY-MM-DD-<question-slug>.md, where the date is the UTC calendar date of capture and the slug derives from the…. |
 | REC-057 | Records SHOULD live under docs/decisions/; ADR records SHOULD live under docs/adr/. |
-| REC-058 | A slug MUST be derived from its source text by:. |
+| REC-058 | A slug MUST be derived from its source text by: — see the rule body for the enumeration. |
 | REC-059 | A slug MUST be bounded at 60 characters. |
 | REC-060 | Truncation MUST land on a word boundary: truncate to the bound, then, if the result contains a -, drop everything from the last - onward, then strip…. |
 | REC-061 | If the first word alone exceeds the bound, the slug MUST be hard-cut. A slug must be bounded; this is the only case where a mid-word cut is permitted. |
@@ -2036,7 +2036,7 @@ Every normative rule, with its one-line statement.
 | REC-068 | The date portion of the pattern in REC-067 MUST be expressed with digit character classes. Neither *-<slug>.md nor ????-??-??-<slug>.md is acceptable. |
 | REC-069 | Fresh name. Otherwise the destination MUST be <today>-<question-slug>.md. |
 | REC-070 | A record's filename MUST NOT be changed by an implementation once written. _(out of scope: action)_ |
-| REC-071 | An intent node's identity MUST be derived from exactly four inputs, joined by :: in this order, and hashed:. |
+| REC-071 | An intent node's identity MUST be derived from exactly four inputs, joined by :: in this order, and hashed: — see the rule body for the enumeration. |
 | REC-072 | The normalized label MUST be the label lowercased, with every run of characters outside a-z0-9 replaced by _, and leading/trailing _ stripped. |
 | REC-073 | The canonical source path MUST be the repository-relative path in POSIX separator form. |
 | REC-074 | A path outside any repository MUST fall back to a POSIX-normalized absolute spelling. Path canonicalization MUST NOT raise. |
@@ -2113,7 +2113,7 @@ Every normative rule, with its one-line statement.
 | Id | Statement |
 |---|---|
 | PROV-001 | Provenance MUST be one of exactly four values. The set is closed; an implementation MUST NOT mint a fifth without a version marker (§7, VER-003). |
-| PROV-002 | The tiers MUST be totally ordered, highest trust first:. |
+| PROV-002 | The tiers MUST be totally ordered, highest trust first: — see the rule body for the enumeration. |
 | PROV-003 | Intent with absent or unrecognized provenance MUST be ranked as reconstructed. |
 | PROV-004 | When results are ordered by trust, provenance MUST be the primary sort key and any numeric confidence the secondary key. |
 | PROV-005 | An ADR record (REC-009) carrying no ## Attribution section MUST yield authored intent. |
@@ -2154,7 +2154,7 @@ Every normative rule, with its one-line statement.
 | ENV-014 | score_stats MUST be an object with top, runner_up, and median — computed over the whole scored field, not only the returned rows. |
 | ENV-015 | Each entry in results MUST carry: disposition, score, id, label, intent_kind, claim, rationale, alternatives, source_file, source_location…. |
 | ENV-016 | alternatives MUST be a list of strings. |
-| ENV-017 | The three evidence fields have fixed meanings, and an implementation MUST NOT redefine them:. |
+| ENV-017 | The three evidence fields have fixed meanings, and an implementation MUST NOT redefine them: — see the rule body for the enumeration. |
 | ENV-018 | matched_coverage MUST be in 0, 1 inclusive. |
 | ENV-019 | The topically_weak status MUST mean: the top result cleared the score cutoff, but its match evidence does not support treating it as an answer. |
 | ENV-020 | The weak_match status MUST mean: the top result scored *under* the cutoff but stands clearly apart from the runner-up — a probable answer at moderate…. |
@@ -2194,8 +2194,8 @@ Every normative rule, with its one-line statement.
 |---|---|
 | VER-001 | A version marker and a migration note are REQUIRED exactly when a change alters how an EXISTING field or section is interpreted — a *meaning change*. _(out of scope: governance)_ |
 | VER-002 | A change that adds a new optional field or section — a *vocabulary extension* — MUST NOT require a version marker. _(out of scope: governance)_ |
-| VER-003 | Each of the following is a meaning change and MUST carry a version marker and a migration note:. _(out of scope: governance)_ |
-| VER-004 | Each of the following is a vocabulary extension and MUST NOT carry a version marker:. _(out of scope: governance)_ |
+| VER-003 | Each of the following is a meaning change and MUST carry a version marker and a migration note: — see the rule body for the enumeration. _(out of scope: governance)_ |
+| VER-004 | Each of the following is a vocabulary extension and MUST NOT carry a version marker: — see the rule body for the enumeration. _(out of scope: governance)_ |
 | VER-005 | A change MUST NOT re-interpret the absence of a field in existing records as a claim. _(out of scope: governance)_ |
 | VER-006 | An implementation MUST NOT retroactively infer a value for a field that a record does not carry. _(out of scope: governance)_ |
 | VER-007 | The version marker governs the record format and the core envelope only. _(out of scope: governance)_ |

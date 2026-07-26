@@ -34,6 +34,10 @@ ROW_RE = re.compile(r"^\| ((?:REC|PROV|ENV|VER)-\d{3}) \| .*$", re.M)
 
 LIMIT = 150
 
+# A statement ending on a colon, or on a phrase that announces content to follow,
+# has been cut before the thing it promises.
+PROMISE_RE = re.compile(r"(:|following|these|below|as follows)\s*\.?\s*$", re.I)
+
 
 def statement(body: str) -> str:
     """One table-cell line: as many whole sentences of the rule as fit.
@@ -60,6 +64,15 @@ def statement(body: str) -> str:
     if len(out) > LIMIT:
         cut = out[:LIMIT].rsplit(" ", 1)[0]
         return cut.rstrip(" ,;:") + "…"
+
+    # A rule whose substance is a list, table or code block continues AFTER a blank
+    # line, which `RULE_RE` does not capture. Left alone the row reads "…both of the
+    # following hold:" and carries nothing — a promise with no payload, in the one
+    # table 9.1 presents as the complete list of rules. Say so explicitly rather
+    # than trailing off, since a row that looks like a statement and isn't is worse
+    # than a row that admits it is a pointer.
+    if PROMISE_RE.search(out):
+        return out.rstrip(". ") + " — see the rule body for the enumeration"
     return out.rstrip(".")
 
 
