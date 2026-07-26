@@ -1,0 +1,28 @@
+{
+  "rule": "REC-043",
+  "statement": "Counter-example: taking the first run of digits of ANY length in a candidate filename as its ADR number. REC-043 fixes the run at exactly four digits, so `7-<slug>.md` MUST NOT be resolvable as ADR-7 and `00123-<slug>.md` MUST NOT be resolvable as ADR-123.",
+  "records_dir_files": {
+    "7-old-approach.md": "# ADR-7: Poll the upstream feed\n\n**Status:** Accepted\n\n## Context\n\nHow do we learn about upstream changes?\n\n## Decision\n\nPolling on a fixed interval is simple to reason about and needs no inbound endpoint.\n",
+    "00123-legacy-export.md": "# ADR-123: Export nightly in one batch\n\n**Status:** Accepted\n\n## Context\n\nHow do we export the archive?\n\n## Decision\n\nOne nightly batch keeps the export window predictable.\n",
+    "0031-feed-revisited.md": "# ADR-0031: Subscribe to the upstream feed\n\n**Status:** Accepted\n\n## Context\n\nHow do we learn about upstream changes?\n\n## Decision\n\nThis supersedes ADR-7 and supersedes ADR-123: a subscription removes the polling delay and the wasted requests.\n"
+  },
+  "expected": {
+    "supersedes_edge_count": 0,
+    "supersedes_edges": [],
+    "errors_raised": []
+  },
+  "wrong_output_a_non_conformant_implementation_might_return": {
+    "supersedes_edge_count": 2,
+    "supersedes_edges": [
+      {
+        "from": "0031-feed-revisited.md",
+        "to": "7-old-approach.md"
+      },
+      {
+        "from": "0031-feed-revisited.md",
+        "to": "00123-legacy-export.md"
+      }
+    ]
+  },
+  "reason": "Each reference has exactly ONE candidate under the loose reading, so REC-105 (drop the ambiguous) cannot mask the defect -- only the exactly-four-digit rule of REC-043 stands between the reference and a wrong edge. Both directions of the digit count are exercised: one run too short (`7`) and one run too long (`00123`). Every candidate filename elsewhere in the corpus carries either exactly four leading digits or none at all, so without this fixture 'the wrong NUMBER of digits' is never tested and an implementation that resolves on `\\d+` passes the whole corpus. Both records also carry a heading number that REC-013 accepts (`# ADR-7`, `# ADR-123`), which is the deliberate asymmetry REC-043's note calls out: addressable as a heading, not addressable as a target."
+}

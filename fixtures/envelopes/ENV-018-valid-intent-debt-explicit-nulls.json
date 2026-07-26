@@ -4,7 +4,20 @@
   "code_files": 40,
   "code_symbols": 210,
   "command": "coverage",
-  "dark_files": 12,
+  "dark_files": [
+    "src/example/archive_writer.py",
+    "src/example/archive_reader.py",
+    "src/example/retention_sweep.py",
+    "src/example/legacy_shim.py",
+    "src/example/manifest_cache.py",
+    "src/example/chunk_index.py",
+    "src/example/restore_drill.py",
+    "src/example/blob_codec.py",
+    "src/example/quota_meter.py",
+    "src/example/segment_merge.py",
+    "src/example/tier_router.py",
+    "src/example/vacuum_job.py"
+  ],
   "file_coverage_pct": 45,
   "files_with_intent": 18,
   "golden": {

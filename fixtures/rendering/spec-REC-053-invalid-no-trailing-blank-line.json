@@ -12,6 +12,6 @@
     "date": "2026-04-02"
   },
   "expected_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
-  "non_conformant_output": "...replica absorbs read load.\n\n\n\n## Alternatives considered\n\n1. ...\n\n",
+  "non_conformant_output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load.\n\n\n\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n\n\n\n",
   "note": "The supplied rationale ENDS IN BLANK LINES. The rendered document MUST still end with exactly one `\\n` -- the trailing whitespace is trimmed, not carried through. An emitter that concatenates the rationale verbatim emits trailing blank lines, so re-capturing an unchanged decision produces different bytes and every re-capture looks like a change."
 }

@@ -1041,7 +1041,22 @@
         "alternatives": 2,
         "recommendation": "Use Postgres locally, for parity with the hosted environment.",
         "supersedes": [],
-        "assumptions": 0
+        "assumptions": 0,
+        "expect": {
+          "parses": true,
+          "status": "resolved",
+          "kind": "decision",
+          "title": "Use SQLite",
+          "alternatives": 2,
+          "recommendation": "Use Postgres locally, for parity with the hosted environment.",
+          "supersedes": [],
+          "assumptions": 0,
+          "resolution_delta_key_present": true,
+          "resolution_delta": {
+            "recommended": "Use Postgres locally, for parity with the hosted environment.",
+            "chosen": "Use SQLite"
+          }
+        }
       },
       "spec_rules": [
         "REC-045",
@@ -1070,7 +1085,18 @@
         "alternatives": 2,
         "recommendation": "Use SQLite",
         "supersedes": [],
-        "assumptions": 0
+        "assumptions": 0,
+        "expect": {
+          "parses": true,
+          "status": "resolved",
+          "kind": "decision",
+          "title": "Use SQLite",
+          "alternatives": 2,
+          "recommendation": "Use SQLite",
+          "supersedes": [],
+          "assumptions": 0,
+          "resolution_delta_key_present": false
+        }
       },
       "spec_rules": [
         "REC-045",
@@ -1662,7 +1688,26 @@
             "path": "status",
             "op": "is_snake_case_token"
           }
-        ]
+        ],
+        "expect": {
+          "conformant": true,
+          "command": "why",
+          "required_keys": [
+            "command",
+            "status"
+          ],
+          "constraints": [
+            {
+              "path": "command",
+              "op": "is_string"
+            },
+            {
+              "path": "status",
+              "op": "is_snake_case_token"
+            }
+          ],
+          "core_conformant": true
+        }
       }
     },
     {
@@ -1932,7 +1977,57 @@
               "captured"
             ]
           }
-        ]
+        ],
+        "expect": {
+          "conformant": true,
+          "command": "coverage",
+          "required_keys": [
+            "command",
+            "status",
+            "authored_anchored_files",
+            "authored_anchored_symbols",
+            "code_files",
+            "code_symbols",
+            "dark_files",
+            "file_coverage_pct",
+            "files_with_intent",
+            "golden",
+            "intent_by_kind",
+            "intent_debt",
+            "symbol_coverage_pct",
+            "symbols_with_intent"
+          ],
+          "forbidden_keys": [
+            "explain",
+            "graph_identity"
+          ],
+          "constraints": [
+            {
+              "path": "golden",
+              "op": "has_keys",
+              "value": [
+                "golden_count",
+                "total_intent",
+                "golden_fraction_pct",
+                "golden_tiers",
+                "by_provenance"
+              ]
+            },
+            {
+              "path": "golden.golden_tiers",
+              "op": "set_eq",
+              "value": [
+                "attested",
+                "authored",
+                "captured"
+              ]
+            },
+            {
+              "path": "dark_files",
+              "op": "is_list"
+            }
+          ]
+        }
       }
     },
     {
@@ -2870,7 +2965,51 @@
             "path": "intent_debt.unresolved_disputes",
             "op": "is_null"
           }
-        ]
+        ],
+        "expect": {
+          "conformant": true,
+          "command": "coverage",
+          "required_keys": [
+            "command",
+            "status",
+            "authored_anchored_files",
+            "authored_anchored_symbols",
+            "code_files",
+            "code_symbols",
+            "dark_files",
+            "file_coverage_pct",
+            "files_with_intent",
+            "golden",
+            "intent_by_kind",
+            "intent_debt",
+            "symbol_coverage_pct",
+            "symbols_with_intent"
+          ],
+          "constraints": [
+            {
+              "path": "intent_debt",
+              "op": "has_keys",
+              "value": [
+                "dark_files",
+                "orphaned_intent",
+                "stale_decisions",
+                "unresolved_disputes"
+              ]
+            },
+            {
+              "path": "intent_debt.stale_decisions",
+              "op": "is_null"
+            },
+            {
+              "path": "intent_debt.unresolved_disputes",
+              "op": "is_null"
+            },
+            {
+              "path": "dark_files",
+              "op": "is_list"
+            }
+          ]
+        }
       },
       "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
     },
@@ -3666,7 +3805,20 @@
           "REC-065"
         ],
         "conformant_filename": "2026-07-25-adopt-library-x.md",
-        "source_of_truth": "filenames/FIL-010-invalid-empty-question-claims-a-real-context.json"
+        "source_of_truth": "filenames/FIL-010-invalid-empty-question-claims-a-real-context.json",
+        "expect": {
+          "conformant": false,
+          "compare_fields": [
+            "expected_output"
+          ],
+          "filename": "adopt-library-x.md",
+          "violates": [
+            "REC-066",
+            "REC-065"
+          ],
+          "conformant_filename": "2026-07-25-decision.md",
+          "source_of_truth": "filenames/FIL-010-invalid-empty-question-claims-a-real-context.json"
+        }
       },
       "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
@@ -3720,7 +3872,19 @@
           "REC-065"
         ],
         "conformant_filename": "2026-07-25-how-do-we-parse-dates.md",
-        "source_of_truth": "filenames/FIL-011-invalid-legacy-claimed-without-reading-context.json"
+        "source_of_truth": "filenames/FIL-011-invalid-legacy-claimed-without-reading-context.json",
+        "expect": {
+          "conformant": false,
+          "compare_fields": [
+            "expected_output"
+          ],
+          "filename": "adopt-library-x.md",
+          "violates": [
+            "REC-065"
+          ],
+          "conformant_filename": "2026-07-25-how-do-we-parse-dates.md",
+          "source_of_truth": "filenames/FIL-011-invalid-legacy-claimed-without-reading-context.json"
+        }
       },
       "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
     },
@@ -4750,7 +4914,17 @@
           "## Alternatives considered",
           "## Recommendation"
         ],
-        "output_must_not_equal": "## Alternatives considered / ## Context / ## Decision / ## Recommendation (alphabetical -- non-conformant)"
+        "output_must_not_equal": "## Alternatives considered / ## Context / ## Decision / ## Recommendation (alphabetical -- non-conformant)",
+        "expect": {
+          "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n\n## Recommendation\n\nShard the primary\n",
+          "heading_order": [
+            "## Context",
+            "## Decision",
+            "## Alternatives considered",
+            "## Recommendation"
+          ],
+          "output_must_not_equal": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Recommendation\n\nShard the primary\n"
+        }
       },
       "spec_rule_ids": [
         "REC-048"
@@ -5505,7 +5679,12 @@
       "expect": {
         "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
         "output_must_not_equal": "...replica absorbs read load.\n\n\n\n## Alternatives considered\n\n1. ...\n\n",
-        "ends_with_single_newline": true
+        "ends_with_single_newline": true,
+        "expect": {
+          "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
+          "output_must_not_equal": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load.\n\n\n\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n\n\n\n",
+          "ends_with_single_newline": true
+        }
       },
       "spec_rule_ids": [
         "REC-053"
@@ -8803,6 +8982,184 @@
         "must_not_equal_key": "governs_must_not_equal"
       },
       "notes": "Two recursive globs plus a control item with no ** sequence."
+    },
+    {
+      "id": "spec-REC-043-invalid-wrong-digit-count-resolves-target",
+      "family": "REC",
+      "rule_statement": "Resolving a reference to a target record MUST be done by the ADR number in the target's filename, taken as the first run of EXACTLY four digits. A candidate whose filename carries a digit run of any other length MUST NOT be resolvable as a supersession target.",
+      "spec_rule_ids": [
+        "REC-043"
+      ],
+      "valid": false,
+      "kind": "ingest_scenario",
+      "path": "status/spec-REC-043-invalid-wrong-digit-count-resolves-target.json",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "supersedes_edge_count": 0,
+        "supersedes_edges": [],
+        "errors_raised": [],
+        "supersedes_edge_count_must_not_equal": 2,
+        "resolved_target_must_not_equal": "7-old-approach.md"
+      },
+      "notes": "Closes the REC-043 mutation hole: every candidate filename elsewhere in the corpus carries either exactly four leading digits or none, so 'the wrong NUMBER of digits' was never tested and an implementation resolving on `\\d+` passed the whole corpus. Exercises both directions -- one run too short (`7-old-approach.md` vs `ADR-7`) and one too long (`00123-legacy-export.md` vs `ADR-123`). Each reference has exactly one candidate under the loose reading, so REC-105 cannot mask the defect. Paired with spec-REC-043-valid-exactly-four-digit-target-resolves, which differs only in the digit count of the two target filenames."
+    },
+    {
+      "id": "spec-REC-043-valid-exactly-four-digit-target-resolves",
+      "family": "REC",
+      "rule_statement": "A candidate record whose filename carries a run of exactly four digits IS resolvable as a supersession target; leading zeros are insignificant when comparing the number.",
+      "spec_rule_ids": [
+        "REC-043"
+      ],
+      "valid": true,
+      "kind": "ingest_scenario",
+      "path": "status/spec-REC-043-valid-exactly-four-digit-target-resolves.json",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "supersedes_edge_count": 2,
+        "supersedes_edges": [
+          {
+            "from": "0031-feed-revisited.md",
+            "to": "0007-old-approach.md"
+          },
+          {
+            "from": "0031-feed-revisited.md",
+            "to": "0123-legacy-export.md"
+          }
+        ],
+        "errors_raised": []
+      },
+      "notes": "Known-positive control for spec-REC-043-invalid-wrong-digit-count-resolves-target: the same corpus with the two target filenames padded to exactly four digits. Catches an implementation that resolves nothing at all, so the counter-example's zero edges cannot be earned by refusing to resolve anything."
+    },
+    {
+      "id": "REC-008-invalid-partial-review-by-date-year-month-only",
+      "rule_id": "REC-008",
+      "family": "REC",
+      "rule_statement": "`review_by` MUST be a full ISO-8601 calendar date, YYYY-MM-DD. A year-only or year-month clause is NOT a date for this purpose: it MUST NOT be extracted and MUST stay embedded in the claim text.",
+      "spec_rule_ids": [
+        "REC-035",
+        "REC-036"
+      ],
+      "valid": false,
+      "kind": "record",
+      "path": "records/REC-008-invalid-partial-review-by-date-year-month-only.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "kind": "decision",
+        "title": "Keep the retention window at 30 days",
+        "status": null,
+        "alternatives": 0,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 2,
+        "assumption_keys": [
+          [
+            "claim"
+          ],
+          [
+            "claim",
+            "review_by"
+          ]
+        ],
+        "assumption_claims": [
+          "Archive volume stays under the storage budget (review by 2027-01)",
+          "Restore drills stay quarterly"
+        ]
+      },
+      "notes": "Closes the REC-036 mutation hole: the corpus's only malformed review-by was `12/01/2026`, which both a strict `\\d{4}-\\d{2}-\\d{2}` reading and a loose `\\d{4}(-\\d{2}){0,2}` reading reject, so 'a date that is not a FULL calendar date' was never tested. The second list item carries a well-formed date and is extracted, so the same fixture also catches an implementation that extracts nothing. Paired with REC-008-valid-full-calendar-review-by-date-extracted, which differs in exactly one character run: `2027-01` vs `2027-01-31`."
+    },
+    {
+      "id": "REC-008-valid-full-calendar-review-by-date-extracted",
+      "rule_id": "REC-008",
+      "family": "REC",
+      "rule_statement": "A `(review by YYYY-MM-DD)` clause carrying a full ISO-8601 calendar date MUST be extracted into `review_by` and removed from the claim text.",
+      "spec_rule_ids": [
+        "REC-035",
+        "REC-036"
+      ],
+      "valid": true,
+      "kind": "record",
+      "path": "records/REC-008-valid-full-calendar-review-by-date-extracted.md",
+      "verdict_kind": "field_expectation",
+      "expect": {
+        "parses": true,
+        "kind": "decision",
+        "title": "Keep the retention window at 30 days",
+        "status": null,
+        "alternatives": 0,
+        "recommendation": null,
+        "supersedes": [],
+        "assumptions": 2,
+        "assumption_keys": [
+          [
+            "claim",
+            "review_by"
+          ],
+          [
+            "claim",
+            "review_by"
+          ]
+        ],
+        "assumption_claims": [
+          "Archive volume stays under the storage budget",
+          "Restore drills stay quarterly"
+        ]
+      },
+      "notes": "Known-positive control for REC-008-invalid-partial-review-by-date-year-month-only. Identical file except the first item's clause is `(review by 2027-01-31)` instead of `(review by 2027-01)`."
+    },
+    {
+      "id": "ENV-001-invalid-status-present-but-not-snake-case",
+      "rule_id": "ENV-001",
+      "family": "ENV",
+      "rule_statement": "Every envelope MUST carry a `status` key that is a lowercase snake_case token. A status that is PRESENT but not a snake_case token fails the universal core exactly as an absent one does.",
+      "spec_rule_ids": [
+        "ENV-003",
+        "ENV-004",
+        "ENV-008"
+      ],
+      "valid": false,
+      "kind": "envelope",
+      "path": "envelopes/ENV-001-invalid-status-present-but-not-snake-case.json",
+      "verdict_kind": "envelope_shape",
+      "expect": {
+        "conformant": false,
+        "core_conformant": false,
+        "command": "why",
+        "violates": [
+          "ENV-003"
+        ],
+        "failing_condition": {
+          "path": "status",
+          "op": "is_snake_case_token"
+        }
+      },
+      "notes": "Closes the ENV-003 mutation hole: all three envelope counter-examples violating the universal core did so by ABSENCE (status absent, command absent, top level an array), so the `{path: status, op: is_snake_case_token}` constraint the core declares was never exercised negatively and an implementation accepting any string passed. `core_conformant` is the computable verdict: it states what the IMPLEMENTATION's universal-core check MUST return for this document, so the fixture fails an implementation whose token check is lax rather than becoming undecidable. Document is otherwise a well-formed `why` envelope: `status` is the single variable."
+    },
+    {
+      "id": "ENV-001-invalid-command-present-but-not-a-string",
+      "rule_id": "ENV-001",
+      "family": "ENV",
+      "rule_statement": "Every envelope MUST carry a `command` key that is a string naming the operation. A `command` that is PRESENT but not a string fails the universal core exactly as an absent one does.",
+      "spec_rule_ids": [
+        "ENV-002",
+        "ENV-004"
+      ],
+      "valid": false,
+      "kind": "envelope",
+      "path": "envelopes/ENV-001-invalid-command-present-but-not-a-string.json",
+      "verdict_kind": "envelope_shape",
+      "expect": {
+        "conformant": false,
+        "core_conformant": false,
+        "violates": [
+          "ENV-002"
+        ],
+        "failing_condition": {
+          "path": "command",
+          "op": "is_string"
+        }
+      },
+      "notes": "The ENV-002 half of the same hole: the corpus's only ENV-002 counter-example omits `command` entirely. Here `command` is present as `[\"why\"]`, so an implementation that checks presence but not type is caught. `status` is a valid snake_case token, isolating `command` as the single variable. No `command` key in `expect` -- the document's command is deliberately not a string, so asserting equality against a string would be incoherent."
     }
   ]
 }

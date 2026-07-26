@@ -1,0 +1,24 @@
+{
+  "rule": "REC-043",
+  "statement": "Control for spec-REC-043-invalid-wrong-digit-count-resolves-target: the SAME corpus with the target filenames padded to exactly four digits. `0007-<slug>.md` IS resolvable as ADR-7, so an implementation that resolves nothing at all is caught here.",
+  "records_dir_files": {
+    "0007-old-approach.md": "# ADR-7: Poll the upstream feed\n\n**Status:** Accepted\n\n## Context\n\nHow do we learn about upstream changes?\n\n## Decision\n\nPolling on a fixed interval is simple to reason about and needs no inbound endpoint.\n",
+    "0123-legacy-export.md": "# ADR-123: Export nightly in one batch\n\n**Status:** Accepted\n\n## Context\n\nHow do we export the archive?\n\n## Decision\n\nOne nightly batch keeps the export window predictable.\n",
+    "0031-feed-revisited.md": "# ADR-0031: Subscribe to the upstream feed\n\n**Status:** Accepted\n\n## Context\n\nHow do we learn about upstream changes?\n\n## Decision\n\nThis supersedes ADR-7 and supersedes ADR-123: a subscription removes the polling delay and the wasted requests.\n"
+  },
+  "expected": {
+    "supersedes_edge_count": 2,
+    "supersedes_edges": [
+      {
+        "from": "0031-feed-revisited.md",
+        "to": "0007-old-approach.md"
+      },
+      {
+        "from": "0031-feed-revisited.md",
+        "to": "0123-legacy-export.md"
+      }
+    ],
+    "errors_raised": []
+  },
+  "reason": "Differs from the counter-example in exactly one respect: the digit count of the two target filenames. Leading zeros are insignificant when comparing the number (REC-043 resolves ADR-7 against `0007`), so the pair isolates the length of the digit run and nothing else."
+}
