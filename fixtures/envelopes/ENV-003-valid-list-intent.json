@@ -16,7 +16,8 @@
       "provenance": "authored",
       "rationale": "Edge caching in front of the origin bucket cuts latency for distant readers.",
       "source_file": "docs/adr/0046-cdn-docs.md",
-      "source_location": "Serve the docs site from a CDN"
+      "source_location": "Serve the docs site from a CDN",
+      "disposition": "adopted"
     },
     {
       "claim": "Adopt library X for date parsing",
@@ -27,7 +28,8 @@
       "provenance": "captured",
       "rationale": "The stdlib parser does not handle the locale formats we receive from partners.",
       "source_file": "docs/decisions/2026-02-11-adopt-library-x.md",
-      "source_location": "Adopt library X for date parsing"
+      "source_location": "Adopt library X for date parsing",
+      "disposition": "adopted"
     }
   ],
   "status": "ok"

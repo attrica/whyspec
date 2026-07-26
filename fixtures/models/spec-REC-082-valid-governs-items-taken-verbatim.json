@@ -1,0 +1,21 @@
+{
+  "rule": "REC-082",
+  "statement": "Governs list items have their list markers stripped and empty items dropped, but the item text is otherwise taken verbatim. The emphasis-stripping and whitespace normalization applied to prose list items MUST NOT be applied.",
+  "kind": "record_scenario",
+  "record": "# Decision: Keep session state server-side\n\n**Status:** Accepted\n**Date:** 2026-05-14\n\n## Context\n\nWhere should session state live?\n\n## Decision\n\nServer-side, in the session store.\n\n## Governs\n\n- src/edge/**/*.py\n- src/session/**\n- config/*.toml\n\n## Alternatives considered\n\n1. Client-side tokens — rejected: cannot be revoked promptly.\n2. Sticky load balancing — rejected: fails on instance loss.\n",
+  "expect": {
+    "governs": [
+      "src/edge/**/*.py",
+      "src/session/**",
+      "config/*.toml"
+    ],
+    "governs_must_not_equal": [
+      "src/edge//*.py",
+      "src/session/",
+      "config/*.toml"
+    ]
+  },
+  "why_this_matters": "Every item here contains a `**` sequence that is a recursive-descent glob token, not markdown emphasis. Applying the prose normalization to these values converts `src/edge/**/*.py` into `src/edge//*.py` and `src/session/**` into `src/session/`, silently turning two recursive globs into literal empty path segments that match nothing.",
+  "failure_shape": "The damage is invisible at parse time and surfaces much later as a decision that appears to govern nothing — reported as an empty resolution while the actual cause sits in the parser. An implementation that reuses its prose list-item normalization here passes every other list-parsing fixture in the corpus and fails only this one.",
+  "note": "The third item carries no `**` and is included as a control: it must survive both readings identically, so a fixture failure isolates the emphasis-stripping behaviour rather than general list parsing."
+}

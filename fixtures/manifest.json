@@ -8310,7 +8310,7 @@
           }
         ]
       },
-      "notes": "The nine keys ENV-022 requires, plus `disposition`. The open record carries an explicit null disposition rather than omitting the key, so `absent` and `has no disposition yet` stay distinguishable per ENV-038."
+      "notes": "The ten keys ENV-022 requires, plus `disposition`. The open record carries an explicit null disposition rather than omitting the key, so `absent` and `has no disposition yet` stay distinguishable per ENV-038."
     },
     {
       "id": "spec-PROV-019-invalid-result-omits-disposition",
@@ -8783,6 +8783,25 @@
         "must_not_equal_key": "non_conformant_filename_must_not_equal"
       },
       "notes": "Two unrelated same-day captures; both conformantly resolve to one destination, which idempotent reuse makes safe."
+    },
+    {
+      "id": "spec-REC-082-valid-governs-items-taken-verbatim",
+      "rule_id": "REC-082",
+      "family": "REC",
+      "spec_rule_ids": [
+        "REC-082"
+      ],
+      "rule_statement": "Governs items are taken verbatim; prose emphasis-stripping MUST NOT be applied.",
+      "kind": "record_scenario",
+      "verdict_kind": "field_expectation",
+      "path": "models/spec-REC-082-valid-governs-items-taken-verbatim.json",
+      "valid": true,
+      "expect": {
+        "governs_key": "governs",
+        "compare": "exact list equality",
+        "must_not_equal_key": "governs_must_not_equal"
+      },
+      "notes": "Two recursive globs plus a control item with no ** sequence."
     }
   ]
 }

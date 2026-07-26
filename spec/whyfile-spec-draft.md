@@ -346,9 +346,21 @@ the general absent-versus-null convention.
 of any tier, and its assumptions **MUST NOT** either. A rejected record is the option *not* taken;
 ingesting it would invert its meaning.
 
-**[REC-033]** No other status value is normative. `accepted`, `open`, `resolved`, `superseded`,
-`proposed` and similar values are conventional; implementations **MUST NOT** attach behaviour to
-them beyond [REC-032].
+**[REC-033]** The status values carrying normative behaviour are exactly those classified in
+§4.6.1 — `draft`, `proposed`, `accepted`, `rejected` — together with the unstated case
+([REC-125]). Any **other** value is conventional, and an implementation **MUST NOT** attach
+behaviour to it beyond [REC-032] and the unrecognized-status rule of [REC-125].
+
+> **Superseded, revised.** An earlier version of this rule declared that *no* status value beyond
+> `rejected` was normative, which §4.6.1 then contradicted by classifying four of them. An
+> independent implementation of the two rules together was unsatisfiable: `superseded` written as
+> a status resolved to *open*, therefore to no disposition, therefore to no currency — while the
+> conformance corpus required it to remain current. A rule that forbids attaching behaviour to a
+> vocabulary the next section attaches behaviour to cannot be implemented by anyone.
+>
+> Note this does **not** re-admit `superseded` as a status: [REC-108] still excludes it, and
+> currency is still derived from the relation graph. It is conventional text that parses and
+> normalizes and contributes nothing.
 
 #### 4.6.1 Settled and unsettled status
 
@@ -896,7 +908,20 @@ identity, and because authority itself moves between people.
 ### 4.15 Governs — declared artifact scope
 
 **[REC-082]** A record **MAY** carry a `## Governs` section listing the artifacts the decision
-governs, one per list item, parsed per [REC-022]–[REC-025].
+governs, one per list item. List markers are stripped per [REC-022] and empty items dropped per
+[REC-025], but an item's text **MUST** otherwise be taken **verbatim**: the emphasis-stripping
+and whitespace normalization of [REC-023] **MUST NOT** be applied.
+
+> **Why this section departs from the shared list rules.** [REC-023] removes every `**` sequence,
+> which is correct for prose and destructive for a path glob: `src/edge/**/*.py` normalizes to
+> `src/edge//*.py`, silently converting a recursive-descent glob into a literal empty path
+> segment. A literal implementation of the earlier cross-reference produced broken globs that
+> then mis-resolved every declared scope — a failure that surfaces as a decision quietly
+> governing nothing, which [REC-086] would report as an empty resolution while the actual cause
+> sat in the parser.
+>
+> The general lesson is worth keeping: a normalization written for human prose cannot be reused
+> unexamined on a machine-readable value that shares the document's markup characters.
 
 **[REC-083]** Each item **MUST** be an **artifact reference**. This version defines exactly one
 kind of artifact reference: a **repository-relative path glob**. Other kinds are reserved and
@@ -1346,7 +1371,19 @@ stands clearly apart from the runner-up — a probable answer at moderate confid
 consumer must be able to see what was *not* filtered.
 
 **[ENV-022]** Each entry in `intent` **MUST** carry: `id`, `label`, `intent_kind`, `claim`,
-`rationale`, `source_file`, `source_location`, `confidence_score`, `provenance`.
+`rationale`, `source_file`, `source_location`, `confidence_score`, `provenance`, `disposition`.
+
+> **`disposition` added.** [PROV-019] requires a result carrying intent to expose disposition so
+> a consumer can partition commitments from foreclosures. This list previously named nine keys
+> and omitted it, which made the two rules **jointly unsatisfiable** — and the conformance corpus
+> instantiated both sides, so no implementation could pass every fixture. The list is where the
+> requirement has to live, because [ENV-004] tells consumers not to assume any key the list does
+> not name.
+>
+> This is the concrete cost of the missing projection principle recorded as gap G7: with no
+> stated rule for which node fields a variant projects, a field added in one section does not
+> reach the section that enumerates the output. G7 is not merely untidiness — it produced an
+> unsatisfiable pair.
 
 #### 6.5.3 `explain`
 
@@ -1641,7 +1678,7 @@ Every normative rule, with its one-line statement.
 | REC-030 | A status value MUST be normalized to its first run of lowercase alphabetic characters. |
 | REC-031 | When no status can be determined, the parsed record's status MUST be absent. |
 | REC-032 | A record whose normalized status is rejected MUST NOT become ground-truth intent of any tier, and its assumptions MUST NOT either. |
-| REC-033 | No other status value is normative. |
+| REC-033 | The status values carrying normative behaviour are exactly those classified in §4.6.1 — draft, proposed, accepted, rejected — together with the…. |
 | REC-034 | Each list item in the Assumptions section (parsed per REC-022–REC-025) MUST yield one assumption with a claim, plus two optional fields. |
 | REC-035 | An item MAY carry a review date matching, case-insensitively, \(?\s*review -by:?\s*(\d{4}-\d{2}-\d{2})\s*\)? — accepting (review by 2027-01-31) and…. |
 | REC-036 | review_by MUST be a full ISO-8601 calendar date, YYYY-MM-DD. |
@@ -1690,7 +1727,7 @@ Every normative rule, with its one-line statement.
 | REC-079 | A record MAY carry an ## Attribution section, one attribution per list item, in the form <role> <kind>:<id> on <date>. |
 | REC-080 | <kind> MUST be one of exactly human or agent. <role> MUST be one of exactly drafted, decided, or ratified. |
 | REC-081 | A record MAY carry any number of attributions, including several sharing a role. An absent attribution MUST be read as *unrecorded*. |
-| REC-082 | A record MAY carry a ## Governs section listing the artifacts the decision governs, one per list item, parsed per REC-022–REC-025. |
+| REC-082 | A record MAY carry a ## Governs section listing the artifacts the decision governs, one per list item. |
 | REC-083 | Each item MUST be an artifact reference. This version defines exactly one kind of artifact reference: a repository-relative path glob. |
 | REC-084 | An absent ## Governs section MUST be read as *scope not declared*. It MUST NOT be read as *governs nothing*. |
 | REC-085 | A declared scope MUST inherit the provenance of the record that declares it. |
@@ -1787,7 +1824,7 @@ Every normative rule, with its one-line statement.
 | ENV-019 | The topically_weak status MUST mean: the top result cleared the score cutoff, but its match evidence does not support treating it as an answer. |
 | ENV-020 | The weak_match status MUST mean: the top result scored *under* the cutoff but stands clearly apart from the runner-up — a probable answer at moderate…. |
 | ENV-021 | The list-intent envelope MUST carry count, filter, and intent. |
-| ENV-022 | Each entry in intent MUST carry: id, label, intent_kind, claim, rationale, source_file, source_location, confidence_score, provenance. |
+| ENV-022 | Each entry in intent MUST carry: id, label, intent_kind, claim, rationale, source_file, source_location, confidence_score, provenance, disposition. |
 | ENV-023 | The ok variant MUST carry query, resolved, intent, explains, and relations. |
 | ENV-024 | The ambiguous variant MUST carry candidates and message and MUST NOT carry resolved. |
 | ENV-025 | The changed envelope MUST carry base (the reference diffed against, or null when files were supplied explicitly), changed_files, files_with_intent…. |
