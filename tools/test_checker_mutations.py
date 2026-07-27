@@ -98,11 +98,11 @@ def shift_yields_column(root: Path) -> None:
 
 
 def remove_nested_required(root: Path) -> None:
-    path = root / "schema" / "envelope.schema.json"
+    path = root / "schema" / "parsed-record.schema.json"
 
     def edit(document: dict) -> None:
-        required = document["$defs"]["intent_entry"]["required"]
-        required.remove("disposition")
+        required = document["$defs"]["relation"]["required"]
+        required.remove("provenance")
 
     change_json(path, edit)
 

@@ -35,10 +35,10 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 205,
+    "rules": 202,
     "fixture_paths": 335,
     "manifest_entries": 362,
-    "mapped_rule_ids": 186,
+    "mapped_rule_ids": 183,
 }
 
 MISSING = object()

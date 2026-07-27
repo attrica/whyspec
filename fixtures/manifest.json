@@ -6399,7 +6399,7 @@
       "valid": true,
       "kind": "record",
       "path": "models/spec-REC-117-valid-attribution-provenance-and-date.md",
-      "notes": "One dated attribution and one undated one on a decision record with no ratification, so the record's tier is `captured` by PROV-006/PROV-021 and each attribution edge carries that same tier per PROV-014. The undated attribution's date is absent, not empty and not defaulted to the record's date.",
+      "notes": "One dated attribution and one undated one on a decision record with no ratification, so the record's tier is `captured` by PROV-006/PROV-021 and each attribution edge carries that same tier per PROV-013. The undated attribution's date is absent, not empty and not defaulted to the record's date.",
       "verdict_kind": "field_expectation",
       "expect": {
         "parses": true,
@@ -6687,13 +6687,13 @@
       ]
     },
     {
-      "id": "spec-REC-085-valid-scope-inherits-record-provenance",
-      "family": "REC",
-      "rule_id": "REC-085",
+      "id": "spec-PROV-013-valid-scope-inherits-record-provenance",
+      "family": "PROV",
+      "rule_id": "PROV-013",
       "rule_statement": "A declared scope MUST inherit the provenance of the record that declares it.",
       "valid": true,
       "kind": "record",
-      "path": "models/spec-REC-085-declared-scope-provenance.md",
+      "path": "models/spec-PROV-013-declared-scope-provenance.md",
       "notes": "A decision record with no attribution is `captured` (PROV-006), and the binding it declares between the decision and `src/limits/**/*.py` carries that same tier. The declaration was written by whoever wrote the record and is worth exactly what the record is worth.",
       "verdict_kind": "field_expectation",
       "expect": {
@@ -6709,17 +6709,17 @@
         ]
       },
       "spec_rule_ids": [
-        "REC-085"
+        "PROV-013"
       ]
     },
     {
-      "id": "spec-REC-085-invalid-declared-scope-must-not-be-reconstructed",
-      "family": "REC",
-      "rule_id": "REC-085",
+      "id": "spec-PROV-013-invalid-declared-scope-must-not-be-reconstructed",
+      "family": "PROV",
+      "rule_id": "PROV-013",
       "rule_statement": "A declared scope MUST inherit the provenance of the record that declares it.",
       "valid": false,
       "kind": "record",
-      "path": "models/spec-REC-085-declared-scope-provenance.md",
+      "path": "models/spec-PROV-013-declared-scope-provenance.md",
       "notes": "The non-conformant output: PROV-015 makes `reconstructed` the tier for an INFERRED binding, and an implementation that applies it to every intent-to-artifact edge marks a human-written declaration as a guess. That is the mirror of the failure PROV-015 prevents, and it drops a declared binding into the one tier a consumer must never read as something a human decided.",
       "verdict_kind": "field_expectation",
       "expect": {
@@ -6732,7 +6732,7 @@
         ]
       },
       "spec_rule_ids": [
-        "REC-085"
+        "PROV-013"
       ]
     },
     {
@@ -6979,13 +6979,13 @@
       ]
     },
     {
-      "id": "spec-REC-092-valid-declared-relation-carries-record-provenance",
-      "family": "REC",
-      "rule_id": "REC-092",
+      "id": "spec-PROV-013-valid-declared-relation-carries-record-provenance",
+      "family": "PROV",
+      "rule_id": "PROV-013",
       "rule_statement": "A declared relation MUST carry the provenance of the record declaring it; an inferred relation MUST NOT be presented as a declared one.",
       "valid": true,
       "kind": "record",
-      "path": "models/spec-REC-092-declared-relation-provenance.md",
+      "path": "models/spec-PROV-013-declared-relation-provenance.md",
       "notes": "A decision record with no attribution is `captured`, and the relation it declares carries that tier and is flagged declared. An edge is itself a claim and carries its own provenance rather than inheriting from the nodes it connects (PROV-013).",
       "verdict_kind": "field_expectation",
       "expect": {
@@ -7001,17 +7001,17 @@
         ]
       },
       "spec_rule_ids": [
-        "REC-092"
+        "PROV-013"
       ]
     },
     {
-      "id": "spec-REC-092-invalid-declared-relation-must-not-be-reconstructed",
-      "family": "REC",
-      "rule_id": "REC-092",
+      "id": "spec-PROV-013-invalid-declared-relation-must-not-be-reconstructed",
+      "family": "PROV",
+      "rule_id": "PROV-013",
       "rule_statement": "A declared relation MUST carry the provenance of the record declaring it; an inferred relation MUST NOT be presented as a declared one.",
       "valid": false,
       "kind": "record",
-      "path": "models/spec-REC-092-declared-relation-provenance.md",
+      "path": "models/spec-PROV-013-declared-relation-provenance.md",
       "notes": "The non-conformant output: marking every edge `reconstructed`, or leaving the declared flag off, makes a human-written relation indistinguishable from one a heuristic guessed. The second clause of the rule -- that an inferred relation MUST NOT be presented as declared -- is only observable against an implementation that performs inference, which nothing in the specification requires; the declared flag asserted here is what makes that clause checkable at all.",
       "verdict_kind": "field_expectation",
       "expect": {
@@ -7030,7 +7030,7 @@
         ]
       },
       "spec_rule_ids": [
-        "REC-092"
+        "PROV-013"
       ]
     },
     {
@@ -8565,16 +8565,16 @@
       "notes": "Inheriting from the endpoints dresses a guessed relationship in the strongest tier the format has, and erases the difference between the two edges -- which is the whole of the information."
     },
     {
-      "id": "spec-PROV-014-valid-declared-takes-record-tier-inferred-is-reconstructed",
-      "rule_id": "PROV-014",
+      "id": "spec-PROV-013-valid-declared-takes-record-tier-inferred-is-reconstructed",
+      "rule_id": "PROV-013",
       "family": "PROV",
       "rule_statement": "A relation declared in a record MUST carry the provenance of the declaring record. A relation produced by inference MUST be `reconstructed`.",
       "spec_rule_ids": [
-        "PROV-014"
+        "PROV-013"
       ],
       "valid": true,
       "kind": "vector",
-      "path": "status/spec-PROV-014-valid-declared-takes-record-tier-inferred-is-reconstructed.json",
+      "path": "status/spec-PROV-013-valid-declared-takes-record-tier-inferred-is-reconstructed.json",
       "verdict_kind": "field_expectation",
       "expect": {
         "relation_provenance": {
@@ -8586,16 +8586,16 @@
       "notes": "The declaring record's tier passes through unchanged in both directions -- a declared relation is worth exactly what the record declaring it is worth -- and the inferred relation lands at the weakest tier regardless of what it connects."
     },
     {
-      "id": "spec-PROV-014-invalid-inferred-relation-carries-a-record-tier",
-      "rule_id": "PROV-014",
+      "id": "spec-PROV-013-invalid-inferred-relation-carries-a-record-tier",
+      "rule_id": "PROV-013",
       "family": "PROV",
       "rule_statement": "A relation declared in a record MUST carry the provenance of the declaring record. A relation produced by inference MUST be `reconstructed`.",
       "spec_rule_ids": [
-        "PROV-014"
+        "PROV-013"
       ],
       "valid": false,
       "kind": "vector",
-      "path": "status/spec-PROV-014-invalid-inferred-relation-carries-a-record-tier.json",
+      "path": "status/spec-PROV-013-invalid-inferred-relation-carries-a-record-tier.json",
       "verdict_kind": "field_expectation",
       "expect": {
         "relation_provenance": {
@@ -8634,7 +8634,7 @@
           "bind_2": "reconstructed"
         }
       },
-      "notes": "The declared binding inherits the declaring record's tier (REC-085); the inferred one is reconstructed despite a high similarity score, because confidence and provenance are orthogonal axes (PROV-009) and no score promotes a tier."
+      "notes": "The declared binding inherits the declaring record's tier (PROV-013); the inferred one is reconstructed despite a high similarity score, because confidence and provenance are orthogonal axes (PROV-009) and no score promotes a tier."
     },
     {
       "id": "spec-PROV-015-invalid-inferred-binding-promoted-to-node-tier",

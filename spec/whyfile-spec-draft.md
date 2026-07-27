@@ -1085,8 +1085,6 @@ undefined; an implementation **MUST NOT** invent one, and adding a kind requires
 **[REC-084]** An absent `## Governs` section **MUST** be read as *scope not declared*. It
 **MUST NOT** be read as *governs nothing*.
 
-**[REC-085]** A declared scope **MUST** inherit the provenance of the record that declares it.
-
 **[REC-086]** An artifact reference that resolves to **zero** artifacts **MUST** be reported as a
 distinct, named state — neither silently dropped nor treated as an error.
 
@@ -1098,7 +1096,7 @@ and a stale inference is not** — an inference that has quietly stopped being t
 disappears, while an empty resolution announces itself. Requiring the empty case to be reported
 converts the format's most-feared failure mode into its best staleness signal.
 
-[REC-085] is what moves a decision's binding to its code out of the weakest evidence tier. An
+[PROV-013] is what moves a decision's binding to its code out of the weakest evidence tier. An
 implementation that *infers* which code a decision governs produces `reconstructed` intent, which
 [PROV-001] says a consumer must never present as something a human decided. A declared scope was
 written by whoever wrote the record, and is worth exactly what the record is worth.
@@ -1120,9 +1118,6 @@ same reasoning as [REC-044] — a corpus may be partial.
 **[REC-091]** A relation whose target is **ambiguous** — resolving to more than one candidate
 record — **MUST** be dropped, and **MUST NOT** be resolved to any one of them. An implementation
 **MUST NOT** select by ingest order, recency, or any other tiebreak.
-
-**[REC-092]** A declared relation **MUST** carry the provenance of the record declaring it
-(§5.5). An inferred relation **MUST NOT** be presented as a declared one.
 
 [REC-091] is the single most important rule added in this revision, because it is the only one
 that stops the format from asserting something false. An unresolvable reference produces no edge,
@@ -1342,23 +1337,12 @@ holds however it ranks.
 ### 5.5 Provenance of relationships
 
 **[PROV-013]** An **edge** — any relationship between two intent nodes, or between an intent node
-and an artifact — **MUST** carry its own provenance, determined by **how the edge itself was
-established**: a declared edge takes the provenance of the record that declares it, and an
-inferred edge is `reconstructed`. An edge's provenance **MUST NOT** be assigned from the tier of a
-node merely because the edge connects to that node.
-
-> **Corrected.** This rule previously said an edge "MUST NOT inherit provenance from either node
-> it connects", which forbade exactly what [REC-085] mandates — a declared scope inheriting the
-> provenance of the record that declares it. Since a declared edge's source endpoint is always
-> that record, the two rules could not both be satisfied.
->
-> The intent was never to sever an edge from its declarer. It was to stop a tier being assigned by
-> *adjacency* — an inferred edge touching an `authored` node reading as authored, which is the
-> live defect [PROV-015] describes. Establishment, not adjacency, is the distinction that matters,
-> and stating it that way keeps the guard while removing the contradiction.
-
-**[PROV-014]** A relation declared in a record (§4.16) **MUST** carry the provenance of the
-declaring record. A relation produced by inference **MUST** be `reconstructed`.
+and an artifact, including every declared or inferred scope binding and relation object — **MUST**
+carry `provenance` determined by **how the edge itself was established**. A declared scope binding
+or relation takes the provenance of the record that declares it. An inferred scope binding or
+relation **MUST** be `reconstructed`, and an inferred relation **MUST NOT** be presented as a
+declared one. An edge's provenance **MUST NOT** be assigned from the tier of a node merely because
+the edge connects to that node.
 
 **[PROV-015]** A binding between intent and an artifact **MUST** be `reconstructed` unless it was
 declared (§4.15). An implementation **MUST NOT** present an inferred binding at any stronger
@@ -1959,14 +1943,12 @@ Every normative rule, with its one-line statement.
 | REC-082 | A record MAY carry a ## Governs section listing the artifacts the decision governs, one per list item. |
 | REC-083 | Each item MUST be an artifact reference. This version defines exactly one kind of artifact reference: a repository-relative path glob. |
 | REC-084 | An absent ## Governs section MUST be read as *scope not declared*. It MUST NOT be read as *governs nothing*. |
-| REC-085 | A declared scope MUST inherit the provenance of the record that declares it. |
 | REC-086 | An artifact reference that resolves to zero artifacts MUST be reported as a distinct, named state — neither silently dropped nor treated as an error. |
 | REC-087 | A record MAY carry a ## Relations section, one relation per list item, in the form <relation> <identifier>. |
 | REC-088 | <relation> MUST be one of exactly supersedes, refines, constrains, motivated_by, trade_off_against, or contradicts. |
 | REC-089 | <identifier> MUST be a record identifier (REC-075) or an ADR number. |
 | REC-090 | A relation whose target cannot be resolved MUST be dropped silently, per the same reasoning as REC-044 — a corpus may be partial. |
 | REC-091 | A relation whose target is ambiguous — resolving to more than one candidate record — MUST be dropped, and MUST NOT be resolved to any one of them. |
-| REC-092 | A declared relation MUST carry the provenance of the record declaring it (§5.5). An inferred relation MUST NOT be presented as a declared one. |
 | REC-093 | A record MAY carry an ## Evidence section, one entry per list item, in the form <method>: <qualifier>, where the qualifier is optional. |
 | REC-094 | <method> MUST be one of exactly grep, diff, executed, read, or traced. |
 | REC-095 | An entry MAY cite the deliberation that produced the decision, as a reference to where that deliberation occurred. A citation MUST be a reference. |
@@ -2027,8 +2009,7 @@ Every normative rule, with its one-line statement.
 | PROV-009 | An implementation MUST NOT conflate provenance with a numeric confidence score or with any string confidence label from an extraction pipeline. |
 | PROV-010 | The golden tiers — the evidence classes that count as trusted — MUST be exactly {authored, captured, attested}. |
 | PROV-012 | A trust metric MUST NOT blend tiers into a single scalar without also reporting the per-tier breakdown. |
-| PROV-013 | An edge — any relationship between two intent nodes, or between an intent node and an artifact — MUST carry its own provenance, determined by how the…. |
-| PROV-014 | A relation declared in a record (§4.16) MUST carry the provenance of the declaring record. A relation produced by inference MUST be reconstructed. |
+| PROV-013 | An edge — any relationship between two intent nodes, or between an intent node and an artifact, including every declared or inferred scope binding…. |
 | PROV-015 | A binding between intent and an artifact MUST be reconstructed unless it was declared (§4.15). |
 | PROV-016 | Ordering and trust rules (PROV-002, PROV-004) apply to edges exactly as they apply to nodes. |
 | PROV-017 | Disposition (§4.6.1) and provenance MUST be treated as independent axes. |

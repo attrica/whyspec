@@ -1,5 +1,5 @@
 {
-  "rule": "PROV-014",
+  "rule": "PROV-013",
   "statement": "Counter-example: an inferred relation given a record tier, and a declared relation flattened to `reconstructed`. Both directions break the mapping.",
   "input_relations": [
     {

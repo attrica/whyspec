@@ -1,5 +1,5 @@
 {
-  "rule": "PROV-014",
+  "rule": "PROV-013",
   "statement": "A relation declared in a record carries the provenance of the declaring record. A relation produced by inference is `reconstructed`.",
   "input_relations": [
     {

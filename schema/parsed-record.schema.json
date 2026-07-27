@@ -154,16 +154,16 @@
       "type": "boolean"
     },
     "governs": {
-      "description": "[REC-082] Artifact references from the `## Governs` section, one per list item, each taken VERBATIM: list markers are stripped per REC-022 and empty items dropped per REC-025, but REC-023's emphasis-stripping and whitespace normalization MUST NOT be applied (they would destroy `src/**/*.py`). [REC-083] Exactly one reference kind is defined: a repository-relative path glob. [REC-084] An ABSENT section means 'scope not declared' and MUST NOT be read as 'governs nothing' -- the key is OMITTED, never an empty array. [REC-085] A declared scope inherits the record's provenance.",
-      "x-rule": ["REC-082", "REC-083", "REC-084", "REC-085"],
+      "description": "[REC-082] Artifact references from the `## Governs` section, one per list item, each taken VERBATIM: list markers are stripped per REC-022 and empty items dropped per REC-025, but REC-023's emphasis-stripping and whitespace normalization MUST NOT be applied (they would destroy `src/**/*.py`). [REC-083] Exactly one reference kind is defined: a repository-relative path glob. [REC-084] An ABSENT section means 'scope not declared' and MUST NOT be read as 'governs nothing' -- the key is OMITTED, never an empty array. [PROV-013] A declared scope binding takes the declaring record's provenance.",
+      "x-rule": ["REC-082", "REC-083", "REC-084", "PROV-013"],
       "x-layer": "parsed-record",
       "x-name-source": "corpus",
       "type": "array",
       "items": { "type": "string" }
     },
     "relations": {
-      "description": "[REC-087] Declared relations from the `## Relations` section, one per list item, in the form `<relation> <identifier>`. [REC-090] A relation whose target cannot be resolved is dropped silently; [REC-091] an AMBIGUOUS target is also dropped and MUST NOT be resolved by any tiebreak. [PROV-014] A declared relation carries the declaring record's provenance; an inferred one is `reconstructed`.",
-      "x-rule": ["REC-087", "REC-090", "REC-091", "PROV-014"],
+      "description": "[REC-087] Declared relations from the `## Relations` section, one per list item, in the form `<relation> <identifier>`. [REC-090] A relation whose target cannot be resolved is dropped silently; [REC-091] an AMBIGUOUS target is also dropped and MUST NOT be resolved by any tiebreak. [PROV-013] Every relation carries provenance: a declared relation takes the declaring record's tier and an inferred relation is `reconstructed`.",
+      "x-rule": ["REC-087", "REC-090", "REC-091", "PROV-013"],
       "x-layer": "parsed-record",
       "x-name-source": "corpus",
       "type": "array",
@@ -340,7 +340,7 @@
       "description": "[REC-087] One relation per list item, in the form `<relation> <identifier>`.",
       "x-rule": ["REC-087"],
       "type": "object",
-      "required": ["relation", "target"],
+      "required": ["relation", "target", "provenance"],
       "properties": {
         "relation": {
           "description": "[REC-088] One of exactly `supersedes`, `refines`, `constrains`, `motivated_by`, `trade_off_against`, `contradicts`. The set is closed; adding a relation requires a version marker (§7).",
@@ -355,8 +355,8 @@
           "type": "string"
         },
         "provenance": {
-          "description": "[PROV-014] A relation declared in a record carries the provenance of the declaring record; a relation produced by inference MUST be `reconstructed`. [REC-092] An inferred relation MUST NOT be presented as a declared one.",
-          "x-rule": ["PROV-014", "REC-092"],
+          "description": "[PROV-013] Every relation object MUST carry provenance. A declared relation takes the provenance of its declaring record; an inferred relation MUST be `reconstructed` and MUST NOT be presented as declared.",
+          "x-rule": ["PROV-013"],
           "type": "string",
           "enum": ["authored", "captured", "attested", "reconstructed"]
         }

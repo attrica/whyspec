@@ -16,7 +16,9 @@ What it re-derives from the spec, and what it compares against:
   E  §5.1 tier table                   -> every enum citing PROV-001
   F  "MUST be one of exactly ..."      -> the mapped enum
   G  §4.5 REC-018 "Yields" column      -> parsed-record property names
-  H  every rule id cited in a schema   -> exists in the spec
+  H  PROV-013's relation field         -> relation object's `required`
+  I  every rule id cited in a schema   -> exists in the spec
+  J  total assertion count             -> retained expected count
 
 Check B is the load-bearing one. The failure it exists to catch has already happened
 once: [ENV-022] enumerated nine required keys for a `list-intent` entry while
@@ -50,7 +52,7 @@ RULE_RE = re.compile(
 )
 TICKED = re.compile(r"`([^`]+)`")
 CORE = ("command", "status")
-EXPECTED_CHECKS = 1143
+EXPECTED_CHECKS = 1142
 
 # ---------------------------------------------------------------- prose extraction
 
@@ -461,26 +463,38 @@ def check_section_yields(spec: str, record: dict, rep: Report) -> None:
             )
 
 
+def check_relation_provenance(rules: dict, record: dict, rep: Report) -> None:
+    """H — PROV-013's named field is required on every relation object."""
+    body = rules.get("PROV-013", "")
+    prose = set(keys_after(body, "MUST carry", 0))
+    required = set(at(record, "#/$defs/relation").get("required", []))
+    rep.check(
+        bool(prose) and prose <= required,
+        f"H [PROV-013] requires {sorted(prose)}; relation object requires "
+        f"{sorted(required)}",
+    )
+
+
 def check_citations(rules: dict, schemas: dict[str, dict], rep: Report) -> None:
-    """H — every rule id a schema cites exists, and every property cites one."""
+    """I — every rule id a schema cites exists, and every property cites one."""
     known = set(rules)
     for name, schema in schemas.items():
         for path, node in walk(schema):
             for rid in node.get("x-rule", []):
-                rep.check(rid in known, f"H {name}{path} cites {rid}, which is not a rule")
+                rep.check(rid in known, f"I {name}{path} cites {rid}, which is not a rule")
             parent = path.rsplit("/", 2)[-2] if path.count("/") >= 2 else ""
             if parent == "properties" and "description" in node:
                 rep.check(
                     bool(node.get("x-rule")),
-                    f"H {name}{path} is a property with no x-rule",
+                    f"I {name}{path} is a property with no x-rule",
                 )
                 cited = re.findall(r"(?:REC|PROV|ENV|VER)-\d{3}", node.get("description", ""))
                 rep.check(
                     bool(cited),
-                    f"H {name}{path} description cites no rule id",
+                    f"I {name}{path} description cites no rule id",
                 )
                 for rid in cited:
-                    rep.check(rid in known, f"H {name}{path} description cites unknown {rid}")
+                    rep.check(rid in known, f"I {name}{path} description cites unknown {rid}")
 
 
 # ---------------------------------------------------------------- entry point
@@ -507,10 +521,11 @@ def main() -> int:
     check_tiers(spec, by_name, rep)
     check_vocabularies(rules, by_path, rep)
     check_section_yields(spec, record, rep)
+    check_relation_provenance(rules, record, rep)
     check_citations(rules, by_name, rep)
     if rep.ok != EXPECTED_CHECKS:
         rep.fail.append(
-            f"I checker assertion count changed: expected {EXPECTED_CHECKS}, ran {rep.ok}"
+            f"J checker assertion count changed: expected {EXPECTED_CHECKS}, ran {rep.ok}"
         )
 
     for line in rep.gap:
