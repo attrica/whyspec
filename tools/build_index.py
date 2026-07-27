@@ -25,10 +25,13 @@ OUT_OF_SCOPE = {
     "VER-004": "governance", "VER-005": "governance", "VER-006": "governance",
     "VER-007": "governance", "VER-008": "governance",
     "ENV-008": "consumer", "ENV-009": "consumer", "ENV-038": "consumer",
-    "ENV-039": "consumer", "ENV-043": "consumer",
+    "ENV-039": "consumer",
     "REC-070": "action",
 }
-RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*(.*?)(?=\n\n)", re.M | re.S)
+RULE_RE = re.compile(
+    r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*(.*?)(?=\n\n|\Z)",
+    re.M | re.S,
+)
 ID_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
 ROW_RE = re.compile(r"^\| ((?:REC|PROV|ENV|VER)-\d{3}) \| .*$", re.M)
 

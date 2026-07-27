@@ -1768,29 +1768,11 @@ variant*. An explicit `null` **MUST** mean *applicable, and the value is known t
 **[ENV-039]** An implementation **MUST NOT** use the two interchangeably. Where the spec names a
 present-with-null field ([ENV-029], [ENV-037], [ENV-041]), the key **MUST** be present.
 
-### 6.7 Transport credential blocks
+### 6.7 Transport profiles
 
-**[ENV-040]** `graph_identity` — or any equivalent block identifying *which corpus answered* —
-**MUST NOT** be treated as a core envelope field. It is a **transport-layer credential block**.
-
-The distinction is factual, not aesthetic. The command-line surface of the reference implementation
-emits no such key on any envelope; the tool-call transport attaches it to every response,
-unconditionally, after the result has been produced. Both surfaces compute it through the *same*
-function — there is no divergent computation, only a difference in what is attached where. Modelling
-it as a core field would make every command's schema depend on which transport carried it.
-
-**[ENV-041]** A transport that attaches a credential block **MUST** attach it unconditionally, with
-an explicit `null` when nothing resolved. A key that is sometimes absent is unusable as a
-fail-closed signal, because the consumer cannot distinguish "nothing resolved" from "this transport
-does not attach it".
-
-**[ENV-042]** A transport-attached key **MUST NOT** collide with any key this specification assigns
-to a command variant.
-
-**[ENV-043]** Transport attachments are **NOT** governed by this specification's version marker
-(§7). Adding, removing, or changing a credential block is a transport event, not a format event,
-and **MUST NOT** trigger a spec version bump. Conversely, a consumer **MUST NOT** rely on the
-presence of a transport attachment as evidence of any spec version.
+Transport metadata is not part of the core result envelope. The optional transport profile and
+its schema are maintained separately in `profiles/transport.md` and
+`schema/transport-envelope.schema.json`.
 
 ---
 
@@ -2161,10 +2143,6 @@ Every normative rule, with its one-line statement.
 | ENV-037 | resolution_delta MUST be present with an explicit null when there was no delta. |
 | ENV-038 | A key omitted from an envelope or node MUST mean *not applicable to this variant*. _(out of scope: consumer)_ |
 | ENV-039 | An implementation MUST NOT use the two interchangeably. _(out of scope: consumer)_ |
-| ENV-040 | graph_identity — or any equivalent block identifying *which corpus answered* — MUST NOT be treated as a core envelope field. |
-| ENV-041 | A transport that attaches a credential block MUST attach it unconditionally, with an explicit null when nothing resolved. |
-| ENV-042 | A transport-attached key MUST NOT collide with any key this specification assigns to a command variant. |
-| ENV-043 | Transport attachments are NOT governed by this specification's version marker (§7). _(out of scope: consumer)_ |
 | ENV-044 | The summary coverage variant MUST carry exactly these twelve coverage-specific keys alongside command and status: code_files, code_symbols…. |
 | ENV-045 | intent_debt MUST carry exactly these four components: dark_files, orphaned_intent, stale_decisions, unresolved_disputes. |
 | ENV-047 | The envelope field intent_kind names the kind of the node and is not constrained to REC-122's pair. |

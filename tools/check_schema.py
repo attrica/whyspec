@@ -39,13 +39,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SPEC = ROOT / "spec" / "whyfile-spec-draft.md"
+TRANSPORT_SPEC = ROOT / "profiles" / "transport.md"
 ENVELOPE = ROOT / "schema" / "envelope.schema.json"
+TRANSPORT = ROOT / "schema" / "transport-envelope.schema.json"
 RECORD = ROOT / "schema" / "parsed-record.schema.json"
 
-RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*(.*?)(?=\n\n)", re.M | re.S)
+RULE_RE = re.compile(
+    r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*(.*?)(?=\n\n|\Z)",
+    re.M | re.S,
+)
 TICKED = re.compile(r"`([^`]+)`")
 CORE = ("command", "status")
-EXPECTED_CHECKS = 1149
+EXPECTED_CHECKS = 1156
 
 # ---------------------------------------------------------------- prose extraction
 
@@ -483,10 +488,15 @@ def check_citations(rules: dict, schemas: dict[str, dict], rep: Report) -> None:
 
 def main() -> int:
     spec = SPEC.read_text()
-    rules = rule_bodies(spec)
+    rules = rule_bodies(spec + "\n\n" + TRANSPORT_SPEC.read_text())
     env = json.loads(ENVELOPE.read_text())
+    transport = json.loads(TRANSPORT.read_text())
     record = json.loads(RECORD.read_text())
-    by_name = {"envelope": env, "parsed-record": record}
+    by_name = {
+        "envelope": env,
+        "transport-envelope": transport,
+        "parsed-record": record,
+    }
     by_path = {ENVELOPE: env, RECORD: record}
 
     rep = Report()

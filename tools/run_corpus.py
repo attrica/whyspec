@@ -25,6 +25,8 @@ FIXTURES = ROOT / "fixtures"
 MANIFEST = FIXTURES / "manifest.json"
 COVERAGE = FIXTURES / "coverage.md"
 SPEC = ROOT / "spec" / "whyfile-spec-draft.md"
+TRANSPORT_PROFILE = ROOT / "profiles" / "transport.md"
+SPEC_FILES = (SPEC, TRANSPORT_PROFILE)
 ENVELOPE_SCHEMA = ROOT / "schema" / "envelope.schema.json"
 TRANSPORT_SCHEMA = ROOT / "schema" / "transport-envelope.schema.json"
 
@@ -58,7 +60,11 @@ def load_json(path: Path) -> Any:
 
 
 def spec_rule_ids() -> list[str]:
-    return RULE_RE.findall(SPEC.read_text())
+    return [
+        rid
+        for path in SPEC_FILES
+        for rid in RULE_RE.findall(path.read_text())
+    ]
 
 
 def fixture_path(entry: dict[str, Any]) -> Path:
@@ -315,9 +321,12 @@ def envelope_verdict(
     surface = expect.get("surface", "core")
     schema = transport_schema if surface == "transport" and transport_schema else core_schema
     schema_document = document
-    if surface == "transport" and transport_schema is None and isinstance(document, dict):
-        schema_document = {key: value for key, value in document.items() if key != "graph_identity"}
+    core_projection = document
+    if surface == "transport" and isinstance(document, dict):
+        core_projection = {key: value for key, value in document.items() if key != "graph_identity"}
     schema_ok = not schema_errors(schema_document, schema)
+    if surface == "transport":
+        schema_ok = schema_ok and not schema_errors(core_projection, core_schema)
 
     required = set(expect.get("required_keys", []))
     forbidden = set(expect.get("forbidden_keys", []))
