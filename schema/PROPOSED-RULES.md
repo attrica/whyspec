@@ -116,10 +116,8 @@ forbids inferring anything from a record's location, so depth cannot change a pa
 
 ### Gap 6 — the twelve `coverage` keys
 
-§6.1 states the summary variant carries "`command`, `status` + 12 coverage-specific keys".
-**The twelve are never named**, in §6.1, in [ENV-028], or anywhere else — [ENV-028] names
-two of them (`golden`, `intent_debt`). `tools/check_schema.py` reports this as its one
-standing gap: a required count that no rule lets a validator satisfy.
+§6.1 once stated only that the summary variant carried "`command`, `status` + 12
+coverage-specific keys". [ENV-044] now names all twelve, so the gap is closed.
 
 The names below are taken from the two corpus fixtures for this variant, which the corpus
 README states were verified against the reference implementation before being written.
@@ -288,15 +286,13 @@ Stated the opposite way from `question` on purpose: a record with no Decision se
 a record at all, so an absent `rationale` key could never be observed and giving it a second
 meaning would be a distinction nobody can act on.
 
-### A2 — the key that carries [ENV-031]'s citation (`ENV-048`)
+### A2 — the key that carries a violation's decision citation (`ENV-048`)
 
-[ENV-031] requires every violation to carry "the identifier of the decision it cites" and
-names no key, so nothing can be validated. `envelope.schema.json` therefore states no
-`required` list for a violation. The corpus spells it `decision_id`.
+An earlier partial rule required every violation to carry "the identifier of the decision it
+cites" and named no key. [ENV-048] closes that gap with `decision_id`.
 
 > **[ENV-048]** Each entry in a `check` envelope's `violations` **MUST** carry `rule`,
-> `file`, `message`, and `decision_id` — the identifier of the decision the rule cites
-> ([ENV-031]).
+> `file`, `message`, and `decision_id` — the identifier of the decision the rule cites.
 
 ### A3 — the keys carrying §4.6.1's axes and [REC-119]'s marking (`REC-136`)
 

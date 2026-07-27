@@ -496,9 +496,6 @@ exists for the same reason: an author needs somewhere to think without broadcast
 the only way to avoid publishing an unfinished thought is not to write it down — which loses
 precisely the reasoning that is most worth keeping, at the moment it is most recoverable.
 
-**[REC-102]** A record **MUST** yield the intent named in its status's **Yields** column
-([REC-101]), and no other. This rule adds no condition of its own.
-
 **[REC-103]** A record whose deliberation is `open` **MUST** still be ingested and **MUST** be
 marked open on the resulting intent. What it yields and whether it counts toward a trusted-
 evidence metric ([PROV-010]) are given by [REC-101], not restated here.
@@ -1357,8 +1354,6 @@ provenance says *who said it*, confidence says *how sure the extractor was*. Fil
 **[PROV-010]** The **golden tiers** — the evidence classes that count as trusted — **MUST** be
 exactly `{authored, captured, attested}`.
 
-**[PROV-011]** `reconstructed` intent **MUST NOT** be counted toward any trusted-evidence metric.
-
 **[PROV-012]** A trust metric **MUST NOT** blend tiers into a single scalar without also reporting
 the per-tier breakdown. A blended number is the one output that makes a corpus of inferences look
 like a corpus of decisions.
@@ -1662,9 +1657,6 @@ that basename resolves to more than one path. A basename match that could mean s
 
 #### 6.5.6 `coverage`
 
-**[ENV-028]** The summary variant **MUST** carry a trusted-evidence block (`golden`) and a debt
-block (`intent_debt`) alongside its coverage counts.
-
 **[ENV-044]** The summary `coverage` variant **MUST** carry exactly these twelve coverage-specific
 keys alongside `command` and `status`: `code_files`, `code_symbols`, `files_with_intent`,
 `symbols_with_intent`, `authored_anchored_files`, `authored_anchored_symbols`, `file_coverage_pct`,
@@ -1703,7 +1695,7 @@ both.
 > and lose the paths entirely; typing it as an array makes the pair complementary, and a consumer
 > wanting the number can take the length.
 
-> §6.1 has always stated the count and never the names, and [ENV-028] names two of the twelve. A
+> §6.1 has always stated the count and never the names. A
 > required count that no rule lets a validator satisfy is not a requirement; it is a number. The
 > names are those the conformance corpus instantiates.
 >
@@ -1734,13 +1726,9 @@ integer, or an explicit `null` where the implementation cannot compute it ([ENV-
 **[ENV-030]** The `check` envelope **MUST** carry `rules` (count of rules evaluated),
 `files_checked`, and `violations`.
 
-**[ENV-031]** Each violation **MUST** carry the identifier of the decision it cites. A rule whose
-failure cannot name the decision that motivated it is not a conformance check; it is a lint.
-
 **[ENV-048]** Each entry in a `check` envelope's `violations` **MUST** carry `rule`, `file`,
-`message`, and `decision_id` — the last being the identifier [ENV-031] requires. [ENV-031] states the
-obligation and names no key, so nothing could be validated; the spellings are those the conformance
-corpus instantiates.
+`message`, and `decision_id`. A rule whose failure cannot name the decision that motivated it is
+not a conformance check; it is a lint.
 
 **[ENV-032]** A rule of a type the checker does not implement **MUST** be skipped — never counted as
 a pass and never counted as a failure. Silence about an unimplementable rule is honest; a pass is
@@ -2067,7 +2055,6 @@ Every normative rule, with its one-line statement.
 | REC-099 | An alternative carrying no disposition MUST yield the whole item as its option text, with disposition and rationale absent. |
 | REC-100 | deferred MUST NOT be treated as equivalent to rejected. A deferred option remains available. |
 | REC-101 | A record's normalized status (REC-030) MUST determine every one of the following, by lookup in this table and by no other means. |
-| REC-102 | A record MUST yield the intent named in its status's Yields column (REC-101), and no other. This rule adds no condition of its own. |
 | REC-103 | A record whose deliberation is open MUST still be ingested and MUST be marked open on the resulting intent. |
 | REC-104 | A record whose disposition is declined MUST yield foreclosure intent: it MUST be retained and queryable, MUST NOT be counted toward any…. |
 | REC-105 | A supersession reference that resolves to more than one candidate record MUST be dropped, exactly as REC-044 drops an unresolved one. |
@@ -2122,7 +2109,6 @@ Every normative rule, with its one-line statement.
 | PROV-008 | Intent ingested from a record MUST carry a numeric confidence of 1.0. The record *is* the evidence; there is nothing to be uncertain about at ingest. |
 | PROV-009 | An implementation MUST NOT conflate provenance with a numeric confidence score or with any string confidence label from an extraction pipeline. |
 | PROV-010 | The golden tiers — the evidence classes that count as trusted — MUST be exactly {authored, captured, attested}. |
-| PROV-011 | reconstructed intent MUST NOT be counted toward any trusted-evidence metric. |
 | PROV-012 | A trust metric MUST NOT blend tiers into a single scalar without also reporting the per-tier breakdown. |
 | PROV-013 | An edge — any relationship between two intent nodes, or between an intent node and an artifact — MUST carry its own provenance, determined by how the…. |
 | PROV-014 | A relation declared in a record (§4.16) MUST carry the provenance of the declaring record. A relation produced by inference MUST be reconstructed. |
@@ -2165,10 +2151,8 @@ Every normative rule, with its one-line statement.
 | ENV-025 | The changed envelope MUST carry base (the reference diffed against, or null when files were supplied explicitly), changed_files, files_with_intent…. |
 | ENV-026 | ambiguous on a result MUST be true when the file was matched by basename and that basename resolves to more than one path. |
 | ENV-027 | The digest envelope MUST carry since, added, removed, and superseded. |
-| ENV-028 | The summary variant MUST carry a trusted-evidence block (golden) and a debt block (intent_debt) alongside its coverage counts. |
 | ENV-029 | A component of intent_debt that the implementation cannot compute MUST be reported as explicit null, never as 0. A zero claims "we measured and found…. |
 | ENV-030 | The check envelope MUST carry rules (count of rules evaluated), files_checked, and violations. |
-| ENV-031 | Each violation MUST carry the identifier of the decision it cites. |
 | ENV-032 | A rule of a type the checker does not implement MUST be skipped — never counted as a pass and never counted as a failure. |
 | ENV-033 | Both MUST distinguish *governed by a decision* from *governed by a constraint*. |
 | ENV-034 | The capture envelope MUST carry record (the path as given, from which node identity derives), record_abs (the resolved absolute destination)…. |
@@ -2184,7 +2168,7 @@ Every normative rule, with its one-line statement.
 | ENV-044 | The summary coverage variant MUST carry exactly these twelve coverage-specific keys alongside command and status: code_files, code_symbols…. |
 | ENV-045 | intent_debt MUST carry exactly these four components: dark_files, orphaned_intent, stale_decisions, unresolved_disputes. |
 | ENV-047 | The envelope field intent_kind names the kind of the node and is not constrained to REC-122's pair. |
-| ENV-048 | Each entry in a check envelope's violations MUST carry rule, file, message, and decision_id — the last being the identifier ENV-031 requires. |
+| ENV-048 | Each entry in a check envelope's violations MUST carry rule, file, message, and decision_id. |
 | ENV-049 | The summary coverage variant's top-level dark_files MUST be an array of repository-relative paths, and MUST NOT be a count. |
 | ENV-050 | The golden block MUST carry exactly these five components: golden_tiers (the array of tier names counted as trusted, per PROV-010), by_provenance (an…. |
 

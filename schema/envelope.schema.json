@@ -1141,10 +1141,9 @@
     },
     "coverage_summary": {
       "title": "coverage (corpus-wide summary)",
-      "description": "[ENV-044] The summary variant MUST carry exactly twelve coverage-specific keys alongside `command` and `status`; the `required` list below is that rule and nothing else. [ENV-028] Two of the twelve are the trusted-evidence block (`golden`) and the debt block (`intent_debt`). [ENV-006] The discriminator against the explain variant is the ABSENCE of the `explain` key; the two shapes share no keys beyond `command` and `status`.",
+      "description": "[ENV-044] The summary variant MUST carry exactly twelve coverage-specific keys alongside `command` and `status`; the `required` list below is that rule and nothing else. Two of the twelve are the trusted-evidence block (`golden`) and the debt block (`intent_debt`). [ENV-006] The discriminator against the explain variant is the ABSENCE of the `explain` key; the two shapes share no keys beyond `command` and `status`.",
       "x-rule": [
         "ENV-044",
-        "ENV-028",
         "ENV-006"
       ],
       "type": "object",
@@ -1311,10 +1310,9 @@
           }
         },
         "intent_debt": {
-          "description": "[ENV-028] The debt block. [ENV-045] It carries EXACTLY four components, each a non-negative integer or an explicit null, and none of them MAY be omitted -- that last clause is what makes ENV-029 enforceable, since an implementation could otherwise satisfy it by dropping the key. [ENV-029] A component the implementation CANNOT COMPUTE MUST be reported as an explicit null, never as 0 -- a zero claims 'we measured and found none', a null honestly says 'not measured'. [ENV-039] Where the spec names a present-with-null field the key MUST be present.",
+          "description": "[ENV-045] The debt block carries EXACTLY four components, each a non-negative integer or an explicit null, and none of them MAY be omitted -- that last clause is what makes ENV-029 enforceable, since an implementation could otherwise satisfy it by dropping the key. [ENV-029] A component the implementation CANNOT COMPUTE MUST be reported as an explicit null, never as 0 -- a zero claims 'we measured and found none', a null honestly says 'not measured'. [ENV-039] Where the spec names a present-with-null field the key MUST be present.",
           "x-rule": [
             "ENV-045",
-            "ENV-028",
             "ENV-029",
             "ENV-039"
           ],
@@ -1493,9 +1491,9 @@
     },
     "violation": {
       "title": "check violation",
-      "description": "[ENV-031] Each violation MUST carry the identifier of the decision it cites. A rule whose failure cannot name the decision that motivated it is not a conformance check; it is a lint.",
+      "description": "[ENV-048] Each violation MUST carry `rule`, `file`, `message`, and the `decision_id` of the decision it cites. A rule whose failure cannot name the decision that motivated it is not a conformance check; it is a lint.",
       "x-rule": [
-        "ENV-031"
+        "ENV-048"
       ],
       "type": "object",
       "required": [
@@ -1527,10 +1525,9 @@
           "type": "string"
         },
         "decision_id": {
-          "description": "[ENV-048] The key that carries the citation. [ENV-031] The identifier of the decision this violation cites -- a rule whose failure cannot name the decision that motivated it is a lint, not a conformance check.",
+          "description": "[ENV-048] The identifier of the decision this violation cites -- a rule whose failure cannot name the decision that motivated it is a lint, not a conformance check.",
           "x-rule": [
-            "ENV-048",
-            "ENV-031"
+            "ENV-048"
           ],
           "x-name-source": "rule",
           "type": "string"

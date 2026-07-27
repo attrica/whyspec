@@ -45,7 +45,7 @@ RECORD = ROOT / "schema" / "parsed-record.schema.json"
 RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*(.*?)(?=\n\n)", re.M | re.S)
 TICKED = re.compile(r"`([^`]+)`")
 CORE = ("command", "status")
-EXPECTED_CHECKS = 1154
+EXPECTED_CHECKS = 1149
 
 # ---------------------------------------------------------------- prose extraction
 
@@ -183,9 +183,7 @@ ENUMERATIONS = [
     ("ENV-025", "MUST carry", 0, "#/$defs/changed_ok", CORE),
     ("ENV-025", "MUST carry", 1, "#/$defs/changed_result", ()),
     ("ENV-027", "MUST carry", 0, "#/$defs/digest_ok", CORE),
-    # ENV-044 enumerates all twelve coverage-specific keys and supersedes ENV-028,
-    # which names only two of them. Wiring the check to the partial rule reported a
-    # gap that no longer existed — the enumeration moved, the pointer did not.
+    # ENV-044 enumerates all twelve coverage-specific keys.
     ("ENV-044", "MUST carry exactly these twelve", 0, "#/$defs/coverage_summary", CORE),
     ("ENV-030", "MUST carry", 0, "#/$defs/check_ok", CORE),
     ("ENV-034", "MUST carry", 0, "#/$defs/capture_ok", CORE),
