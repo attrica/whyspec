@@ -45,6 +45,7 @@ RECORD = ROOT / "schema" / "parsed-record.schema.json"
 RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*(.*?)(?=\n\n)", re.M | re.S)
 TICKED = re.compile(r"`([^`]+)`")
 CORE = ("command", "status")
+EXPECTED_CHECKS = 1154
 
 # ---------------------------------------------------------------- prose extraction
 
@@ -336,17 +337,23 @@ def check_status_tokens(spec: str, env: dict, rep: Report) -> None:
     rows = dict(table_rows(spec, "| `command` | Status tokens |"))
     universal = set(TICKED.findall(rows.get("any (input failure)", "")))
     rep.check(bool(universal), "D §6.3 has no 'any (input failure)' row")
+    error_enum = set(at(env, "#/$defs/error_envelope/properties/status").get("enum", []))
+    rep.check(
+        universal == error_enum,
+        f"D input failures: §6.3 lists {sorted(universal)}; "
+        f"error envelope allows {sorted(error_enum)}",
+    )
     for command, variants in STATUS_VARIANTS.items():
         prose = set(TICKED.findall(rows.get(command, "")))
         rep.check(bool(prose), f"D §6.3 lists no status tokens for {command!r}")
-        allowed = set(universal)
+        allowed: set[str] = set()
         for v in variants:
             enum = at(env, f"#/$defs/{v}/properties/status")
             allowed |= set(enum.get("enum", [])) | ({enum["const"]} if "const" in enum else set())
+        allowed |= universal & prose
         rep.check(
-            prose <= allowed,
-            f"D {command}: §6.3 lists {sorted(prose - allowed)} which no variant's "
-            f"status enum accepts (schema allows {sorted(allowed)})",
+            prose == allowed,
+            f"D {command}: §6.3 lists {sorted(prose)}; variants allow {sorted(allowed)}",
         )
 
 
@@ -493,6 +500,10 @@ def main() -> int:
     check_vocabularies(rules, by_path, rep)
     check_section_yields(spec, record, rep)
     check_citations(rules, by_name, rep)
+    if rep.ok != EXPECTED_CHECKS:
+        rep.fail.append(
+            f"I checker assertion count changed: expected {EXPECTED_CHECKS}, ran {rep.ok}"
+        )
 
     for line in rep.gap:
         print(f"GAP  {line}")
