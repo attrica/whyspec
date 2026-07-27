@@ -24,6 +24,7 @@ class Mutant:
     name: str
     mutate: Callable[[Path], None]
     command: tuple[str, ...]
+    required_output: tuple[str, ...] = ()
 
 
 def replace_once(path: Path, old: str, new: str) -> None:
@@ -148,6 +149,33 @@ def stale_out_of_scope(root: Path) -> None:
     )
 
 
+def reclassify_computed_verdict(root: Path) -> None:
+    path = root / "tools" / "run_corpus.py"
+    replace_once(
+        path,
+        "        return COMPUTED  # envelope evidence\n",
+        "        return DRIFT_CHECKED  # mutant: computed evidence mislabeled\n",
+    )
+
+
+def reorder_identity_join(root: Path) -> None:
+    path = root / "tools" / "run_corpus.py"
+    replace_once(
+        path,
+        "    joined = IDENTITY_SEPARATOR.join(components)\n",
+        "    joined = IDENTITY_SEPARATOR.join((components[1], components[0], *components[2:]))\n",
+    )
+
+
+def space_identity_join(root: Path) -> None:
+    path = root / "tools" / "run_corpus.py"
+    replace_once(
+        path,
+        'IDENTITY_SEPARATOR = "::"\n',
+        'IDENTITY_SEPARATOR = " :: "  # mutant: visible prose spacing\n',
+    )
+
+
 MUTANTS = (
     Mutant("duplicate_rule_identifier", duplicate_rule, ("tools/build_index.py", "--check")),
     Mutant("extra_closed_enum_member", extra_closed_enum, ("tools/check_schema.py",)),
@@ -160,6 +188,25 @@ MUTANTS = (
     Mutant("total_check_count_decreases", decrease_check_count, ("tools/check_schema.py",)),
     Mutant("dangling_x_rule_citation", dangling_rule_citation, ("tools/check_schema.py",)),
     Mutant("stale_out_of_scope_entry", stale_out_of_scope, ("tools/build_index.py", "--check")),
+    Mutant(
+        "computed_verdict_reclassified_as_drift",
+        reclassify_computed_verdict,
+        ("tools/run_corpus.py", "--check"),
+    ),
+    Mutant(
+        "identity_join_inputs_reordered",
+        reorder_identity_join,
+        ("tools/run_corpus.py", "--check"),
+    ),
+    Mutant(
+        "identity_join_separator_spaced",
+        space_identity_join,
+        ("tools/run_corpus.py", "--check"),
+        (
+            "spec-REC-121-invalid-spaced-joiner-forks-identity",
+            "fixture joined_string expected",
+        ),
+    ),
 )
 
 
@@ -182,11 +229,15 @@ def main() -> int:
                 text=True,
                 check=False,
             )
-            if result.returncode == 0:
+            output = result.stdout + result.stderr
+            missing_output = [
+                marker for marker in mutant.required_output if marker not in output
+            ]
+            if result.returncode == 0 or missing_output:
                 print(f"SURVIVED {mutant.name}")
                 survivors.append(mutant.name)
             else:
-                diagnostic = (result.stdout + result.stderr).strip().splitlines()
+                diagnostic = output.strip().splitlines()
                 suffix = f" — {diagnostic[0]}" if diagnostic else ""
                 print(f"KILLED   {mutant.name}{suffix}")
     print(f"{len(MUTANTS) - len(survivors)}/{len(MUTANTS)} mutants killed")

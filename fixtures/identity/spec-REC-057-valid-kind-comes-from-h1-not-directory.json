@@ -6,6 +6,14 @@
     "notes/misc/0055-rotate.md"
   ],
   "expected_kind_for_each": "adr",
+  "inputs": [
+    "docs/adr/0055-rotate.md",
+    "Rotate credentials quarterly",
+    "decision",
+    "Rotate credentials quarterly"
+  ],
+  "joined_string": "docs/adr/0055-rotate.md::Rotate credentials quarterly::decision::rotate_credentials_quarterly",
+  "expected_identity": "intent_bf2c719fbdf5",
   "rule": "REC-057",
   "statement": "Directory location is conventional, never normative; kind MUST NOT be inferred from it.",
   "note": "The SAME ADR record text is parsed from three different directories, including `docs/decisions/` (the conventional home of `decision`-kind records). The kind MUST be 'adr' in all three, because kind comes from the H1 and nothing else."

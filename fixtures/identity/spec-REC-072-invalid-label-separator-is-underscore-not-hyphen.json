@@ -8,6 +8,14 @@
   "non_conformant": [
     "use-a-shared-cache"
   ],
+  "inputs": [
+    "docs/decisions/label-normalization.md",
+    "Use a Shared Cache!!",
+    "decision",
+    "Use a Shared Cache!!"
+  ],
+  "joined_string": "docs/decisions/label-normalization.md::Use a Shared Cache!!::decision::use_a_shared_cache",
+  "expected_identity": "intent_08320d074f79",
   "rule": "REC-072",
   "statement": "Normalized label: lowercase, non-`[a-z0-9]` runs replaced by `_`, edge `_` stripped.",
   "note": "The normalized label uses `_` as its separator. An implementation that reuses the REC-058 slug derivation (which uses `-`) produces 'use-a-shared-cache' -- a different string, hence a different hash, hence a different node id for the same record."
