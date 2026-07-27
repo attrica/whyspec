@@ -14,8 +14,15 @@ This repository specifies three things, and nothing else:
 - **the result envelope** — the shape of an answer to a query
 - **the provenance vocabulary** — the tiers a claim can come from, and what each is worth
 
-It also carries a machine-checkable `fixtures/` corpus: valid and invalid examples for every
-normative rule, so a conforming implementation can be verified rather than asserted.
+It also carries a machine-checkable `fixtures/` corpus: valid and invalid examples whose
+mapping to the normative rule inventory is reported in generated coverage, so a conforming
+implementation can be verified rather than asserted.
+
+Run the retained verdicts and verify that the generated coverage report is current:
+
+```bash
+python3 tools/run_corpus.py --check
+```
 
 ## Why this is open when the product is not
 
