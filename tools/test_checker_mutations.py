@@ -176,6 +176,43 @@ def space_identity_join(root: Path) -> None:
     )
 
 
+def alter_normative_table_cell(root: Path) -> None:
+    path = root / "spec" / "whyfile-spec-draft.md"
+    replace_once(
+        path,
+        "| `accepted` | resolved | yes | **adopted** | ground-truth intent | yes | **yes** |",
+        "| `accepted` | resolved | no | **adopted** | ground-truth intent | yes | **yes** |",
+    )
+
+
+def alter_valid_fixture_expect(root: Path) -> None:
+    path = root / "fixtures" / "manifest.json"
+
+    def edit(document: dict) -> None:
+        entry = next(
+            fixture
+            for fixture in document["fixtures"]
+            if fixture["id"] == "spec-REC-101-valid-status-carries-two-independent-axes"
+        )
+        entry["expect"]["axes"]["accepted"]["disposition"] = "declined"
+
+    change_json(path, edit)
+
+
+def make_forbidden_value_conformant(root: Path) -> None:
+    path = root / "fixtures" / "manifest.json"
+
+    def edit(document: dict) -> None:
+        entry = next(
+            fixture
+            for fixture in document["fixtures"]
+            if fixture["id"] == "spec-REC-141-invalid-draft-offered-must-be-false"
+        )
+        entry["expect"]["offered_must_not_equal"] = entry["expect"]["offered"]
+
+    change_json(path, edit)
+
+
 MUTANTS = (
     Mutant("duplicate_rule_identifier", duplicate_rule, ("tools/build_index.py", "--check")),
     Mutant("extra_closed_enum_member", extra_closed_enum, ("tools/check_schema.py",)),
@@ -205,6 +242,33 @@ MUTANTS = (
         (
             "spec-REC-121-invalid-spaced-joiner-forks-identity",
             "fixture joined_string expected",
+        ),
+    ),
+    Mutant(
+        "normative_table_cell_altered",
+        alter_normative_table_cell,
+        ("tools/check_table_fixtures.py",),
+        (
+            "spec-REC-101-valid-status-carries-two-independent-axes",
+            "offered expected True",
+        ),
+    ),
+    Mutant(
+        "valid_fixture_expect_altered",
+        alter_valid_fixture_expect,
+        ("tools/check_table_fixtures.py",),
+        (
+            "spec-REC-101-valid-status-carries-two-independent-axes",
+            "disposition expected 'declined'",
+        ),
+    ),
+    Mutant(
+        "forbidden_value_names_conformant_value",
+        make_forbidden_value_conformant,
+        ("tools/run_corpus.py", "--check"),
+        (
+            "spec-REC-141-invalid-draft-offered-must-be-false",
+            "forbidden-value assertion is dead",
         ),
     ),
 )

@@ -44,12 +44,46 @@ EXPECTED_EVIDENCE = {
     "computed": 268,
     "drift_checked": 94,
 }
+EXPECTED_MUST_NOT_EQUAL = {
+    "fixtures": 73,
+    "assertions": 88,
+}
 
 COMPUTED = "computed"
 DRIFT_CHECKED = "drift_checked"
 IDENTITY_SEPARATOR = "::"
 
 MISSING = object()
+
+# Most forbidden-value assertions sit next to their conformant base value. These
+# six do not, so keep the un-derivable relationship explicit rather than
+# guessing from field names.
+MUST_NOT_EQUAL_BASE_REGISTRY: dict[tuple[str, str], tuple[str, ...] | str] = {
+    (
+        "spec-REC-084-invalid-absent-governs-must-not-be-empty-scope",
+        "expect.governs_must_not_equal",
+    ): "absent",
+    (
+        "spec-REC-106-invalid-dated-filename-resolved-as-adr-year",
+        "expect.resolved_target_must_not_equal",
+    ): "absent",
+    (
+        "spec-REC-107-invalid-empty-context-must-not-yield-empty-string",
+        "expect.question_must_not_equal",
+    ): "absent",
+    (
+        "spec-REC-043-invalid-wrong-digit-count-resolves-target",
+        "expect.resolved_target_must_not_equal",
+    ): "absent",
+    (
+        "spec-REC-136-valid-rejected-status-round-trips",
+        "expect.round_trip_status_must_not_equal",
+    ): ("round_trip", "status"),
+    (
+        "spec-REC-128-invalid-case-folded-actor-comparison",
+        "expect.actor_ids_must_not_equal",
+    ): "actor_ids",
+}
 
 
 class Failure(Exception):
@@ -82,6 +116,90 @@ def fixture_path(entry: dict[str, Any]) -> Path:
     if not path.exists():
         fail(f"{entry['id']}: fixture path does not exist: {entry['path']}")
     return path
+
+
+def value_at_path(value: Any, path: tuple[str, ...]) -> Any:
+    node = value
+    for part in path:
+        if not isinstance(node, dict) or part not in node:
+            return MISSING
+        node = node[part]
+    return node
+
+
+def must_not_equal_base(
+    entry: dict[str, Any],
+    container: dict[str, Any],
+    key: str,
+    path: str,
+) -> Any:
+    base_key = key.removesuffix("_must_not_equal")
+    if base_key in container:
+        return container[base_key]
+
+    resolution = MUST_NOT_EQUAL_BASE_REGISTRY.get((entry["id"], path))
+    if resolution == "absent":
+        return MISSING
+    if resolution == "actor_ids":
+        actors = entry["expect"].get("actors", [])
+        return [
+            actor[1]
+            for actor in actors
+            if isinstance(actor, list) and len(actor) >= 2
+        ]
+    if isinstance(resolution, tuple):
+        return value_at_path(entry["expect"], resolution)
+    fail(f"{path}: has no conformant base value or resolver registry entry")
+
+
+def forbidden_names_conformant(conformant: Any, forbidden: Any) -> bool:
+    if conformant is MISSING:
+        return False
+    # A scalar base can name several forbidden scalar alternatives. A list base,
+    # however, is itself one complete conformant value and compares as a whole.
+    if isinstance(forbidden, list) and not isinstance(conformant, list):
+        return conformant in forbidden
+    return conformant == forbidden
+
+
+def check_must_not_equal_expectations(
+    manifest: dict[str, Any],
+) -> tuple[int, int, list[str]]:
+    assertion_count = 0
+    fixture_ids: set[str] = set()
+    failures: list[str] = []
+
+    for entry in manifest["fixtures"]:
+        def walk(node: Any, path: tuple[str, ...]) -> None:
+            nonlocal assertion_count
+            if not isinstance(node, dict):
+                return
+            for key, forbidden in node.items():
+                item_path = ".".join((*path, key))
+                if key.endswith("_must_not_equal"):
+                    assertion_count += 1
+                    fixture_ids.add(entry["id"])
+                    try:
+                        conformant = must_not_equal_base(
+                            entry,
+                            node,
+                            key,
+                            item_path,
+                        )
+                    except Failure as exc:
+                        failures.append(f"{entry['id']}: {exc}")
+                    else:
+                        if forbidden_names_conformant(conformant, forbidden):
+                            failures.append(
+                                f"{entry['id']}: {item_path} names the conformant "
+                                "value; forbidden-value assertion is dead"
+                            )
+                if isinstance(forbidden, dict):
+                    walk(forbidden, (*path, key))
+
+        walk(entry.get("expect"), ("expect",))
+
+    return len(fixture_ids), assertion_count, failures
 
 
 # ---------------------------------------------------------------------------
@@ -989,6 +1107,20 @@ def main() -> int:
         check_integrity(manifest, rules)
     except Failure as exc:
         failures.append(f"integrity: {exc}")
+
+    forbidden_fixtures, forbidden_assertions, forbidden_failures = (
+        check_must_not_equal_expectations(manifest)
+    )
+    failures.extend(forbidden_failures)
+    actual_forbidden = {
+        "fixtures": forbidden_fixtures,
+        "assertions": forbidden_assertions,
+    }
+    if actual_forbidden != EXPECTED_MUST_NOT_EQUAL:
+        failures.append(
+            "forbidden-value harvest changed: "
+            f"expected {EXPECTED_MUST_NOT_EQUAL}, got {actual_forbidden}"
+        )
 
     core_schema = load_json(ENVELOPE_SCHEMA)
     transport_schema = load_json(TRANSPORT_SCHEMA) if TRANSPORT_SCHEMA.exists() else None

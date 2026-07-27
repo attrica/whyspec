@@ -22,6 +22,14 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: python3 tools/check_schema.py
 
+  check-table-fixtures:
+    name: check_table_fixtures
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: python3 tools/check_table_fixtures.py
+
   build-index:
     name: build_index --check
     runs-on: ubuntu-latest
