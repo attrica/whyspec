@@ -1,6 +1,14 @@
 {
   "input_path": "docs/decisions/2026-04-02-shed-read-load.md",
   "expected": "docs/decisions/2026-04-02-shed-read-load.md",
+  "inputs": [
+    "docs/decisions/2026-04-02-shed-read-load.md",
+    "Serve reads from a replica",
+    "decision",
+    "Serve reads from a replica"
+  ],
+  "joined_string": "docs/decisions/2026-04-02-shed-read-load.md::Serve reads from a replica::decision::serve_reads_from_a_replica",
+  "expected_identity": "intent_b3428e397834",
   "rule": "REC-073",
   "statement": "The canonical source path MUST be repository-relative and POSIX-separated.",
   "note": "An ALREADY-relative path MUST come through unchanged apart from separator normalization. An implementation that resolves every input to an absolute path first (then back to relative) forks the ids of every existing relative-built graph. Any output other than the input string MUST be rejected."

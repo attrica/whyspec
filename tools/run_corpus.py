@@ -40,6 +40,14 @@ EXPECTED = {
     "manifest_entries": 362,
     "mapped_rule_ids": 183,
 }
+EXPECTED_EVIDENCE = {
+    "computed": 268,
+    "drift_checked": 94,
+}
+
+COMPUTED = "computed"
+DRIFT_CHECKED = "drift_checked"
+IDENTITY_SEPARATOR = "::"
 
 MISSING = object()
 
@@ -388,6 +396,59 @@ def slug(text: str, limit: int) -> str:
     return cut or value[:limit] or "decision"
 
 
+def normalize_label(label: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", label.lower()).strip("_")
+
+
+def canonical_source_path(source: str, repo_root: str | None = None) -> str:
+    """Apply REC-073/REC-074 without allowing path-library errors to escape."""
+    normalized = source.replace("\\", "/")
+    try:
+        path = Path(source)
+        if not path.is_absolute():
+            return normalized
+        resolved = path.resolve(strict=False)
+        if repo_root is not None:
+            try:
+                return resolved.relative_to(Path(repo_root).resolve(strict=False)).as_posix()
+            except (OSError, ValueError):
+                pass
+        return resolved.as_posix()
+    except (OSError, RuntimeError, ValueError):
+        return normalized
+
+
+def identity_parts(inputs: Any) -> tuple[str, str, str]:
+    if not isinstance(inputs, list) or len(inputs) != 4:
+        fail("identity inputs must be an array of exactly four strings")
+    if not all(isinstance(item, str) for item in inputs):
+        fail("identity inputs must all be strings")
+    source_path, source_location, intent_kind, label = inputs
+    if intent_kind not in {"decision", "assumption"}:
+        fail(f"identity intent kind must be decision or assumption, got {intent_kind!r}")
+    components = (source_path, source_location, intent_kind, normalize_label(label))
+    joined = IDENTITY_SEPARATOR.join(components)
+    full_digest = hashlib.sha1(joined.encode("utf-8")).hexdigest()
+    return joined, full_digest, f"intent_{full_digest[:12]}"
+
+
+def compare_identity(
+    inputs: Any,
+    *,
+    joined_string: Any = MISSING,
+    digest_full_hex: Any = MISSING,
+    identity: Any = MISSING,
+) -> str:
+    joined, full_digest, actual_identity = identity_parts(inputs)
+    if joined_string is not MISSING and joined != joined_string:
+        fail(f"joined string expected {joined_string!r}, got {joined!r}")
+    if digest_full_hex is not MISSING and full_digest != digest_full_hex:
+        fail(f"full identity digest expected {digest_full_hex!r}, got {full_digest!r}")
+    if identity is not MISSING and actual_identity != identity:
+        fail(f"identity expected {identity!r}, got {actual_identity!r}")
+    return actual_identity
+
+
 def render_record(inputs: dict[str, Any]) -> str:
     out = [f"# Decision: {inputs['chosen']}", ""]
     identifier = inputs.get("identifier")
@@ -576,7 +637,7 @@ def fixture_verdict(
     entry: dict[str, Any],
     core_schema: dict[str, Any],
     transport_schema: dict[str, Any] | None,
-) -> None:
+) -> str:
     path = fixture_path(entry)
     kind = entry["kind"]
     verdict = entry["verdict_kind"]
@@ -592,19 +653,19 @@ def fixture_verdict(
             core_schema,
             transport_schema,
         )
-        return
+        return COMPUTED  # envelope evidence
     if kind == "record_bytes":
         actual = parse_record(path.read_bytes())
         compare_known_expectations(actual, expect)
-        return
+        return COMPUTED
     if kind == "record":
         actual = parse_record(path.read_bytes())
         if verdict == "parse_rejects":
             if actual["parses"]:
                 fail("record parsed but verdict requires rejection")
-            return
+            return COMPUTED
         compare_known_expectations(actual, expect)
-        return
+        return COMPUTED
     if kind == "slug_scenario":
         document = load_json(path)
         actual = slug(document["input_text"], document["max_len"])
@@ -612,7 +673,7 @@ def fixture_verdict(
             fail(f"slug expected {expect['slug']!r}, got {actual!r}")
         if len(actual) != expect["slug_length"]:
             fail(f"slug length expected {expect['slug_length']}, got {len(actual)}")
-        return
+        return COMPUTED
     if kind == "render_scenario":
         document = load_json(path)
         expected_output = document["expected_output"]
@@ -621,12 +682,13 @@ def fixture_verdict(
         # Execute the canonical renderer for its compact core input shape. Extension
         # and round-trip scenarios carry their executable field assertions in expect.
         core_keys = {"chosen", "question", "options", "rationale", "date", "status", "recommendation"}
-        if set(document["inputs"]) <= core_keys:
+        computed = isinstance(document.get("inputs"), dict) and set(document["inputs"]) <= core_keys
+        if computed:
             actual = render_record(document["inputs"])
             if actual != expected_output:
                 fail("rendered output differs from manifest verdict")
         json_scenario_verdict(entry, document)
-        return
+        return COMPUTED if computed else DRIFT_CHECKED
     if kind == "filename_scenario":
         document = load_json(path)
         if "input_text" in document:
@@ -634,7 +696,7 @@ def fixture_verdict(
             wanted = expect.get("slug") or document.get("expected_slug")
             if actual != wanted:
                 fail(f"slug expected {wanted!r}, got {actual!r}")
-            return
+            return COMPUTED
         if "cases" in document:
             result_key = expect.get("per_case_key")
             for case in document["cases"]:
@@ -645,7 +707,7 @@ def fixture_verdict(
                 forbidden_key = expect.get("must_not_equal_key")
                 if forbidden_key and actual == case[forbidden_key]:
                     fail(f"{case['name']}: produced forbidden filename")
-            return
+            return COMPUTED
         if "input" not in document:
             question = document.get("question") or ""
             expected_filename = expect["filename"]
@@ -666,7 +728,7 @@ def fixture_verdict(
                 actual = f"{document['today']}-{slug(question, 60)}.md"
             if actual != expected_filename:
                 fail(f"filename expected {expected_filename!r}, got {actual!r}")
-            return
+            return COMPUTED
         question = document["input"]["question"]
         question_slug = slug(question, 60)
         existing = [
@@ -707,32 +769,126 @@ def fixture_verdict(
             fail(f"filename expected {wanted!r}, got {filename!r}")
         if not entry["valid"] and expect.get("conformant_filename") != filename:
             fail(f"conformant filename expected {expect.get('conformant_filename')!r}, got {filename!r}")
-        return
+        return COMPUTED
     if kind == "identity_scenario":
         document = load_json(path)
         json_scenario_verdict(entry, document)
+        computed = False
+
+        if "record_text" in document and "source_paths" in document:
+            parsed = parse_record(document["record_text"].encode("utf-8"))
+            actual_kinds = [parsed.get("kind")] * len(document["source_paths"])
+            if "kind_for_each_path" in expect and actual_kinds != expect["kind_for_each_path"]:
+                fail(
+                    f"record kinds expected {expect['kind_for_each_path']!r}, "
+                    f"got {actual_kinds!r}"
+                )
+            computed = True
+
         if "labels" in document:
-            normalized = [
-                re.sub(r"[^a-z0-9]+", "_", label.lower()).strip("_")
-                for label in document["labels"]
-            ]
+            normalized = [normalize_label(label) for label in document["labels"]]
             if "normalized_labels" in expect and normalized != expect["normalized_labels"]:
                 fail("normalized labels differ")
-        if "identity" in expect and all(
-            key in expect for key in ("joined_string", "digest_algorithm", "identity_prefix")
-        ):
-            digest = hashlib.sha1(expect["joined_string"].encode()).hexdigest()[:12]
-            if f"{expect['identity_prefix']}{digest}" != expect["identity"]:
-                fail("identity digest differs")
-        return
+            computed = True
+
+        if "input_path" in document:
+            source = document["input_path"]
+            repo_root = None
+            if document.get("repo_root_placeholder"):
+                repo_root = str(ROOT)
+                source = source.replace(document["repo_root_placeholder"], repo_root)
+            actual_path = canonical_source_path(source, repo_root)
+            wanted_path = expect.get("canonical_path")
+            if wanted_path is not None and actual_path != wanted_path:
+                fail(f"canonical path expected {wanted_path!r}, got {actual_path!r}")
+            if "inputs" in document and document["inputs"][0] != actual_path:
+                fail("canonical path differs from the first identity input")
+            if expect.get("raised") is False:
+                # Reaching this assertion is the positive evidence: the call returned.
+                pass
+            computed = True
+        elif "input_path_escaped" in document:
+            escaped = document["input_path_escaped"]
+            try:
+                source = json.loads(f'"{escaped}"')
+                actual_path = canonical_source_path(source)
+            except Exception as exc:
+                fail(f"canonical path raised {type(exc).__name__}: {exc}")
+            if expect.get("raised") is not False:
+                fail("path no-raise scenario must declare raised=false")
+            if "inputs" in document and document["inputs"][0] != actual_path:
+                fail("fallback path differs from the first identity input")
+            computed = True
+
+        if "variants" in document:
+            actual_ids = {
+                name: compare_identity(inputs)
+                for name, inputs in document["variants"].items()
+            }
+            if document.get("expected_ids") != actual_ids:
+                fail("variant identities differ from fixture expected_ids")
+            if expect.get("ids") != actual_ids:
+                fail("variant identities differ from manifest expect.ids")
+            if expect.get("distinct_count") != len(set(actual_ids.values())):
+                fail("identity distinct count differs")
+            if expect.get("all_distinct") is not (len(set(actual_ids.values())) == len(actual_ids)):
+                fail("identity all_distinct verdict differs")
+            computed = True
+
+        identity_sets: list[tuple[str, Any, dict[str, Any]]] = []
+        if "inputs" in document:
+            identity_sets.append(("identity", document["inputs"], document))
+        for index, case in enumerate(document.get("identity_cases", [])):
+            if not isinstance(case, dict):
+                fail(f"identity_cases[{index}] must be an object")
+            identity_sets.append((case.get("name", f"identity_cases[{index}]"), case.get("inputs"), case))
+
+        for name, inputs, declarations in identity_sets:
+            joined, full_digest, actual_identity = identity_parts(inputs)
+            for source_name, source in (("fixture", declarations), ("manifest", expect)):
+                declared_join = source.get("joined_string", MISSING)
+                if declared_join is not MISSING and joined != declared_join:
+                    fail(
+                        f"{name}: {source_name} joined_string expected "
+                        f"{declared_join!r}, got {joined!r}"
+                    )
+                declared_digest = source.get("digest_full_hex", MISSING)
+                if declared_digest is not MISSING and full_digest != declared_digest:
+                    fail(
+                        f"{name}: {source_name} digest_full_hex expected "
+                        f"{declared_digest!r}, got {full_digest!r}"
+                    )
+                declared_identity = source.get(
+                    "expected_identity",
+                    source.get("identity", MISSING),
+                )
+                if declared_identity is not MISSING and actual_identity != declared_identity:
+                    fail(
+                        f"{name}: {source_name} identity expected "
+                        f"{declared_identity!r}, got {actual_identity!r}"
+                    )
+            forbidden_identities = set(
+                declarations.get("non_conformant_identities", {}).values()
+            )
+            forbidden_identities.update(expect.get("identity_must_not_equal", []))
+            if actual_identity in forbidden_identities:
+                fail(f"{name}: produced a declared non-conformant identity")
+            forbidden_join_parts = expect.get("joined_string_must_not_contain", [])
+            if any(part in joined for part in forbidden_join_parts):
+                fail(f"{name}: joined string contains a forbidden spelling")
+            computed = True
+
+        if not computed:
+            fail("identity scenario did not execute a derived operation")
+        return COMPUTED
     if path.is_file() and path.suffix == ".json":
         json_scenario_verdict(entry, load_json(path))
-        return
+        return DRIFT_CHECKED
     if kind == "record_dir":
         expected_path = path / expect.get("expected_file", "expected.json")
         document = load_json(expected_path)
         json_scenario_verdict(entry, document)
-        return
+        return DRIFT_CHECKED
     fail(f"unsupported fixture kind {kind!r}")
 
 
@@ -785,7 +941,11 @@ def esc(value: Any) -> str:
     return str(value).replace("|", "\\|").replace("\n", " ")
 
 
-def render_coverage(manifest: dict[str, Any], rules: list[str]) -> str:
+def render_coverage(
+    manifest: dict[str, Any],
+    rules: list[str],
+    evidence: Counter[str],
+) -> str:
     entries = manifest["fixtures"]
     by_rule: dict[str, dict[bool, list[str]]] = defaultdict(lambda: {True: [], False: []})
     for entry in entries:
@@ -800,6 +960,8 @@ def render_coverage(manifest: dict[str, Any], rules: list[str]) -> str:
         f"- Normative rule bodies: **{len(rules)}**",
         f"- Distinct fixture paths: **{len({entry['path'] for entry in entries})}**",
         f"- Manifest entries: **{len(entries)}**",
+        f"- Computed verdicts: **{evidence[COMPUTED]}**",
+        f"- Drift-checked verdicts: **{evidence[DRIFT_CHECKED]}**",
         f"- Distinct mapped rule ids: **{len(by_rule)}**",
         f"- Unmapped normative rule ids: **{len(set(rules) - set(by_rule))}**",
         "",
@@ -832,19 +994,33 @@ def main() -> int:
     transport_schema = load_json(TRANSPORT_SCHEMA) if TRANSPORT_SCHEMA.exists() else None
     passed = 0
     by_kind: Counter[str] = Counter()
+    by_evidence: Counter[str] = Counter()
     for entry in manifest["fixtures"]:
         try:
-            fixture_verdict(entry, core_schema, transport_schema)
+            evidence = fixture_verdict(entry, core_schema, transport_schema)
+            if evidence not in {COMPUTED, DRIFT_CHECKED}:
+                fail(f"runner returned unknown evidence class {evidence!r}")
             passed += 1
             by_kind[entry["kind"]] += 1
+            by_evidence[evidence] += 1
             if args.verbose:
-                print(f"PASS {entry['id']}")
+                print(f"PASS {evidence} {entry['id']}")
         except Failure as exc:
             failures.append(f"{entry['id']}: {exc}")
         except Exception as exc:  # a malformed executable verdict is a corpus failure
             failures.append(f"{entry['id']}: runner error: {type(exc).__name__}: {exc}")
 
-    generated = render_coverage(manifest, rules)
+    actual_evidence = {
+        COMPUTED: by_evidence[COMPUTED],
+        DRIFT_CHECKED: by_evidence[DRIFT_CHECKED],
+    }
+    if actual_evidence != EXPECTED_EVIDENCE:
+        failures.append(
+            f"evidence classification changed: expected {EXPECTED_EVIDENCE}, "
+            f"got {actual_evidence}"
+        )
+
+    generated = render_coverage(manifest, rules, by_evidence)
     if args.write_coverage:
         COVERAGE.write_text(generated)
     if args.check and (not COVERAGE.exists() or COVERAGE.read_text() != generated):
@@ -853,7 +1029,11 @@ def main() -> int:
     for message in failures:
         print(f"FAIL {message}")
     summary = ", ".join(f"{kind}={count}" for kind, count in sorted(by_kind.items()))
-    print(f"{passed}/{len(manifest['fixtures'])} fixture verdicts passed ({summary})")
+    print(
+        f"{by_evidence[COMPUTED]} computed verdicts passed; "
+        f"{by_evidence[DRIFT_CHECKED]} drift checks passed "
+        f"({passed}/{len(manifest['fixtures'])} manifest entries; {summary})"
+    )
     actual = counts(manifest, rules)
     print("counts: " + ", ".join(f"{key}={value}" for key, value in actual.items()))
     return 1 if failures else 0

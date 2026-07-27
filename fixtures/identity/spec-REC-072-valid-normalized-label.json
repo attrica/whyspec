@@ -11,6 +11,14 @@
     "adr_0042_pin_the_digest",
     "leading_and_trailing"
   ],
+  "inputs": [
+    "docs/decisions/label-normalization.md",
+    "Use a Shared Cache!!",
+    "decision",
+    "Use a Shared Cache!!"
+  ],
+  "joined_string": "docs/decisions/label-normalization.md::Use a Shared Cache!!::decision::use_a_shared_cache",
+  "expected_identity": "intent_08320d074f79",
   "rule": "REC-072",
   "statement": "Normalized label: lowercase, non-`[a-z0-9]` runs replaced by `_`, edge `_` stripped.",
   "note": "Four labels exercising case, punctuation runs, embedded digits and leading/trailing separator characters. Note the separator is `_` here, NOT the `-` used by the slug rule REC-058: an implementation that reuses the slug function for labels forks every node id in the graph."

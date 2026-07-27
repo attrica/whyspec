@@ -51,7 +51,16 @@ every id in `manifest.json`, not by the numbers.
 
 The in-repository runner executes every manifest verdict without consulting its prose
 `notes`, validates the core envelope schema and the manifest's semantic constraints, and
-pins the corpus counts:
+pins the corpus counts. Its output separates two evidence classes:
+
+- **computed verdicts** derive an answer from fixture inputs and compare it with the
+  declared expectation;
+- **drift checks** compare the manifest expectation with an expected block already stored
+  in the fixture. They catch two sources of truth diverging, but do not independently
+  establish conformance.
+
+Classification happens after dispatch for each fixture, so a kind such as
+`render_scenario` may contribute to both classes.
 
 ```bash
 python3 tools/run_corpus.py
@@ -59,9 +68,10 @@ python3 tools/run_corpus.py --check
 python3 tools/run_corpus.py --write-coverage
 ```
 
-`--check` also exits non-zero when this generated coverage report has drifted. The runner
-uses only the Python standard library; an implementation adapter may additionally consume
-the same verdict shapes described below.
+`coverage.md` carries both evidence counts. `--check` exits non-zero when either count or
+the rest of the generated report has drifted. The runner uses only the Python standard
+library; an implementation adapter may additionally consume the same verdict shapes
+described below.
 
 ## How to run an implementation against this corpus
 

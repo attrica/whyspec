@@ -1,6 +1,14 @@
 {
   "input_path": "/nonexistent-root/records/x.md",
   "expected": "/nonexistent-root/records/x.md",
+  "inputs": [
+    "/nonexistent-root/records/x.md",
+    "Outside repository",
+    "decision",
+    "Outside repository"
+  ],
+  "joined_string": "/nonexistent-root/records/x.md::Outside repository::decision::outside_repository",
+  "expected_identity": "intent_277303c19f86",
   "rule": "REC-074",
   "statement": "A path outside a repository falls back to POSIX absolute; canonicalization MUST NOT raise.",
   "note": "An absolute path belonging to no repository MUST fall back to a POSIX-normalized absolute spelling rather than raising or returning empty."
