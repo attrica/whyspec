@@ -48,11 +48,25 @@ parallel by a sibling work package from the same implementation, with no visibil
 this corpus while doing so). Reconcile by the one-line `rule_statement` carried alongside
 every id in `manifest.json`, not by the numbers.
 
+## Run the retained corpus
+
+The in-repository runner executes every manifest verdict without consulting its prose
+`notes`, validates the core envelope schema and the manifest's semantic constraints, and
+pins the corpus counts:
+
+```bash
+python3 tools/run_corpus.py
+python3 tools/run_corpus.py --check
+python3 tools/run_corpus.py --write-coverage
+```
+
+`--check` also exits non-zero when this generated coverage report has drifted. The runner
+uses only the Python standard library; an implementation adapter may additionally consume
+the same verdict shapes described below.
+
 ## How to run an implementation against this corpus
 
-There is no bundled test harness (deliberately -- a harness is itself an opinion about
-your implementation's API shape, and this corpus should not impose one). Each fixture
-`kind` implies a mechanical check:
+Each fixture `kind` implies a mechanical check:
 
 - **`record`** (`records/*.md`): feed the file's raw bytes to your record parser.
   - `valid: true` -- it MUST parse, and the manifest's `notes` field states which fields
