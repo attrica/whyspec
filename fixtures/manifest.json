@@ -7777,7 +7777,7 @@
       "id": "spec-REC-101-valid-absent-status-is-unstated",
       "rule_id": "REC-101",
       "family": "REC",
-      "rule_statement": "An absent status is UNSTATED -- neither open nor resolved -- and MUST take its tier from record kind and yield ground-truth intent. An UNRECOGNIZED status, by contrast, is treated as open, unoffered, with no disposition.",
+      "rule_statement": "An absent or unrecognized status is UNSTATED, has an adopted disposition, and MUST take its tier from record kind and yield ground-truth intent.",
       "spec_rule_ids": [
         "REC-101"
       ],
@@ -7797,7 +7797,7 @@
         "status_key_present_on_node": false,
         "deliberation": "unstated",
         "offered": null,
-        "disposition": null,
+        "disposition": "adopted",
         "yields": "ground_truth_intent",
         "provenance": "captured",
         "counted_toward_trusted_evidence": true
@@ -7808,7 +7808,7 @@
       "id": "spec-REC-101-invalid-unrecognized-status-is-open-not-unstated",
       "rule_id": "REC-101",
       "family": "REC",
-      "rule_statement": "An absent status is UNSTATED -- neither open nor resolved -- and MUST take its tier from record kind and yield ground-truth intent. An UNRECOGNIZED status, by contrast, is treated as open, unoffered, with no disposition.",
+      "rule_statement": "An absent or unrecognized status is UNSTATED, has an adopted disposition, and MUST take its tier from record kind and yield ground-truth intent.",
       "spec_rule_ids": [
         "REC-101"
       ],
@@ -7825,15 +7825,15 @@
         "title": "Split the ingest worker pool",
         "status": "circulating",
         "alternatives": 2,
-        "deliberation": "open",
-        "offered": false,
-        "disposition": null,
-        "yields": "provisional_intent",
-        "counted_toward_trusted_evidence": false,
-        "deliberation_must_not_equal": "unstated",
-        "yields_must_not_equal": "ground_truth_intent"
+        "deliberation": "unstated",
+        "offered": null,
+        "disposition": "adopted",
+        "yields": "ground_truth_intent",
+        "counted_toward_trusted_evidence": true,
+        "deliberation_must_not_equal": "open",
+        "yields_must_not_equal": "provisional_intent"
       },
-      "notes": "A status IS present and normalizes (REC-030: first run of lowercase alphabetic characters) to `circulating`, which is not in the table. Unrecognized is treated as OPEN, so this record is NOT ground truth -- the opposite of the absent case. Conflating the two either strips ground truth from every record written before status existed, or promotes an unfinished thought."
+      "notes": "A status IS present and normalizes (REC-030: first run of lowercase alphabetic characters) to `circulating`, which is not in the table. The conformant result is the `any other value` row: unstated, adopted ground truth. The forbidden values preserve the counter-example's purpose by catching an implementation that invents an open, provisional state for an unrecognized token."
     },
     {
       "id": "spec-REC-111-valid-currency-is-derived-not-authored",
