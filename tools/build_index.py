@@ -29,6 +29,7 @@ OUT_OF_SCOPE = {
     "REC-070": "action",
 }
 RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*(.*?)(?=\n\n)", re.M | re.S)
+ID_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
 ROW_RE = re.compile(r"^\| ((?:REC|PROV|ENV|VER)-\d{3}) \| .*$", re.M)
 
 
@@ -77,7 +78,12 @@ def statement(body: str) -> str:
 
 
 def build(text: str) -> dict[str, str]:
-    return {m.group(1): statement(m.group(2)) for m in RULE_RE.finditer(text)}
+    matches = list(RULE_RE.finditer(text))
+    ids = ID_RE.findall(text)
+    duplicates = sorted({rid for rid in ids if ids.count(rid) > 1})
+    if duplicates:
+        raise ValueError(f"duplicate rule identifier(s): {duplicates}")
+    return {match.group(1): statement(match.group(2)) for match in matches}
 
 
 def render(text: str, rules: dict[str, str]) -> str:
@@ -111,7 +117,15 @@ def render(text: str, rules: dict[str, str]) -> str:
 
 def main() -> int:
     text = SPEC.read_text()
-    rules = build(text)
+    try:
+        rules = build(text)
+    except ValueError as exc:
+        print(f"rule index input is invalid: {exc}")
+        return 1
+    stale_scope = sorted(set(OUT_OF_SCOPE) - set(rules))
+    if stale_scope:
+        print(f"OUT_OF_SCOPE cites {len(stale_scope)} missing rule(s): {stale_scope}")
+        return 1
 
     rebuilt = render(text, rules)
     still_missing = sorted(set(rules) - set(ROW_RE.findall(rebuilt)))
