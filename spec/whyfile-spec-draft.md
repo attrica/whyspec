@@ -1,6 +1,6 @@
 # The Whyfile Format Specification
 
-**Version:** 0.1 — working draft
+**Version:** 0.1 — working draft; pre-publication baseline, not a record-format marker
 **Status:** Draft. Not frozen. Not a standard. Rule ids are stable within this draft and are
 referenced by the conformance corpus; rule *text* may still change.
 
@@ -357,8 +357,9 @@ emit an object there.
 > satisfy every fixture. Keeping the projection at the envelope is what lets the envelope rule stand
 > unchanged: the parse gains structure, the wire format does not.
 >
-> This crosses [VER-001]. It changes how an existing section's body is parsed ([VER-003], fourth
-> bullet) and therefore requires a version marker and a migration note; §7.5 records the working.
+> In a published format, changing an alternatives item from a string to this object would cross
+> [VER-001] ([VER-003], fourth bullet). Here the object is part of the pre-publication baseline:
+> there is no earlier public contract to migrate and no marker is owed (§7.5).
 
 This is the format's answer to its own central question. A decision that records only what was
 chosen has recorded a commitment; a decision that records why the alternatives *lost* has
@@ -370,11 +371,10 @@ The distinction [REC-100] draws is the one most often lost. "We ruled this out" 
 still do this" are different states of the world, and a corpus that conflates them cannot answer
 what it has left on the table.
 
-The **record syntax** is additive by construction ([REC-099]): every existing record continues to
-parse without error, with disposition simply absent. Absence means *not recorded*, never *no
-disposition existed*. The **parse result** is not additive — [REC-134] changes the item shape a
-parser yields for every record, including records written before this section existed, which is why
-that rule and not this one carries the version marker.
+The **record syntax** accepts every bare alternative unchanged ([REC-099]), with disposition simply
+absent. Absence means *not recorded*, never *no disposition existed*. The **parse result** is the
+object shape [REC-134] defines; the envelope remains the string projection [ENV-016] defines. Both
+are baseline contracts, not migrations from an earlier published shape.
 
 ### 4.6 Status
 
@@ -430,9 +430,8 @@ behaviour to it beyond [REC-032] and the unrecognized-status row of [REC-101].
 
 #### 4.6.1 Settled and unsettled status
 
-> **This subsection is a meaning change, not a vocabulary extension.** It alters how an existing
-> field is interpreted, and is therefore the one change in this revision that requires a version
-> marker and a migration note under [VER-001]. Every other addition here is additive.
+> **Baseline note.** This subsection defines the status semantics of the pre-publication baseline.
+> After publication, reinterpreting any status row would be a meaning change under [VER-001].
 
 Status carries **two independent properties**, and collapsing them onto one axis is what makes
 `rejected` look like an unfinished thought rather than the most settled state a record can reach.
@@ -1755,46 +1754,25 @@ worse than an honest gap: the gap is visible and the inference is not.
 **not** govern transport attachments ([ENV-043]), storage layouts, index formats, ranking
 behaviour, or any other non-goal from §1.4.
 
-**[VER-008]** The record format carries **no explicit version marker today**. A record is recognized
-by its H1 shape alone ([REC-008]). This is a deliberate consequence of [VER-002]: every change to
-date has been additive, so no marker has ever been required. [VER-001] is the rule that governs when
-the first one becomes necessary — the marker's *format* is deliberately left unspecified until a
-meaning change actually requires one, so that it can be designed against a real case rather than a
-hypothetical.
+**[VER-008]** This document defines the **pre-publication baseline**, and the record format carries
+no explicit version marker in that baseline. A record is recognized by its H1 shape alone
+([REC-008]). Draft edits that established this baseline are not changes to an earlier public format
+and therefore do not trigger [VER-001]. After the baseline is published, [VER-001] governs the first
+meaning change; its marker format and migration note **MUST** be defined before that change merges.
 
 ---
 
-### 7.5 Applying the rule to this revision
+### 7.5 Establishing the baseline
 
-This revision is the first occasion the versioning rule has had to adjudicate real changes, so
-the working is shown.
+This working draft has not been published as a compatibility contract and has no external
+implementer to migrate. Its current status table (§4.6.1), parsed alternative object
+([REC-134]), optional sections, core envelope, and provenance rules together define one clean
+pre-version baseline. No record-format marker or migration note is owed for the edits that produced
+it.
 
-**Vocabulary extensions — no version marker.** The record identifier (§4.13), attribution (§4.14),
-declared scope (§4.15), relations (§4.16), evidence (§4.17), the alternative-disposition *syntax*
-(§4.5.2), and the question field ([REC-107]) are all new optional sections or fields. Every existing
-record parses without error, and in each case absence means *not recorded* rather than a claim. Edge
-provenance (§5.5) constrains a structure the format did not previously describe at all.
-
-**Two meaning changes — version marker required.** Settled and unsettled status (§4.6.1) alters how
-an existing field is interpreted: a status of `proposed` previously yielded ground-truth intent
-and now does not. Records do not change, but their *meaning* does, and a consumer written against
-the earlier reading would silently disagree with one written against this. That is exactly the
-line [VER-001] draws, and this change sits on the far side of it.
-
-The second is [REC-134], and it is the reason the alternative-disposition entry above is qualified.
-The *syntax* is additive — an older record still parses — but [REC-134] changes what the parse
-**yields** for every record, an item shape rather than a string, which is [VER-003]'s fourth bullet.
-The distinction is worth keeping in view: a change can be invisible on the read side of the document
-and still be a meaning change on the output side, and only the second half is what [VER-001] tests.
-
-**The ambiguity rules are a defect fix, not a change of meaning** ([REC-105], [REC-106]). They
-narrow behaviour that produced demonstrably wrong output — a reference resolving to an unrelated
-record that merely shared a year. No conforming implementation could have relied on the previous
-behaviour, because the previous behaviour was not deterministic with respect to anything a reader
-could see.
-
-That two changes of the nine require a marker is the rule working as designed: additive extension is
-cheap and meaning change is expensive, so the format grows freely and reinterprets rarely.
+[VER-001] remains the forward rule. Once this baseline is published, a proposal that reinterprets
+one of those existing fields, sections, or shapes must define the marker and migration before the
+meaning change merges. A vocabulary extension remains governed by [VER-002].
 
 ## 8. Known gaps
 
@@ -1814,7 +1792,7 @@ gap: implementers build on it, and it becomes real without ever having been deci
 | **G8** | **Multiple `## Decision` sections are first-wins with no diagnostic** ([REC-019]). A record with two Decision sections silently loses the second. Whether that should be an error is undecided. |
 | **G9** | **No rule governs a record whose title is duplicated** within the same directory. Identity ([REC-071]) includes the source path, so two records with the same title in different files are distinct nodes; two records with the same title in the *same* file are not addressable separately. |
 | **G10** | **The `attested` tier has no record syntax.** It is normatively ordered ([PROV-002]) but is produced from sources outside this format's scope (§1.4). A conforming implementation that only reads records will never mint it. |
-| **G11** | **No version marker format exists** ([VER-008]). The rule for when one is required is decided; its syntax is not. |
+| ~~G11~~ | **NOT APPLICABLE before publication** ([VER-008]). The baseline owes no record-format marker. The marker syntax and migration form become a publication obligation before the first later meaning change merges. |
 | **G12** | **Empty `## Recommendation`.** [REC-046] says an empty recommendation yields no delta, but an emitter is not forbidden from writing an empty section, and a parser cannot distinguish "recommended nothing" from "recommendation section written and left blank". |
 
 ---
@@ -2074,7 +2052,7 @@ Every normative rule, with its one-line statement.
 | VER-004 | Each of the following is a vocabulary extension and MUST NOT carry a version marker: — see the rule body for the enumeration. _(out of scope: governance)_ |
 | VER-005 | A change MUST NOT re-interpret the absence of a field in existing records as a claim or retroactively infer a value the record does not carry. _(out of scope: governance)_ |
 | VER-007 | The version marker governs the record format and the core envelope only. _(out of scope: governance)_ |
-| VER-008 | The record format carries no explicit version marker today. A record is recognized by its H1 shape alone (REC-008). _(out of scope: governance)_ |
+| VER-008 | This document defines the pre-publication baseline, and the record format carries no explicit version marker in that baseline. _(out of scope: governance)_ |
 
 ---
 

@@ -262,11 +262,10 @@ choice.
 > **envelope** field `alternatives`, which projects each alternative's `option` text only;
 > an implementation **MUST NOT** emit an object there.
 
-This crosses [VER-001]: it changes how an existing section's body is parsed ([VER-003],
-third and fourth bullets) and therefore needs a version marker and a migration note. §4.5.2
-currently claims the disposition feature is "additive by construction" — that is true of the
-*record syntax* and not of the *parse result*, and the claim should be narrowed in the same
-edit.
+Resolved in the pre-publication baseline: [REC-134] makes the parsed object shape normative while
+[ENV-016] keeps the envelope projection as strings. There is no earlier public format to migrate,
+so no marker or migration note is owed. After publication, changing either existing shape would
+cross [VER-001].
 
 ---
 
