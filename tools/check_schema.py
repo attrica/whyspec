@@ -426,10 +426,11 @@ def check_vocabularies(rules: dict, schemas: dict[Path, dict], rep: Report) -> N
             prose = set(column_values(span_of(rule), trigger))
         node = at(schemas[path], pointer)
         enum = set(node.get("enum", []))
+        vocabulary = {value for value in enum if value is not None}
         rep.check(
-            bool(prose) and prose <= enum,
+            bool(prose) and prose == vocabulary,
             f"F [{rule}] states {sorted(prose)}; {pointer} enumerates "
-            f"{sorted(v for v in enum if v is not None)}",
+            f"{sorted(vocabulary)}",
         )
 
 
