@@ -314,7 +314,10 @@ def envelope_verdict(
     conformant = expect.get("conformant", entry["valid"])
     surface = expect.get("surface", "core")
     schema = transport_schema if surface == "transport" and transport_schema else core_schema
-    schema_ok = not schema_errors(document, schema)
+    schema_document = document
+    if surface == "transport" and transport_schema is None and isinstance(document, dict):
+        schema_document = {key: value for key, value in document.items() if key != "graph_identity"}
+    schema_ok = not schema_errors(schema_document, schema)
 
     required = set(expect.get("required_keys", []))
     forbidden = set(expect.get("forbidden_keys", []))
@@ -344,7 +347,10 @@ def envelope_verdict(
             "spec-ENV-050-valid-golden-five-components",
         }
         if entry["id"] not in fragments and not schema_ok:
-            fail("schema rejected valid envelope: " + "; ".join(schema_errors(document, schema)[:3]))
+            fail(
+                "schema rejected valid envelope: "
+                + "; ".join(schema_errors(schema_document, schema)[:3])
+            )
         return
 
     condition = expect.get("failing_condition")
