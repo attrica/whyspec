@@ -1,5 +1,5 @@
 {
-  "rule": "REC-109",
+  "rule": "REC-101",
   "statement": "Counter-example: folding `draft` into `proposed` because both are open. That erases the only signal an author has for thinking somewhere without broadcasting.",
   "input_statuses": [
     "draft",

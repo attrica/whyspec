@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://whyfile.example/schema/transport-envelope.schema.json",
+  "title": "Whyfile result-envelope transport profile",
+  "description": "[ENV-040] A transport credential is outside the core envelope and is validated as a separate profile. Validate the object with this schema and validate the projection without `graph_identity` against the core envelope schema.",
+  "x-rule": [
+    "ENV-040"
+  ],
+  "type": "object",
+  "required": [
+    "command",
+    "status",
+    "graph_identity"
+  ],
+  "properties": {
+    "command": {},
+    "status": {},
+    "graph_identity": {
+      "description": "[ENV-040] `graph_identity` is a transport credential block. [ENV-041] It is always present on this profile and is explicit null when no identity resolved.",
+      "x-rule": [
+        "ENV-040",
+        "ENV-041"
+      ],
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

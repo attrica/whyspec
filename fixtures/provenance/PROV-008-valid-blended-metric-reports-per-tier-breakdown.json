@@ -2,8 +2,7 @@
   "rule": "PROV-008",
   "spec_rule_ids": [
     "PROV-012",
-    "PROV-010",
-    "PROV-011"
+    "PROV-010"
   ],
   "statement": "A trust metric that blends tiers into a single scalar MUST also report the per-tier breakdown and the tier set it treated as trusted. A bare percentage is the one output that makes a corpus of inferences look like a corpus of decisions.",
   "input": [
@@ -15,9 +14,6 @@
     },
     {
       "provenance": "attested"
-    },
-    {
-      "provenance": "reconstructed"
     },
     {
       "provenance": "reconstructed"

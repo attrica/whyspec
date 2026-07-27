@@ -197,8 +197,7 @@
       "family": "PROV",
       "statement": "golden_fraction counts only nodes whose provenance is in {authored, captured, attested}; reconstructed (and absent-provenance) nodes never contribute to the golden numerator under any circumstance. An empty node list yields 0%, not an error.",
       "spec_rule_ids": [
-        "PROV-010",
-        "PROV-011"
+        "PROV-010"
       ]
     },
     {
@@ -232,7 +231,7 @@
       "family": "ENV",
       "statement": "The `coverage` command's envelope keys are EXACTLY {command, status, authored_anchored_files, authored_anchored_symbols, code_files, code_symbols, dark_files, file_coverage_pct, files_with_intent, golden, intent_by_kind, intent_debt, symbol_coverage_pct, symbols_with_intent} (14 keys total).",
       "spec_rule_ids": [
-        "ENV-028"
+        "ENV-044"
       ]
     },
     {
@@ -281,7 +280,6 @@
       "statement": "A failure envelope MUST carry `command`, `status` and a human-readable `message`, and MUST NOT be required to carry any variant-specific key. The error variant of every command is a legitimate shape with none of them.",
       "spec_rule_ids": [
         "ENV-011",
-        "ENV-012",
         "ENV-002"
       ]
     },
@@ -348,7 +346,7 @@
       "family": "ENV",
       "statement": "A component of `intent_debt` the implementation cannot compute MUST be reported as an explicit null, never as 0. A zero claims a measurement that did not happen.",
       "spec_rule_ids": [
-        "ENV-028",
+        "ENV-044",
         "ENV-029"
       ]
     },
@@ -358,7 +356,6 @@
       "statement": "The `capture` envelope MUST carry all nine named keys. Both the as-given `record` path (from which node identity derives) and the resolved `record_abs` MUST be reported, and `resolution_delta` MUST be present with an explicit null when there is no delta.",
       "spec_rule_ids": [
         "ENV-034",
-        "ENV-035",
         "ENV-036",
         "ENV-037"
       ]
@@ -385,7 +382,7 @@
       "family": "ENV",
       "statement": "Each violation MUST cite the identifier of the decision it enforces. A rule whose failure cannot name its decision is a lint, not a conformance check.",
       "spec_rule_ids": [
-        "ENV-031"
+        "ENV-048"
       ]
     },
     {
@@ -478,8 +475,7 @@
       "statement": "A trust metric that blends tiers into a single scalar MUST also report the per-tier breakdown and the tier set it treated as trusted.",
       "spec_rule_ids": [
         "PROV-012",
-        "PROV-010",
-        "PROV-011"
+        "PROV-010"
       ]
     },
     {
@@ -487,8 +483,7 @@
       "family": "VER",
       "statement": "Absence means 'this was not recorded' and MUST keep meaning that. An implementation MUST NOT retroactively infer a value for a field a record does not carry, nor re-render the gap as an explicit null.",
       "spec_rule_ids": [
-        "VER-005",
-        "VER-006"
+        "VER-005"
       ]
     }
   ],
@@ -1643,8 +1638,7 @@
       "kind": "vector",
       "path": "provenance/PROV-004-valid-golden-fraction.json",
       "spec_rule_ids": [
-        "PROV-010",
-        "PROV-011"
+        "PROV-010"
       ],
       "verdict_kind": "vector",
       "expect": {
@@ -1664,8 +1658,7 @@
       "kind": "vector",
       "path": "provenance/PROV-004-invalid-golden-fraction-blends-reconstructed.json",
       "spec_rule_ids": [
-        "PROV-010",
-        "PROV-011"
+        "PROV-010"
       ],
       "verdict_kind": "vector",
       "expect": {
@@ -1674,8 +1667,7 @@
           "wrong_output_a_non_conformant_implementation_might_return"
         ],
         "violates": [
-          "PROV-010",
-          "PROV-011"
+          "PROV-010"
         ]
       }
     },
@@ -1952,7 +1944,7 @@
       "kind": "envelope",
       "path": "envelopes/ENV-004-valid-coverage.json",
       "spec_rule_ids": [
-        "ENV-028"
+        "ENV-044"
       ],
       "verdict_kind": "envelope_shape",
       "expect": {
@@ -2062,14 +2054,14 @@
       "path": "envelopes/ENV-004-invalid-coverage-missing-golden.json",
       "notes": "'golden' removed (all other 13 keys present, zeroed). MUST be rejected.",
       "spec_rule_ids": [
-        "ENV-028"
+        "ENV-044"
       ],
       "verdict_kind": "envelope_shape",
       "expect": {
         "conformant": false,
         "command": "coverage",
         "violates": [
-          "ENV-028"
+          "ENV-044"
         ],
         "failing_condition": {
           "path": "golden",
@@ -2392,7 +2384,6 @@
       "rule_statement": "A failure envelope MUST carry `command`, `status` and a human-readable `message`, and MUST NOT be required to carry any variant-specific key. The error variant of every command is a legitimate shape with none of them.",
       "spec_rule_ids": [
         "ENV-011",
-        "ENV-012",
         "ENV-002"
       ],
       "valid": true,
@@ -2426,7 +2417,6 @@
       "rule_statement": "A failure envelope MUST carry `command`, `status` and a human-readable `message`, and MUST NOT be required to carry any variant-specific key. The error variant of every command is a legitimate shape with none of them.",
       "spec_rule_ids": [
         "ENV-011",
-        "ENV-012",
         "ENV-002"
       ],
       "valid": false,
@@ -2942,7 +2932,7 @@
       "family": "ENV",
       "rule_statement": "A component of `intent_debt` the implementation cannot compute MUST be reported as an explicit null, never as 0. A zero claims a measurement that did not happen.",
       "spec_rule_ids": [
-        "ENV-028",
+        "ENV-044",
         "ENV-029"
       ],
       "valid": true,
@@ -3041,7 +3031,7 @@
       "family": "ENV",
       "rule_statement": "A component of `intent_debt` the implementation cannot compute MUST be reported as an explicit null, never as 0. A zero claims a measurement that did not happen.",
       "spec_rule_ids": [
-        "ENV-028",
+        "ENV-044",
         "ENV-029"
       ],
       "valid": false,
@@ -3071,7 +3061,6 @@
       "rule_statement": "The `capture` envelope MUST carry all nine named keys. Both the as-given `record` path (from which node identity derives) and the resolved `record_abs` MUST be reported, and `resolution_delta` MUST be present with an explicit null when there is no delta.",
       "spec_rule_ids": [
         "ENV-034",
-        "ENV-035",
         "ENV-036",
         "ENV-037"
       ],
@@ -3125,7 +3114,6 @@
       "rule_statement": "The `capture` envelope MUST carry all nine named keys. Both the as-given `record` path (from which node identity derives) and the resolved `record_abs` MUST be reported, and `resolution_delta` MUST be present with an explicit null when there is no delta.",
       "spec_rule_ids": [
         "ENV-034",
-        "ENV-035",
         "ENV-036",
         "ENV-037"
       ],
@@ -3290,7 +3278,7 @@
       "family": "ENV",
       "rule_statement": "Each violation MUST cite the identifier of the decision it enforces. A rule whose failure cannot name its decision is a lint, not a conformance check.",
       "spec_rule_ids": [
-        "ENV-031"
+        "ENV-048"
       ],
       "valid": true,
       "kind": "envelope",
@@ -3325,7 +3313,7 @@
       "family": "ENV",
       "rule_statement": "Each violation MUST cite the identifier of the decision it enforces. A rule whose failure cannot name its decision is a lint, not a conformance check.",
       "spec_rule_ids": [
-        "ENV-031"
+        "ENV-048"
       ],
       "valid": false,
       "kind": "envelope",
@@ -3335,7 +3323,7 @@
         "conformant": false,
         "command": "check",
         "violates": [
-          "ENV-031"
+          "ENV-048"
         ],
         "failing_condition": {
           "path": "violations[0]",
@@ -3642,8 +3630,7 @@
       "rule_statement": "A trust metric that blends tiers into a single scalar MUST also report the per-tier breakdown and the tier set it treated as trusted.",
       "spec_rule_ids": [
         "PROV-012",
-        "PROV-010",
-        "PROV-011"
+        "PROV-010"
       ],
       "valid": true,
       "kind": "vector",
@@ -3664,8 +3651,7 @@
       "rule_statement": "A trust metric that blends tiers into a single scalar MUST also report the per-tier breakdown and the tier set it treated as trusted.",
       "spec_rule_ids": [
         "PROV-012",
-        "PROV-010",
-        "PROV-011"
+        "PROV-010"
       ],
       "valid": false,
       "kind": "vector",
@@ -3916,8 +3902,7 @@
       "family": "VER",
       "rule_statement": "Absence means 'this was not recorded' and MUST keep meaning that. An implementation MUST NOT retroactively infer a value for a field a record does not carry, nor re-render the gap as an explicit null.",
       "spec_rule_ids": [
-        "VER-005",
-        "VER-006"
+        "VER-005"
       ],
       "valid": true,
       "kind": "vector",
@@ -3937,8 +3922,7 @@
       "family": "VER",
       "rule_statement": "Absence means 'this was not recorded' and MUST keep meaning that. An implementation MUST NOT retroactively infer a value for a field a record does not carry, nor re-render the gap as an explicit null.",
       "spec_rule_ids": [
-        "VER-005",
-        "VER-006"
+        "VER-005"
       ],
       "valid": false,
       "kind": "vector",
@@ -3950,8 +3934,7 @@
           "expect"
         ],
         "violates": [
-          "VER-005",
-          "VER-006"
+          "VER-005"
         ]
       },
       "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
@@ -4850,7 +4833,7 @@
       "valid": true,
       "kind": "render_scenario",
       "path": "rendering/spec-REC-021-valid-context-always-rendered.json",
-      "notes": "`## Context` is present and carries the question text. The question reaches no parsed field (known gap G3), so the rendered Context section is the ONLY durable home for it -- and it is the field REC-056 derives the filename from and REC-064 matches legacy records on.",
+      "notes": "`## Context` is present and carries the question text. REC-107 now yields it as the parsed `question` field and carries it to the intent node; the rendered section remains its durable on-disk form and the input to REC-056 filename derivation and REC-064 legacy matching.",
       "verdict_kind": "field_expectation",
       "expect": {
         "output": "# Decision: Serve reads from a replica\n\n**Status:** Accepted\n**Date:** 2026-04-02\n\n## Context\n\nHow do we shed read load?\n\n## Decision\n\nA replica absorbs read load without a resharding project.\n\n## Alternatives considered\n\n1. Serve reads from a replica\n2. Shard the primary\n",
@@ -5162,12 +5145,12 @@
       ]
     },
     {
-      "id": "spec-REC-063-invalid-glob-metacharacters-cannot-survive",
+      "id": "spec-REC-058-invalid-glob-metacharacters-cannot-survive",
       "family": "REC",
       "rule_statement": "A slug MUST NOT be able to contain a glob metacharacter.",
       "valid": false,
       "kind": "slug_scenario",
-      "path": "slugs/spec-REC-063-invalid-glob-metacharacters-cannot-survive.json",
+      "path": "slugs/spec-REC-058-invalid-glob-metacharacters-cannot-survive.json",
       "notes": "The question text contains `*`, `.`, `[`, `]` and `?` -- every metacharacter the REC-067 lookup glob is built from. Because REC-058 restricts output to [a-z0-9-], NONE of them can survive into the slug. This is the property REC-068's pattern construction relies on: if a slug could smuggle a `*` into the glob, the anchored digit-class pattern would be defeated from the other end.",
       "verdict_kind": "field_expectation",
       "expect": {
@@ -5176,7 +5159,7 @@
         "slug_must_not_equal": "which-*.md-files-should-the-[0-9]-matcher-pick-up"
       },
       "spec_rule_ids": [
-        "REC-063"
+        "REC-058"
       ]
     },
     {
@@ -5775,20 +5758,20 @@
       ]
     },
     {
-      "id": "spec-REC-063-valid-ordinary-question-slug-is-glob-safe",
+      "id": "spec-REC-058-valid-ordinary-question-slug-is-glob-safe",
       "family": "REC",
       "rule_statement": "A slug MUST NOT be able to contain a glob metacharacter.",
       "valid": true,
       "kind": "slug_scenario",
-      "path": "slugs/spec-REC-063-valid-ordinary-question-slug-is-glob-safe.json",
-      "notes": "The positive control for REC-063: an ordinary question produces a slug drawn only from [a-z0-9-]. This is the property REC-068's lookup pattern is built on -- the slug is interpolated directly into a glob, so it must never be able to contribute a metacharacter.",
+      "path": "slugs/spec-REC-058-valid-ordinary-question-slug-is-glob-safe.json",
+      "notes": "The positive control for REC-058: an ordinary question produces a slug drawn only from [a-z0-9-]. This is the property REC-067's lookup pattern is built on -- the slug is interpolated directly into a glob, so it must never be able to contribute a metacharacter.",
       "verdict_kind": "field_expectation",
       "expect": {
         "slug": "should-the-reconciliation-service-retry-failed-batches",
         "slug_length": 54
       },
       "spec_rule_ids": [
-        "REC-063"
+        "REC-058"
       ]
     },
     {
@@ -6030,7 +6013,7 @@
       "valid": false,
       "kind": "record",
       "path": "models/spec-REC-076-invalid-absent-id-must-not-be-derived.md",
-      "notes": "The same record with the `Id` line removed. No identifier was written, so none may be manufactured from mutable content: an implementation that mints one from the title, the slug or the filename produces an identifier that silently changes the next time the title is corrected, which is exactly what REC-077 forbids. The listed values are the derivations a naive implementation reaches for.",
+      "notes": "The same record with the `Id` line removed. No identifier was written, so none may be manufactured from mutable content: an implementation that mints one from the title, the slug or the filename produces an identifier that silently changes the next time the title is corrected, which is exactly what REC-076 forbids. The listed values are the derivations a naive implementation reaches for.",
       "verdict_kind": "field_expectation",
       "expect": {
         "parses": true,
@@ -6049,13 +6032,13 @@
       ]
     },
     {
-      "id": "spec-REC-077-valid-identifier-survives-revision",
+      "id": "spec-REC-076-valid-identifier-survives-revision",
       "family": "REC",
-      "rule_id": "REC-077",
+      "rule_id": "REC-076",
       "rule_statement": "An identifier MUST be stable across an edit to any other part of the record; a record whose title is corrected retains its identifier.",
       "valid": true,
       "kind": "record_scenario",
-      "path": "models/spec-REC-077-identifier-survives-revision.json",
+      "path": "models/spec-REC-076-identifier-survives-revision.json",
       "notes": "Two revisions of one record: a title typo corrected and the rationale expanded. Parse each revision and compare identifiers. Node identity (REC-071) legitimately differs between the two because the title is hashed; the record identifier legitimately does not.",
       "verdict_kind": "field_expectation",
       "expect": {
@@ -6074,17 +6057,17 @@
         "distinct_identifier_count": 1
       },
       "spec_rule_ids": [
-        "REC-077"
+        "REC-076"
       ]
     },
     {
-      "id": "spec-REC-077-invalid-identifier-must-not-track-the-title",
+      "id": "spec-REC-076-invalid-identifier-must-not-track-the-title",
       "family": "REC",
-      "rule_id": "REC-077",
+      "rule_id": "REC-076",
       "rule_statement": "An identifier MUST be stable across an edit to any other part of the record; a record whose title is corrected retains its identifier.",
       "valid": false,
       "kind": "record_scenario",
-      "path": "models/spec-REC-077-identifier-survives-revision.json",
+      "path": "models/spec-REC-076-identifier-survives-revision.json",
       "notes": "Same two revisions, stating the non-conformant output. An implementation deriving the identifier from the title returns two different identifiers for one record, and every citation of the pre-correction identifier dangles the moment a typo is fixed.",
       "verdict_kind": "field_expectation",
       "expect": {
@@ -6098,7 +6081,7 @@
         ]
       },
       "spec_rule_ids": [
-        "REC-077"
+        "REC-076"
       ]
     },
     {
@@ -6416,7 +6399,7 @@
       "valid": true,
       "kind": "record",
       "path": "models/spec-REC-117-valid-attribution-provenance-and-date.md",
-      "notes": "One dated attribution and one undated one on a decision record with no ratification, so the record's tier is `captured` by PROV-006/PROV-021 and each attribution edge carries that same tier per PROV-014. The undated attribution's date is absent, not empty and not defaulted to the record's date.",
+      "notes": "One dated attribution and one undated one on a decision record with no ratification, so the record's tier is `captured` by PROV-006/PROV-021 and each attribution edge carries that same tier per PROV-013. The undated attribution's date is absent, not empty and not defaulted to the record's date.",
       "verdict_kind": "field_expectation",
       "expect": {
         "parses": true,
@@ -6704,13 +6687,13 @@
       ]
     },
     {
-      "id": "spec-REC-085-valid-scope-inherits-record-provenance",
-      "family": "REC",
-      "rule_id": "REC-085",
+      "id": "spec-PROV-013-valid-scope-inherits-record-provenance",
+      "family": "PROV",
+      "rule_id": "PROV-013",
       "rule_statement": "A declared scope MUST inherit the provenance of the record that declares it.",
       "valid": true,
       "kind": "record",
-      "path": "models/spec-REC-085-declared-scope-provenance.md",
+      "path": "models/spec-PROV-013-declared-scope-provenance.md",
       "notes": "A decision record with no attribution is `captured` (PROV-006), and the binding it declares between the decision and `src/limits/**/*.py` carries that same tier. The declaration was written by whoever wrote the record and is worth exactly what the record is worth.",
       "verdict_kind": "field_expectation",
       "expect": {
@@ -6726,17 +6709,17 @@
         ]
       },
       "spec_rule_ids": [
-        "REC-085"
+        "PROV-013"
       ]
     },
     {
-      "id": "spec-REC-085-invalid-declared-scope-must-not-be-reconstructed",
-      "family": "REC",
-      "rule_id": "REC-085",
+      "id": "spec-PROV-013-invalid-declared-scope-must-not-be-reconstructed",
+      "family": "PROV",
+      "rule_id": "PROV-013",
       "rule_statement": "A declared scope MUST inherit the provenance of the record that declares it.",
       "valid": false,
       "kind": "record",
-      "path": "models/spec-REC-085-declared-scope-provenance.md",
+      "path": "models/spec-PROV-013-declared-scope-provenance.md",
       "notes": "The non-conformant output: PROV-015 makes `reconstructed` the tier for an INFERRED binding, and an implementation that applies it to every intent-to-artifact edge marks a human-written declaration as a guess. That is the mirror of the failure PROV-015 prevents, and it drops a declared binding into the one tier a consumer must never read as something a human decided.",
       "verdict_kind": "field_expectation",
       "expect": {
@@ -6749,7 +6732,7 @@
         ]
       },
       "spec_rule_ids": [
-        "REC-085"
+        "PROV-013"
       ]
     },
     {
@@ -6996,13 +6979,13 @@
       ]
     },
     {
-      "id": "spec-REC-092-valid-declared-relation-carries-record-provenance",
-      "family": "REC",
-      "rule_id": "REC-092",
+      "id": "spec-PROV-013-valid-declared-relation-carries-record-provenance",
+      "family": "PROV",
+      "rule_id": "PROV-013",
       "rule_statement": "A declared relation MUST carry the provenance of the record declaring it; an inferred relation MUST NOT be presented as a declared one.",
       "valid": true,
       "kind": "record",
-      "path": "models/spec-REC-092-declared-relation-provenance.md",
+      "path": "models/spec-PROV-013-declared-relation-provenance.md",
       "notes": "A decision record with no attribution is `captured`, and the relation it declares carries that tier and is flagged declared. An edge is itself a claim and carries its own provenance rather than inheriting from the nodes it connects (PROV-013).",
       "verdict_kind": "field_expectation",
       "expect": {
@@ -7018,17 +7001,17 @@
         ]
       },
       "spec_rule_ids": [
-        "REC-092"
+        "PROV-013"
       ]
     },
     {
-      "id": "spec-REC-092-invalid-declared-relation-must-not-be-reconstructed",
-      "family": "REC",
-      "rule_id": "REC-092",
+      "id": "spec-PROV-013-invalid-declared-relation-must-not-be-reconstructed",
+      "family": "PROV",
+      "rule_id": "PROV-013",
       "rule_statement": "A declared relation MUST carry the provenance of the record declaring it; an inferred relation MUST NOT be presented as a declared one.",
       "valid": false,
       "kind": "record",
-      "path": "models/spec-REC-092-declared-relation-provenance.md",
+      "path": "models/spec-PROV-013-declared-relation-provenance.md",
       "notes": "The non-conformant output: marking every edge `reconstructed`, or leaving the declared flag off, makes a human-written relation indistinguishable from one a heuristic guessed. The second clause of the rule -- that an inferred relation MUST NOT be presented as declared -- is only observable against an implementation that performs inference, which nothing in the specification requires; the declared flag asserted here is what makes that clause checkable at all.",
       "verdict_kind": "field_expectation",
       "expect": {
@@ -7047,7 +7030,7 @@
         ]
       },
       "spec_rule_ids": [
-        "REC-092"
+        "PROV-013"
       ]
     },
     {
@@ -7494,75 +7477,16 @@
       "notes": "The naive reading treats status as one axis running from unfinished to finished, which puts `rejected` alongside `draft`. `rejected` is resolved AND declined; collapsing the axes drops the disposition, after which `we decided not to` is indistinguishable from `we have not decided yet`."
     },
     {
-      "id": "spec-REC-102-valid-accepted-yields-ground-truth",
-      "rule_id": "REC-102",
-      "family": "REC",
-      "rule_statement": "Only a status that is resolved AND adopted MUST yield ground-truth intent.",
-      "spec_rule_ids": [
-        "REC-102"
-      ],
-      "valid": true,
-      "kind": "record",
-      "path": "status/spec-REC-102-valid-accepted-yields-ground-truth.md",
-      "verdict_kind": "field_expectation",
-      "expect": {
-        "parses": true,
-        "recommendation": null,
-        "supersedes": [],
-        "assumptions": 0,
-        "kind": "decision",
-        "title": "Serve reads from a replica",
-        "status": "accepted",
-        "alternatives": 2,
-        "deliberation": "resolved",
-        "offered": true,
-        "disposition": "adopted",
-        "yields": "ground_truth_intent",
-        "counted_toward_trusted_evidence": true
-      },
-      "notes": "`accepted` is the only status in the table that is both resolved and adopted, and it is the only one that yields ground truth."
-    },
-    {
-      "id": "spec-REC-102-invalid-proposed-must-not-be-ground-truth",
-      "rule_id": "REC-102",
-      "family": "REC",
-      "rule_statement": "Only a status that is resolved AND adopted MUST yield ground-truth intent.",
-      "spec_rule_ids": [
-        "REC-102"
-      ],
-      "valid": false,
-      "kind": "record",
-      "path": "status/spec-REC-102-invalid-proposed-must-not-be-ground-truth.md",
-      "verdict_kind": "field_expectation",
-      "expect": {
-        "parses": true,
-        "recommendation": null,
-        "supersedes": [],
-        "assumptions": 0,
-        "kind": "decision",
-        "title": "Move the session store off the primary",
-        "status": "proposed",
-        "alternatives": 2,
-        "deliberation": "open",
-        "offered": true,
-        "disposition": null,
-        "yields": "provisional_intent",
-        "counted_toward_trusted_evidence": false,
-        "yields_must_not_equal": "ground_truth_intent"
-      },
-      "notes": "A proposed record is resolved on neither axis. Before this rule such a record became intent indistinguishable from a decision, at full confidence, counted as ground truth -- the record parses identically, so the only thing separating the two behaviours is this mapping."
-    },
-    {
-      "id": "spec-REC-103-valid-open-is-ingested-and-marked-open",
-      "rule_id": "REC-103",
+      "id": "spec-REC-101-valid-open-is-ingested-and-marked-open",
+      "rule_id": "REC-101",
       "family": "REC",
       "rule_statement": "A record whose deliberation is open MUST be ingested, MUST be marked open on the resulting intent, and MUST NOT be counted toward any trusted-evidence metric.",
       "spec_rule_ids": [
-        "REC-103"
+        "REC-101"
       ],
       "valid": true,
       "kind": "record",
-      "path": "status/spec-REC-103-valid-open-is-ingested-and-marked-open.md",
+      "path": "status/spec-REC-101-valid-open-is-ingested-and-marked-open.md",
       "verdict_kind": "field_expectation",
       "expect": {
         "parses": true,
@@ -7581,16 +7505,16 @@
       "notes": "Ingested and visible, not suppressed. What a team is actively considering is often the most urgent information in a corpus; the constraint is on counting, not on retention."
     },
     {
-      "id": "spec-REC-103-invalid-open-counted-toward-trusted-evidence",
-      "rule_id": "REC-103",
+      "id": "spec-REC-101-invalid-open-counted-toward-trusted-evidence",
+      "rule_id": "REC-101",
       "family": "REC",
       "rule_statement": "A record whose deliberation is open MUST be ingested, MUST be marked open on the resulting intent, and MUST NOT be counted toward any trusted-evidence metric.",
       "spec_rule_ids": [
-        "REC-103"
+        "REC-101"
       ],
       "valid": false,
       "kind": "vector",
-      "path": "status/spec-REC-103-invalid-open-counted-toward-trusted-evidence.json",
+      "path": "status/spec-REC-101-invalid-open-counted-toward-trusted-evidence.json",
       "verdict_kind": "field_expectation",
       "expect": {
         "ingested_count": 3,
@@ -7711,16 +7635,16 @@
       "notes": "The status string still parses and still normalizes to `superseded` under REC-030; what it MUST NOT do is set currency. Honouring it creates a second source of truth that drifts the moment a superseding record is written without revisiting the record it replaces."
     },
     {
-      "id": "spec-REC-109-valid-draft-and-proposed-are-distinct",
-      "rule_id": "REC-109",
+      "id": "spec-REC-101-valid-draft-and-proposed-are-distinct",
+      "rule_id": "REC-101",
       "family": "REC",
       "rule_statement": "`draft` and `proposed` MUST NOT be treated as equivalent. A draft record has not been offered for deliberation; a proposed record has been offered and awaits resolution.",
       "spec_rule_ids": [
-        "REC-109"
+        "REC-101"
       ],
       "valid": true,
       "kind": "vector",
-      "path": "status/spec-REC-109-valid-draft-and-proposed-are-distinct.json",
+      "path": "status/spec-REC-101-valid-draft-and-proposed-are-distinct.json",
       "verdict_kind": "field_expectation",
       "expect": {
         "axes": {
@@ -7737,16 +7661,16 @@
       "notes": "Both are open. The distinguishing property is `offered` and nothing else."
     },
     {
-      "id": "spec-REC-109-invalid-draft-normalized-to-proposed",
-      "rule_id": "REC-109",
+      "id": "spec-REC-101-invalid-draft-normalized-to-proposed",
+      "rule_id": "REC-101",
       "family": "REC",
       "rule_statement": "`draft` and `proposed` MUST NOT be treated as equivalent. A draft record has not been offered for deliberation; a proposed record has been offered and awaits resolution.",
       "spec_rule_ids": [
-        "REC-109"
+        "REC-101"
       ],
       "valid": false,
       "kind": "vector",
-      "path": "status/spec-REC-109-invalid-draft-normalized-to-proposed.json",
+      "path": "status/spec-REC-101-invalid-draft-normalized-to-proposed.json",
       "verdict_kind": "field_expectation",
       "expect": {
         "axes": {
@@ -7834,16 +7758,16 @@
       "rule_strength": "SHOULD"
     },
     {
-      "id": "spec-REC-125-valid-absent-status-is-unstated",
-      "rule_id": "REC-125",
+      "id": "spec-REC-101-valid-absent-status-is-unstated",
+      "rule_id": "REC-101",
       "family": "REC",
       "rule_statement": "An absent status is UNSTATED -- neither open nor resolved -- and MUST take its tier from record kind and yield ground-truth intent. An UNRECOGNIZED status, by contrast, is treated as open, unoffered, with no disposition.",
       "spec_rule_ids": [
-        "REC-125"
+        "REC-101"
       ],
       "valid": true,
       "kind": "record",
-      "path": "status/spec-REC-125-valid-absent-status-is-unstated.md",
+      "path": "status/spec-REC-101-valid-absent-status-is-unstated.md",
       "verdict_kind": "field_expectation",
       "expect": {
         "parses": true,
@@ -7865,16 +7789,16 @@
       "notes": "No status line at all. The record predates the field, which is the historical norm for this format, so it keeps the tier its kind earns and stays ground truth. `status` is OMITTED from the node (REC-031), not serialized as null."
     },
     {
-      "id": "spec-REC-125-invalid-unrecognized-status-is-open-not-unstated",
-      "rule_id": "REC-125",
+      "id": "spec-REC-101-invalid-unrecognized-status-is-open-not-unstated",
+      "rule_id": "REC-101",
       "family": "REC",
       "rule_statement": "An absent status is UNSTATED -- neither open nor resolved -- and MUST take its tier from record kind and yield ground-truth intent. An UNRECOGNIZED status, by contrast, is treated as open, unoffered, with no disposition.",
       "spec_rule_ids": [
-        "REC-125"
+        "REC-101"
       ],
       "valid": false,
       "kind": "record",
-      "path": "status/spec-REC-125-invalid-unrecognized-status-is-open-not-unstated.md",
+      "path": "status/spec-REC-101-invalid-unrecognized-status-is-open-not-unstated.md",
       "verdict_kind": "field_expectation",
       "expect": {
         "parses": true,
@@ -8191,16 +8115,16 @@
       "notes": "`## Evidence` with `(none recorded)` reads as `we looked and there was no evidence`. Nobody was asked. REC-096 already says a record with no Evidence section records nothing about method and must not be flagged on that basis; the placeholder converts that honest silence into a false claim the record then carries forever."
     },
     {
-      "id": "spec-REC-055-valid-empty-extension-section-omitted-entirely",
-      "rule_id": "REC-055",
+      "id": "spec-REC-054-valid-empty-extension-section-omitted-entirely",
+      "rule_id": "REC-054",
       "family": "REC",
       "rule_statement": "An optional section added by a future vocabulary extension MUST be omitted entirely when it has no content, unless REC-054's first condition applies to it.",
       "spec_rule_ids": [
-        "REC-055"
+        "REC-054"
       ],
       "valid": true,
       "kind": "render_scenario",
-      "path": "status/spec-REC-055-valid-empty-extension-section-omitted-entirely.json",
+      "path": "status/spec-REC-054-valid-empty-extension-section-omitted-entirely.json",
       "verdict_kind": "field_expectation",
       "expect": {
         "sections_present": [
@@ -8219,16 +8143,16 @@
       "notes": "Every optional section this revision adds is unsupplied, and every one of them is omitted. The two placeholdered sections are the pre-existing pair REC-050 names, and no new section joins them."
     },
     {
-      "id": "spec-REC-055-invalid-extension-sections-placeholdered",
-      "rule_id": "REC-055",
+      "id": "spec-REC-054-invalid-extension-sections-placeholdered",
+      "rule_id": "REC-054",
       "family": "REC",
       "rule_statement": "An optional section added by a future vocabulary extension MUST be omitted entirely when it has no content, unless REC-054's first condition applies to it.",
       "spec_rule_ids": [
-        "REC-055"
+        "REC-054"
       ],
       "valid": false,
       "kind": "render_scenario",
-      "path": "status/spec-REC-055-invalid-extension-sections-placeholdered.json",
+      "path": "status/spec-REC-054-invalid-extension-sections-placeholdered.json",
       "verdict_kind": "field_expectation",
       "expect": {
         "sections_present": [
@@ -8641,16 +8565,16 @@
       "notes": "Inheriting from the endpoints dresses a guessed relationship in the strongest tier the format has, and erases the difference between the two edges -- which is the whole of the information."
     },
     {
-      "id": "spec-PROV-014-valid-declared-takes-record-tier-inferred-is-reconstructed",
-      "rule_id": "PROV-014",
+      "id": "spec-PROV-013-valid-declared-takes-record-tier-inferred-is-reconstructed",
+      "rule_id": "PROV-013",
       "family": "PROV",
       "rule_statement": "A relation declared in a record MUST carry the provenance of the declaring record. A relation produced by inference MUST be `reconstructed`.",
       "spec_rule_ids": [
-        "PROV-014"
+        "PROV-013"
       ],
       "valid": true,
       "kind": "vector",
-      "path": "status/spec-PROV-014-valid-declared-takes-record-tier-inferred-is-reconstructed.json",
+      "path": "status/spec-PROV-013-valid-declared-takes-record-tier-inferred-is-reconstructed.json",
       "verdict_kind": "field_expectation",
       "expect": {
         "relation_provenance": {
@@ -8662,16 +8586,16 @@
       "notes": "The declaring record's tier passes through unchanged in both directions -- a declared relation is worth exactly what the record declaring it is worth -- and the inferred relation lands at the weakest tier regardless of what it connects."
     },
     {
-      "id": "spec-PROV-014-invalid-inferred-relation-carries-a-record-tier",
-      "rule_id": "PROV-014",
+      "id": "spec-PROV-013-invalid-inferred-relation-carries-a-record-tier",
+      "rule_id": "PROV-013",
       "family": "PROV",
       "rule_statement": "A relation declared in a record MUST carry the provenance of the declaring record. A relation produced by inference MUST be `reconstructed`.",
       "spec_rule_ids": [
-        "PROV-014"
+        "PROV-013"
       ],
       "valid": false,
       "kind": "vector",
-      "path": "status/spec-PROV-014-invalid-inferred-relation-carries-a-record-tier.json",
+      "path": "status/spec-PROV-013-invalid-inferred-relation-carries-a-record-tier.json",
       "verdict_kind": "field_expectation",
       "expect": {
         "relation_provenance": {
@@ -8710,7 +8634,7 @@
           "bind_2": "reconstructed"
         }
       },
-      "notes": "The declared binding inherits the declaring record's tier (REC-085); the inferred one is reconstructed despite a high similarity score, because confidence and provenance are orthogonal axes (PROV-009) and no score promotes a tier."
+      "notes": "The declared binding inherits the declaring record's tier (PROV-013); the inferred one is reconstructed despite a high similarity score, because confidence and provenance are orthogonal axes (PROV-009) and no score promotes a tier."
     },
     {
       "id": "spec-PROV-015-invalid-inferred-binding-promoted-to-node-tier",
@@ -8959,16 +8883,17 @@
       "notes": "The constraint-governed file is folded into `governed` as though a decision governed it, and marked as a proven violation. A reviewer is told a change breaks a decision when all that is known is that the change touched code a constraint applies to."
     },
     {
-      "id": "spec-REC-126-valid-empty-question-yields-literal-decision",
-      "rule_id": "REC-126",
+      "id": "spec-REC-062-069-valid-empty-question-yields-literal-decision",
+      "rule_id": "REC-062",
       "family": "FIL",
       "spec_rule_ids": [
-        "REC-126"
+        "REC-062",
+        "REC-069"
       ],
       "rule_statement": "An empty or empty-slugging question MUST yield the literal slug `decision`.",
       "kind": "filename_scenario",
       "verdict_kind": "filename_scenario",
-      "path": "filenames/spec-REC-126-valid-empty-question-yields-literal-decision.json",
+      "path": "filenames/spec-REC-062-069-valid-empty-question-yields-literal-decision.json",
       "valid": true,
       "expect": {
         "per_case_key": "expected_filename",
@@ -8977,16 +8902,17 @@
       "notes": "Four degenerate questions plus one control that must slug normally."
     },
     {
-      "id": "spec-REC-126-invalid-empty-question-falls-back-to-chosen",
-      "rule_id": "REC-126",
+      "id": "spec-REC-062-069-invalid-empty-question-falls-back-to-chosen",
+      "rule_id": "REC-062",
       "family": "FIL",
       "spec_rule_ids": [
-        "REC-126"
+        "REC-062",
+        "REC-069"
       ],
       "rule_statement": "An implementation MUST NOT derive the slug from the chosen option when the question slugs empty.",
       "kind": "filename_scenario",
       "verdict_kind": "filename_scenario",
-      "path": "filenames/spec-REC-126-invalid-empty-question-falls-back-to-chosen.json",
+      "path": "filenames/spec-REC-062-069-invalid-empty-question-falls-back-to-chosen.json",
       "valid": false,
       "expect": {
         "per_case_key": "conformant_filename",
@@ -9340,7 +9266,7 @@
       "rule_statement": "Status provenance: the value rendered on the `**Status:**` line MUST be the record's own status; where the record has no status the line MUST be omitted entirely, and an emitter MUST NOT substitute a default.",
       "spec_rule_ids": [
         "REC-136",
-        "REC-125"
+        "REC-101"
       ],
       "valid": false,
       "kind": "render_scenario",
@@ -9498,8 +9424,7 @@
       "rule_statement": "An emitter MUST omit any of REC-137's sections entirely when its field is absent or empty, and MUST NOT emit a placeholder for it (REC-054).",
       "spec_rule_ids": [
         "REC-138",
-        "REC-054",
-        "REC-055"
+        "REC-054"
       ],
       "valid": false,
       "kind": "render_scenario",
@@ -9526,8 +9451,7 @@
       "spec_rule_ids": [
         "REC-139",
         "REC-047",
-        "REC-076",
-        "REC-077"
+        "REC-076"
       ],
       "valid": true,
       "kind": "render_scenario",
@@ -9557,8 +9481,7 @@
       "rule_statement": "An emitter MUST render the `**Id:**` line, adjacent to `**Status:**` and `**Date:**`, when the record carries an identifier.",
       "spec_rule_ids": [
         "REC-139",
-        "REC-076",
-        "REC-077"
+        "REC-076"
       ],
       "valid": false,
       "kind": "render_scenario",
@@ -10123,7 +10046,7 @@
         "ratification_corroborated": false,
         "provenance": "captured"
       },
-      "notes": "The control is `record_keys_must_contain`: before this rule only `disposition` had a spelling given by any rule (ENV-022), so an implementation could satisfy REC-101, REC-103, REC-118 and REC-119 and still expose none of the other four fields. A do-nothing implementation carries `status` and nothing else and fails. Values come from REC-101's table and REC-119 (nothing external to corroborate, so the ratification is uncorroborated and the record stays `captured`); this rule assigns spellings only."
+      "notes": "The control is `record_keys_must_contain`: before this rule only `disposition` had a spelling given by any rule (ENV-022), so an implementation could satisfy REC-101, REC-118 and REC-119 and still expose none of the other four fields. A do-nothing implementation carries `status` and nothing else and fails. Values come from REC-101's table and REC-119 (nothing external to corroborate, so the ratification is uncorroborated and the record stays `captured`); this rule assigns spellings only."
     },
     {
       "id": "spec-REC-141-invalid-draft-offered-must-be-false",
@@ -10132,8 +10055,7 @@
       "rule_statement": "REC-101's properties MUST be carried on the parsed record and the intent node as `deliberation`, `offered` and `disposition`; REC-118's mark as `self_ratification` (boolean, on the record) and REC-119's corroboration as `corroborated` (boolean, on the attribution).",
       "spec_rule_ids": [
         "REC-141",
-        "REC-101",
-        "REC-109"
+        "REC-101"
       ],
       "valid": false,
       "kind": "record",
@@ -10153,7 +10075,7 @@
         "disposition": null,
         "self_ratification": false
       },
-      "notes": "Counter-example. `offered` is the ONLY field that distinguishes `draft` from `proposed` (REC-109), and both share a deliberation of `open` -- so an implementation that carries `deliberation` alone, or that sets `offered` from the presence of a status rather than from REC-101's table, reports a draft as offered for deliberation. REC-110 then presents on a review surface a record whose author never offered it."
+      "notes": "Counter-example. `offered` is the field REC-101 uses to distinguish `draft` from `proposed`, and both share a deliberation of `open` -- so an implementation that carries `deliberation` alone, or that sets `offered` from the presence of a status rather than from REC-101's table, reports a draft as offered for deliberation. REC-110 then presents on a review surface a record whose author never offered it."
     },
     {
       "id": "spec-ENV-044-valid-coverage-twelve-keys",
@@ -10162,7 +10084,6 @@
       "rule_statement": "The summary coverage variant MUST carry exactly twelve coverage-specific keys alongside command and status: code_files, code_symbols, files_with_intent, symbols_with_intent, authored_anchored_files, authored_anchored_symbols, file_coverage_pct, symbol_coverage_pct, dark_files, intent_by_kind, golden, intent_debt.",
       "spec_rule_ids": [
         "ENV-044",
-        "ENV-028",
         "ENV-004"
       ],
       "valid": true,
@@ -10223,7 +10144,7 @@
           }
         ]
       },
-      "notes": "The control is `exact_key_count` together with `required_keys`: §6.1 has always stated the COUNT and never the names, so a validator written from §6.1 alone can accept any twelve keys, and a validator written from ENV-028 alone checks two of them. This fixture fails both. `forbidden_keys` are the explain variant's keys -- ENV-006 makes `explain` the discriminator, and the two shapes share nothing beyond command and status. `dark_files` is a LIST of paths here; the count lives inside intent_debt (ENV-045), so the list reading is the one that adds information."
+      "notes": "The control is `exact_key_count` together with `required_keys`: a validator written from §6.1's count alone can accept any twelve keys, while ENV-044 names the exact set. `forbidden_keys` are the explain variant's keys -- ENV-006 makes `explain` the discriminator, and the two shapes share nothing beyond command and status. `dark_files` is a LIST of paths here; the count lives inside intent_debt (ENV-045), so the list reading is the one that adds information."
     },
     {
       "id": "spec-ENV-044-invalid-coverage-omits-intent-by-kind",
@@ -10231,8 +10152,7 @@
       "family": "ENV",
       "rule_statement": "The summary coverage variant MUST carry exactly twelve coverage-specific keys alongside command and status: code_files, code_symbols, files_with_intent, symbols_with_intent, authored_anchored_files, authored_anchored_symbols, file_coverage_pct, symbol_coverage_pct, dark_files, intent_by_kind, golden, intent_debt.",
       "spec_rule_ids": [
-        "ENV-044",
-        "ENV-028"
+        "ENV-044"
       ],
       "valid": false,
       "kind": "envelope",
@@ -10249,7 +10169,7 @@
           "op": "absent"
         }
       },
-      "notes": "Eleven of the twelve coverage-specific keys are present, so the envelope looks complete to any validator that checks §6.1's count loosely or checks only the two keys ENV-028 names. `intent_by_kind` is the missing one. MUST be rejected."
+      "notes": "Eleven of the twelve coverage-specific keys are present, so the envelope looks complete to any validator that checks §6.1's count loosely. ENV-044 names `intent_by_kind` as the missing key, so this MUST be rejected."
     },
     {
       "id": "spec-ENV-045-valid-intent-debt-four-components",
@@ -10259,7 +10179,7 @@
       "spec_rule_ids": [
         "ENV-045",
         "ENV-029",
-        "ENV-028"
+        "ENV-044"
       ],
       "valid": true,
       "kind": "envelope",
@@ -10450,10 +10370,9 @@
       "id": "spec-ENV-048-valid-violation-entry-four-keys",
       "rule_id": "ENV-048",
       "family": "ENV",
-      "rule_statement": "Each entry in a check envelope's violations MUST carry rule, file, message and decision_id -- the last being the identifier ENV-031 requires.",
+      "rule_statement": "Each entry in a check envelope's violations MUST carry rule, file, message and decision_id.",
       "spec_rule_ids": [
         "ENV-048",
-        "ENV-031",
         "ENV-030"
       ],
       "valid": true,
@@ -10491,16 +10410,15 @@
           }
         ]
       },
-      "notes": "The control is the `has_keys` constraint applied to EVERY entry: a lint-shaped violation carries rule, file and message, which is what an implementation produces when it reads ENV-031's obligation and finds no key named. Both entries here cite a decision. ENV-031 states the obligation and names no key; these are the spellings the corpus instantiates."
+      "notes": "The control is the `has_keys` constraint applied to EVERY entry: a lint-shaped violation carries rule, file and message, while ENV-048 additionally requires `decision_id`. Both entries here cite a decision."
     },
     {
       "id": "spec-ENV-048-invalid-violation-omits-decision-id",
       "rule_id": "ENV-048",
       "family": "ENV",
-      "rule_statement": "Each entry in a check envelope's violations MUST carry rule, file, message and decision_id -- the last being the identifier ENV-031 requires.",
+      "rule_statement": "Each entry in a check envelope's violations MUST carry rule, file, message and decision_id.",
       "spec_rule_ids": [
-        "ENV-048",
-        "ENV-031"
+        "ENV-048"
       ],
       "valid": false,
       "kind": "envelope",
@@ -10510,8 +10428,7 @@
         "conformant": false,
         "command": "check",
         "violates": [
-          "ENV-048",
-          "ENV-031"
+          "ENV-048"
         ],
         "failing_condition": {
           "path": "violations[1].decision_id",

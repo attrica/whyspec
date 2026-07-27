@@ -1,5 +1,5 @@
 {
-  "rule": "REC-055",
+  "rule": "REC-054",
   "statement": "An optional section added by a future vocabulary extension is omitted entirely when it has no content, unless the absence of content is itself an answer for that section.",
   "inputs": {
     "chosen": "Keep the nightly export window",

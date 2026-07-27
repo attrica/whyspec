@@ -1,5 +1,5 @@
 {
-  "rule": "REC-055",
+  "rule": "REC-054",
   "statement": "Counter-example: applying REC-050's placeholder convention uniformly to every new optional section. Each such section then asserts something the record does not know about itself.",
   "inputs": {
     "chosen": "Keep the nightly export window",

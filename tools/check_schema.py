@@ -16,7 +16,9 @@ What it re-derives from the spec, and what it compares against:
   E  §5.1 tier table                   -> every enum citing PROV-001
   F  "MUST be one of exactly ..."      -> the mapped enum
   G  §4.5 REC-018 "Yields" column      -> parsed-record property names
-  H  every rule id cited in a schema   -> exists in the spec
+  H  PROV-013's relation field         -> relation object's `required`
+  I  every rule id cited in a schema   -> exists in the spec
+  J  total assertion count             -> retained expected count
 
 Check B is the load-bearing one. The failure it exists to catch has already happened
 once: [ENV-022] enumerated nine required keys for a `list-intent` entry while
@@ -39,12 +41,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SPEC = ROOT / "spec" / "whyfile-spec-draft.md"
+TRANSPORT_SPEC = ROOT / "profiles" / "transport.md"
 ENVELOPE = ROOT / "schema" / "envelope.schema.json"
+TRANSPORT = ROOT / "schema" / "transport-envelope.schema.json"
 RECORD = ROOT / "schema" / "parsed-record.schema.json"
 
-RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*(.*?)(?=\n\n)", re.M | re.S)
+RULE_RE = re.compile(
+    r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*(.*?)(?=\n\n|\Z)",
+    re.M | re.S,
+)
 TICKED = re.compile(r"`([^`]+)`")
 CORE = ("command", "status")
+EXPECTED_CHECKS = 1142
 
 # ---------------------------------------------------------------- prose extraction
 
@@ -58,18 +66,48 @@ def rule_bodies(spec: str) -> dict[str, str]:
     return {m.group(1): flat(m.group(2)) for m in RULE_RE.finditer(spec)}
 
 
-def table_rows(spec: str, header: str) -> list[tuple[str, str]]:
-    """Rows of the first markdown table whose header line contains `header`."""
+def table_records(spec: str, header: str) -> list[dict[str, str]]:
+    """Rows keyed by their markdown column header.
+
+    Returning only the first two cells silently redirected Check G from the
+    ``Yields`` column to ``Required`` as soon as that table gained its third
+    column. Header-addressed cells remain correct when columns are inserted or
+    reordered, and an extractor that finds no table returns no rows so its caller
+    can report a normal checker failure.
+    """
     lines = spec.splitlines()
-    start = next(i for i, l in enumerate(lines) if header in l)
-    rows = []
+    start = next((i for i, line in enumerate(lines) if header in line), None)
+    if start is None:
+        return []
+    headings = [
+        flat(cell).replace("`", "").strip().lower()
+        for cell in lines[start].strip().strip("|").split("|")
+    ]
+    rows: list[dict[str, str]] = []
     for line in lines[start + 2:]:
         if not line.startswith("|"):
             break
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) >= 2:
-            rows.append((flat(cells[0]).replace("`", ""), flat(cells[1])))
+        rows.append({
+            name: flat(cells[index])
+            for index, name in enumerate(headings)
+            if index < len(cells)
+        })
     return rows
+
+
+def table_rows(spec: str, header: str) -> list[tuple[str, str]]:
+    """Compatibility view of the first two named table columns."""
+    records = table_records(spec, header)
+    if not records:
+        return []
+    columns = list(records[0])
+    if len(columns) < 2:
+        return []
+    return [
+        (row.get(columns[0], "").replace("`", ""), row.get(columns[1], ""))
+        for row in records
+    ]
 
 
 def keys_after(text: str, trigger: str, occurrence: int = 0, take: int = 0) -> list[str]:
@@ -152,9 +190,7 @@ ENUMERATIONS = [
     ("ENV-025", "MUST carry", 0, "#/$defs/changed_ok", CORE),
     ("ENV-025", "MUST carry", 1, "#/$defs/changed_result", ()),
     ("ENV-027", "MUST carry", 0, "#/$defs/digest_ok", CORE),
-    # ENV-044 enumerates all twelve coverage-specific keys and supersedes ENV-028,
-    # which names only two of them. Wiring the check to the partial rule reported a
-    # gap that no longer existed — the enumeration moved, the pointer did not.
+    # ENV-044 enumerates all twelve coverage-specific keys.
     ("ENV-044", "MUST carry exactly these twelve", 0, "#/$defs/coverage_summary", CORE),
     ("ENV-030", "MUST carry", 0, "#/$defs/check_ok", CORE),
     ("ENV-034", "MUST carry", 0, "#/$defs/capture_ok", CORE),
@@ -306,17 +342,23 @@ def check_status_tokens(spec: str, env: dict, rep: Report) -> None:
     rows = dict(table_rows(spec, "| `command` | Status tokens |"))
     universal = set(TICKED.findall(rows.get("any (input failure)", "")))
     rep.check(bool(universal), "D §6.3 has no 'any (input failure)' row")
+    error_enum = set(at(env, "#/$defs/error_envelope/properties/status").get("enum", []))
+    rep.check(
+        universal == error_enum,
+        f"D input failures: §6.3 lists {sorted(universal)}; "
+        f"error envelope allows {sorted(error_enum)}",
+    )
     for command, variants in STATUS_VARIANTS.items():
         prose = set(TICKED.findall(rows.get(command, "")))
         rep.check(bool(prose), f"D §6.3 lists no status tokens for {command!r}")
-        allowed = set(universal)
+        allowed: set[str] = set()
         for v in variants:
             enum = at(env, f"#/$defs/{v}/properties/status")
             allowed |= set(enum.get("enum", [])) | ({enum["const"]} if "const" in enum else set())
+        allowed |= universal & prose
         rep.check(
-            prose <= allowed,
-            f"D {command}: §6.3 lists {sorted(prose - allowed)} which no variant's "
-            f"status enum accepts (schema allows {sorted(allowed)})",
+            prose == allowed,
+            f"D {command}: §6.3 lists {sorted(prose)}; variants allow {sorted(allowed)}",
         )
 
 
@@ -396,21 +438,21 @@ def check_vocabularies(rules: dict, schemas: dict[Path, dict], rep: Report) -> N
             prose = set(column_values(span_of(rule), trigger))
         node = at(schemas[path], pointer)
         enum = set(node.get("enum", []))
+        vocabulary = {value for value in enum if value is not None}
         rep.check(
-            bool(prose) and prose <= enum,
+            bool(prose) and prose == vocabulary,
             f"F [{rule}] states {sorted(prose)}; {pointer} enumerates "
-            f"{sorted(v for v in enum if v is not None)}",
+            f"{sorted(vocabulary)}",
         )
 
 
 def check_section_yields(spec: str, record: dict, rep: Report) -> None:
     """G — REC-018's "Yields" column against parsed-record property names."""
     props = record["properties"]
-    rows = table_rows(spec, "| Heading | Required | Yields |")
+    rows = table_records(spec, "| Heading |")
     rep.check(bool(rows), "G REC-018's section table was not found")
     for row in rows:
-        line = " | ".join(row)
-        cell = line.split("|")[-1]
+        cell = row.get("yields", "")
         for field in TICKED.findall(cell):
             if field in ("REC-021",) or field.startswith("§"):
                 continue
@@ -421,26 +463,38 @@ def check_section_yields(spec: str, record: dict, rep: Report) -> None:
             )
 
 
+def check_relation_provenance(rules: dict, record: dict, rep: Report) -> None:
+    """H — PROV-013's named field is required on every relation object."""
+    body = rules.get("PROV-013", "")
+    prose = set(keys_after(body, "MUST carry", 0))
+    required = set(at(record, "#/$defs/relation").get("required", []))
+    rep.check(
+        bool(prose) and prose <= required,
+        f"H [PROV-013] requires {sorted(prose)}; relation object requires "
+        f"{sorted(required)}",
+    )
+
+
 def check_citations(rules: dict, schemas: dict[str, dict], rep: Report) -> None:
-    """H — every rule id a schema cites exists, and every property cites one."""
+    """I — every rule id a schema cites exists, and every property cites one."""
     known = set(rules)
     for name, schema in schemas.items():
         for path, node in walk(schema):
             for rid in node.get("x-rule", []):
-                rep.check(rid in known, f"H {name}{path} cites {rid}, which is not a rule")
+                rep.check(rid in known, f"I {name}{path} cites {rid}, which is not a rule")
             parent = path.rsplit("/", 2)[-2] if path.count("/") >= 2 else ""
             if parent == "properties" and "description" in node:
                 rep.check(
                     bool(node.get("x-rule")),
-                    f"H {name}{path} is a property with no x-rule",
+                    f"I {name}{path} is a property with no x-rule",
                 )
                 cited = re.findall(r"(?:REC|PROV|ENV|VER)-\d{3}", node.get("description", ""))
                 rep.check(
                     bool(cited),
-                    f"H {name}{path} description cites no rule id",
+                    f"I {name}{path} description cites no rule id",
                 )
                 for rid in cited:
-                    rep.check(rid in known, f"H {name}{path} description cites unknown {rid}")
+                    rep.check(rid in known, f"I {name}{path} description cites unknown {rid}")
 
 
 # ---------------------------------------------------------------- entry point
@@ -448,10 +502,15 @@ def check_citations(rules: dict, schemas: dict[str, dict], rep: Report) -> None:
 
 def main() -> int:
     spec = SPEC.read_text()
-    rules = rule_bodies(spec)
+    rules = rule_bodies(spec + "\n\n" + TRANSPORT_SPEC.read_text())
     env = json.loads(ENVELOPE.read_text())
+    transport = json.loads(TRANSPORT.read_text())
     record = json.loads(RECORD.read_text())
-    by_name = {"envelope": env, "parsed-record": record}
+    by_name = {
+        "envelope": env,
+        "transport-envelope": transport,
+        "parsed-record": record,
+    }
     by_path = {ENVELOPE: env, RECORD: record}
 
     rep = Report()
@@ -462,7 +521,12 @@ def main() -> int:
     check_tiers(spec, by_name, rep)
     check_vocabularies(rules, by_path, rep)
     check_section_yields(spec, record, rep)
+    check_relation_provenance(rules, record, rep)
     check_citations(rules, by_name, rep)
+    if rep.ok != EXPECTED_CHECKS:
+        rep.fail.append(
+            f"J checker assertion count changed: expected {EXPECTED_CHECKS}, ran {rep.ok}"
+        )
 
     for line in rep.gap:
         print(f"GAP  {line}")

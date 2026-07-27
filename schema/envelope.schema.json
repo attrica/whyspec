@@ -3,7 +3,7 @@
   "$id": "https://whyfile.example/schema/envelope.schema.json",
   "title": "Whyfile result envelope",
   "description": "[ENV-001] A query result MUST be a single JSON object -- not an array, not a stream of objects, not a bare value. [ENV-005] Modelled as a TAGGED UNION discriminated by `command` over a universal core of {command, status}, never as one struct with many optional fields. Key sets are taken from the §6.1 table and the ENV-0nn enumerations; every property names the rule that mandates it.",
-  "$comment": "OPEN AT THREE POINTS, ON PURPOSE. (1) `command` carries no enum: [VER-004] makes adding a command a vocabulary extension and [ENV-008] already requires consumers to handle an unknown tag, so a closed enum would contradict both -- unknown tags validate against the core only. (2) additionalProperties is left open: [ENV-040]/[ENV-041] require a transport to attach a credential block such as `graph_identity` unconditionally, so a closed envelope would reject a conforming transport. [ENV-042] forbids such a key from COLLIDING with a variant key, which JSON Schema cannot express and which the checker does not attempt. (3) Nested entries are open for the same reason -- the corpus's `changed` result carries a `resolved_paths` key that [ENV-025] does not name.",
+  "$comment": "The core command variants are closed tagged-union members: each known command accepts only its own declared top-level keys. `command` itself has no enum because [VER-004] makes adding a command a vocabulary extension and [ENV-008] requires consumers to fail safely on an unknown tag. Transport metadata is outside this core schema and is specified by the separate transport profile. Nested result entries remain open where their governing rule does not state an exact key set.",
   "type": "object",
   "required": [
     "command",
@@ -266,19 +266,20 @@
   "$defs": {
     "error_envelope": {
       "title": "Error variant (any command)",
-      "description": "[ENV-011] An envelope reporting a failure MUST carry `command`, `status` and a human-readable `message`, and MUST NOT be required to carry any variant-specific key. [ENV-012] A consumer MUST NOT assume a variant key is present merely because `command` names a variant that normally has it -- the error variant of every command is a legitimate shape with none of them. [ENV-007] The two input-failure tokens available to any command.",
+      "description": "[ENV-011] An envelope reporting a failure MUST carry `command`, `status` and a human-readable `message`, MUST NOT require variant-specific keys, and consumers cannot assume those keys from `command` alone. [ENV-007] The two input-failure tokens available to any command.",
       "x-rule": [
         "ENV-011",
-        "ENV-012",
         "ENV-007"
       ],
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "command",
         "status",
         "message"
       ],
       "properties": {
+        "command": {},
         "status": {
           "description": "[ENV-007] `no_intent_layer` or `error` -- the tokens the table lists for 'any (input failure)'.",
           "x-rule": [
@@ -305,6 +306,7 @@
         "ENV-013"
       ],
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "command",
         "status",
@@ -315,6 +317,7 @@
         "results"
       ],
       "properties": {
+        "command": {},
         "status": {
           "description": "[ENV-007] `why` emits `ok`, `weak_match`, `topically_weak`, `no_strong_match`. [ENV-019] `topically_weak` means the top result cleared the cutoff but its match evidence does not support treating it as an answer -- an abstention ABOVE the cutoff, which a consumer MUST NOT treat as equivalent to `ok`. [ENV-020] `weak_match` means the top result scored UNDER the cutoff but stands clearly apart from the runner-up.",
           "x-rule": [
@@ -619,6 +622,7 @@
         "ENV-021"
       ],
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "command",
         "status",
@@ -627,6 +631,7 @@
         "intent"
       ],
       "properties": {
+        "command": {},
         "status": {
           "description": "[ENV-007] `list-intent` emits `ok`.",
           "x-rule": [
@@ -800,6 +805,7 @@
         "ENV-006"
       ],
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "command",
         "status",
@@ -810,6 +816,7 @@
         "relations"
       ],
       "properties": {
+        "command": {},
         "status": {
           "description": "[ENV-006] [ENV-007] The secondary discriminator: `ok`.",
           "x-rule": [
@@ -879,6 +886,7 @@
         "ENV-024"
       ],
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "command",
         "status",
@@ -892,6 +900,7 @@
         ]
       },
       "properties": {
+        "command": {},
         "status": {
           "description": "[ENV-006] [ENV-007] The secondary discriminator: `ambiguous`.",
           "x-rule": [
@@ -931,6 +940,7 @@
         "ENV-010"
       ],
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "command",
         "status",
@@ -938,6 +948,7 @@
         "message"
       ],
       "properties": {
+        "command": {},
         "status": {
           "description": "[ENV-006] [ENV-007] The secondary discriminator: `not_found`.",
           "x-rule": [
@@ -969,6 +980,7 @@
         "ENV-025"
       ],
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "command",
         "status",
@@ -978,6 +990,7 @@
         "results"
       ],
       "properties": {
+        "command": {},
         "status": {
           "description": "[ENV-007] `changed` emits `ok`, `no_intent_governing_changes`. [ENV-010] The negative is a complete answer.",
           "x-rule": [
@@ -1076,6 +1089,7 @@
         "ENV-027"
       ],
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "command",
         "status",
@@ -1085,6 +1099,7 @@
         "superseded"
       ],
       "properties": {
+        "command": {},
         "status": {
           "description": "[ENV-007] `digest` emits `ok`, `no_changes`. [ENV-010] `no_changes` is a complete answer.",
           "x-rule": [
@@ -1125,13 +1140,13 @@
     },
     "coverage_summary": {
       "title": "coverage (corpus-wide summary)",
-      "description": "[ENV-044] The summary variant MUST carry exactly twelve coverage-specific keys alongside `command` and `status`; the `required` list below is that rule and nothing else. [ENV-028] Two of the twelve are the trusted-evidence block (`golden`) and the debt block (`intent_debt`). [ENV-006] The discriminator against the explain variant is the ABSENCE of the `explain` key; the two shapes share no keys beyond `command` and `status`.",
+      "description": "[ENV-044] The summary variant MUST carry exactly twelve coverage-specific keys alongside `command` and `status`; the `required` list below is that rule and nothing else. Two of the twelve are the trusted-evidence block (`golden`) and the debt block (`intent_debt`). [ENV-006] The discriminator against the explain variant is the ABSENCE of the `explain` key; the two shapes share no keys beyond `command` and `status`.",
       "x-rule": [
         "ENV-044",
-        "ENV-028",
         "ENV-006"
       ],
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "command",
         "status",
@@ -1155,6 +1170,7 @@
         ]
       },
       "properties": {
+        "command": {},
         "status": {
           "description": "[ENV-007] The summary form emits `ok`.",
           "x-rule": [
@@ -1293,10 +1309,9 @@
           }
         },
         "intent_debt": {
-          "description": "[ENV-028] The debt block. [ENV-045] It carries EXACTLY four components, each a non-negative integer or an explicit null, and none of them MAY be omitted -- that last clause is what makes ENV-029 enforceable, since an implementation could otherwise satisfy it by dropping the key. [ENV-029] A component the implementation CANNOT COMPUTE MUST be reported as an explicit null, never as 0 -- a zero claims 'we measured and found none', a null honestly says 'not measured'. [ENV-039] Where the spec names a present-with-null field the key MUST be present.",
+          "description": "[ENV-045] The debt block carries EXACTLY four components, each a non-negative integer or an explicit null, and none of them MAY be omitted -- that last clause is what makes ENV-029 enforceable, since an implementation could otherwise satisfy it by dropping the key. [ENV-029] A component the implementation CANNOT COMPUTE MUST be reported as an explicit null, never as 0 -- a zero claims 'we measured and found none', a null honestly says 'not measured'. [ENV-039] Where the spec names a present-with-null field the key MUST be present.",
           "x-rule": [
             "ENV-045",
-            "ENV-028",
             "ENV-029",
             "ENV-039"
           ],
@@ -1369,6 +1384,7 @@
         "ENV-004"
       ],
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "command",
         "status",
@@ -1378,6 +1394,7 @@
         "counts"
       ],
       "properties": {
+        "command": {},
         "status": {
           "description": "[ENV-007] The explain form emits `ok`, `no_references`. [ENV-010] `no_references` is a complete answer, not an error.",
           "x-rule": [
@@ -1422,6 +1439,7 @@
         "ENV-030"
       ],
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "command",
         "status",
@@ -1430,6 +1448,7 @@
         "violations"
       ],
       "properties": {
+        "command": {},
         "status": {
           "description": "[ENV-007] `check` emits `ok`, `conformance_failed`.",
           "x-rule": [
@@ -1471,9 +1490,9 @@
     },
     "violation": {
       "title": "check violation",
-      "description": "[ENV-031] Each violation MUST carry the identifier of the decision it cites. A rule whose failure cannot name the decision that motivated it is not a conformance check; it is a lint.",
+      "description": "[ENV-048] Each violation MUST carry `rule`, `file`, `message`, and the `decision_id` of the decision it cites. A rule whose failure cannot name the decision that motivated it is not a conformance check; it is a lint.",
       "x-rule": [
-        "ENV-031"
+        "ENV-048"
       ],
       "type": "object",
       "required": [
@@ -1505,10 +1524,9 @@
           "type": "string"
         },
         "decision_id": {
-          "description": "[ENV-048] The key that carries the citation. [ENV-031] The identifier of the decision this violation cites -- a rule whose failure cannot name the decision that motivated it is a lint, not a conformance check.",
+          "description": "[ENV-048] The identifier of the decision this violation cites -- a rule whose failure cannot name the decision that motivated it is a lint, not a conformance check.",
           "x-rule": [
-            "ENV-048",
-            "ENV-031"
+            "ENV-048"
           ],
           "x-name-source": "rule",
           "type": "string"
@@ -1523,6 +1541,7 @@
         "ENV-033"
       ],
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "command",
         "status",
@@ -1534,6 +1553,7 @@
         "constraint_review"
       ],
       "properties": {
+        "command": {},
         "status": {
           "description": "[ENV-007] `intent-diff` emits `ok`, `conformance_required`.",
           "x-rule": [
@@ -1593,6 +1613,7 @@
         "ENV-033"
       ],
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "command",
         "status",
@@ -1603,6 +1624,7 @@
         "guidance"
       ],
       "properties": {
+        "command": {},
         "status": {
           "description": "[ENV-007] `review-context` emits `ok`, `no_intent_governing_changes`. [ENV-010] The negative is a complete answer.",
           "x-rule": [
@@ -1655,6 +1677,7 @@
         "ENV-034"
       ],
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "command",
         "status",
@@ -1667,6 +1690,7 @@
         "merged"
       ],
       "properties": {
+        "command": {},
         "status": {
           "description": "[ENV-007] `capture` emits `ok`, `dry_run`, `error`; `error` takes the error variant ([ENV-011]).",
           "x-rule": [
@@ -1679,19 +1703,17 @@
           ]
         },
         "record": {
-          "description": "[ENV-034] The path AS GIVEN, from which node identity derives. [ENV-035] Reporting only the absolute path hides the spelling that identity was derived from. [REC-073] Identity hashes the canonical spelling of this path.",
+          "description": "[ENV-034] The path AS GIVEN, which is required alongside the absolute destination because node identity derives from this spelling. [REC-073] Identity hashes the canonical spelling of this path.",
           "x-rule": [
             "ENV-034",
-            "ENV-035",
             "REC-073"
           ],
           "type": "string"
         },
         "record_abs": {
-          "description": "[ENV-034] The resolved absolute destination. [ENV-035] Reporting only the relative path lets a success envelope hide a write into an unrelated working tree.",
+          "description": "[ENV-034] The resolved absolute destination, required alongside the relative spelling so a success envelope cannot hide a write into an unrelated working tree.",
           "x-rule": [
-            "ENV-034",
-            "ENV-035"
+            "ENV-034"
           ],
           "type": "string"
         },

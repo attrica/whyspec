@@ -2,7 +2,7 @@
 
 This corpus exists so that an agent given **only** the Whyfile specification -- with no
 access to the reference implementation -- can build a record parser and envelope validator
-and mechanically check it against every normative rule below. Every fixture was verified
+and mechanically check it against the mapped normative rules. Every fixture was verified
 against the reference implementation (whyfile the reference implementation) before being written here; none of
 this is copied from the project's own real decision records, which are excluded from a
 public spec repo on principle (invented, neutral example content only).
@@ -13,9 +13,8 @@ public spec repo on principle (invented, neutral example content only).
 manifest.json        Machine-readable index: every fixture, its rule id, valid/invalid,
                       and (for invalid fixtures) exactly what must be rejected and why.
 coverage.md           Human-readable rule -> valid fixture(s) -> invalid fixture(s) table.
-                      Proves no orphan rules (every rule has fixtures) and no untested
-                      rules (every rule has at least a valid fixture; almost all have an
-                      invalid one too -- the two exceptions are called out explicitly).
+                      Generated from the manifest and the current normative rule inventory;
+                      its summary reports mapped and currently unmapped rule ids honestly.
 records/              REC-* fixtures: standalone markdown decision records. Feed the raw
                       file text to your record parser; check the result against the
                       manifest entry ("parses" / "does not parse", extracted fields).
@@ -48,19 +47,32 @@ parallel by a sibling work package from the same implementation, with no visibil
 this corpus while doing so). Reconcile by the one-line `rule_statement` carried alongside
 every id in `manifest.json`, not by the numbers.
 
+## Run the retained corpus
+
+The in-repository runner executes every manifest verdict without consulting its prose
+`notes`, validates the core envelope schema and the manifest's semantic constraints, and
+pins the corpus counts:
+
+```bash
+python3 tools/run_corpus.py
+python3 tools/run_corpus.py --check
+python3 tools/run_corpus.py --write-coverage
+```
+
+`--check` also exits non-zero when this generated coverage report has drifted. The runner
+uses only the Python standard library; an implementation adapter may additionally consume
+the same verdict shapes described below.
+
 ## How to run an implementation against this corpus
 
-There is no bundled test harness (deliberately -- a harness is itself an opinion about
-your implementation's API shape, and this corpus should not impose one). Each fixture
-`kind` implies a mechanical check:
+Each fixture `kind` implies a mechanical check:
 
 - **`record`** (`records/*.md`): feed the file's raw bytes to your record parser.
-  - `valid: true` -- it MUST parse, and the manifest's `notes` field states which fields
+  - `valid: true` -- it MUST parse, and the manifest's `expect` object states which fields
     the result must contain (title, status, alternatives, etc.).
   - `valid: false` -- it MUST be rejected (treated as "not a record"), or in the
     finer-grained cases (REC-005/006/008/010/011) it MUST parse but with a specific field
-    value that the `notes` field calls out as the ONE thing a naive implementation gets
-    wrong -- read `notes` before asserting.
+    value named by `expect`; `valid` alone never determines that polarity.
 - **`record_dir`** (`dirs/*/`): run your directory-level ingest over the whole folder.
   Each such directory carries its own `expected.json` stating the valid and invalid node
   counts/fields.

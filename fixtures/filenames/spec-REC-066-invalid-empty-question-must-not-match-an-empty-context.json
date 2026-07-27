@@ -9,5 +9,5 @@
   "today": "2026-07-25",
   "expected_filename": "2026-07-25-decision.md",
   "expected_filename_must_not_equal": "2026-07-25-keep-the-window.md",
-  "note": "The fresh name's slug is the literal `decision` (REC-126, REC-062), never a slug derived from the chosen option. An EMPTY question against a legacy record whose `## Context` section exists but is EMPTY. REC-066 says an empty question matches a recorded context of `(none recorded)` AND ONLY THAT, so this MUST NOT match and a fresh dated record MUST be minted. DIVERGENCE: the reference implementation compares whitespace-normalized strings first, so empty == empty matches and the legacy file IS claimed. The `expect` below states the SPEC-required outcome."
+  "note": "The fresh name's slug is REC-062's literal `decision`, never a slug derived from the chosen option. An EMPTY question against a legacy record whose `## Context` section exists but is EMPTY. REC-066 says an empty question matches a recorded context of `(none recorded)` AND ONLY THAT, so this MUST NOT match and a fresh dated record MUST be minted. DIVERGENCE: the reference implementation compares whitespace-normalized strings first, so empty == empty matches and the legacy file IS claimed. The `expect` below states the SPEC-required outcome."
 }

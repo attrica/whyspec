@@ -1,5 +1,5 @@
 {
-  "rule": "REC-109",
+  "rule": "REC-101",
   "statement": "`draft` and `proposed` are both open, and are NOT equivalent: a draft record has not been offered for deliberation, a proposed one has been offered and awaits resolution.",
   "input_statuses": [
     "draft",

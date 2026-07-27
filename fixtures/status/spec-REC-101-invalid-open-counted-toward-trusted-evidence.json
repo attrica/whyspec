@@ -1,5 +1,5 @@
 {
-  "rule": "REC-103",
+  "rule": "REC-101",
   "statement": "Counter-example: counting an open record toward a trusted-evidence metric. An open record MUST be ingested and marked open, and MUST NOT be counted as trusted evidence.",
   "input_nodes": [
     {
