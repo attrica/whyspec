@@ -35,10 +35,10 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 215,
+    "rules": 205,
     "fixture_paths": 335,
     "manifest_entries": 362,
-    "mapped_rule_ids": 196,
+    "mapped_rule_ids": 186,
 }
 
 MISSING = object()
@@ -766,6 +766,10 @@ def check_integrity(manifest: dict[str, Any], rules: list[str]) -> None:
     if len(ids) != len(set(ids)):
         fail("duplicate manifest fixture ids")
     known = set(rules)
+    for rule in manifest.get("rules", []):
+        unknown = sorted(set(rule.get("spec_rule_ids", [])) - known)
+        if unknown:
+            fail(f"manifest rule {rule.get('rule_id')}: maps retired/unknown rules {unknown}")
     for entry in entries:
         fixture_path(entry)
         mapped = entry.get("spec_rule_ids", entry.get("spec_rules", []))

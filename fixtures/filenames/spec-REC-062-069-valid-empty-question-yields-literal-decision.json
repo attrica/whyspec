@@ -1,5 +1,5 @@
 {
-  "rule": "REC-126",
+  "rule": "REC-062 + REC-069",
   "statement": "Where the question is absent, empty, or reduces to an empty slug, the slug MUST be the literal `decision`. An implementation MUST NOT fall back to a slug derived from the chosen option.",
   "scenario": "A fresh capture on 2026-05-14 with no prior record in the directory. Four questions that each reduce to an empty slug, and one control that does not.",
   "today": "2026-05-14",

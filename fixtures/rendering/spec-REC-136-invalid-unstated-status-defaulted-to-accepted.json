@@ -17,5 +17,5 @@
   },
   "expected_output": "# Decision: Adopt a second message broker\n\n**Date:** 2026-05-19\n\n## Context\n\nShould a second message broker be introduced?\n\n## Decision\n\nThe on-call rota cannot absorb another broker.\n\n## Alternatives considered\n\n1. Adopt a second message broker\n2. Raise the partition count on the existing broker\n",
   "wrong_output_a_non_conformant_implementation_might_return": "# Decision: Adopt a second message broker\n\n**Status:** Accepted\n**Date:** 2026-05-19\n\n## Context\n\nShould a second message broker be introduced?\n\n## Decision\n\nThe on-call rota cannot absorb another broker.\n\n## Alternatives considered\n\n1. Adopt a second message broker\n2. Raise the partition count on the existing broker\n",
-  "reason": "No status was supplied, so the record is *unstated* (REC-125) and the `**Status:**` line MUST be omitted entirely. Emitting `Accepted` invents a claim the author never made, and the next parse reads it as ground truth. REC-125 is explicit that absence is no claim at all."
+  "reason": "No status was supplied, so the record is *unstated* (REC-101) and the `**Status:**` line MUST be omitted entirely. Emitting `Accepted` invents a claim the author never made, and the next parse reads it as ground truth. REC-101 is explicit that absence is no claim at all."
 }

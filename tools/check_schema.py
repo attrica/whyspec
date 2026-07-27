@@ -50,7 +50,7 @@ RULE_RE = re.compile(
 )
 TICKED = re.compile(r"`([^`]+)`")
 CORE = ("command", "status")
-EXPECTED_CHECKS = 1156
+EXPECTED_CHECKS = 1143
 
 # ---------------------------------------------------------------- prose extraction
 

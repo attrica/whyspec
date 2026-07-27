@@ -446,7 +446,7 @@
       "supersedes": [],
       "assumptions": 0,
       "alternatives_list": [
-        "Streaming export \u2014 continuous, higher operational cost.",
+        "Streaming export — continuous, higher operational cost.",
         "Batch export, split across several lines."
       ]
     },
@@ -1195,12 +1195,12 @@
     ]
   },
   {
-    "id": "spec-REC-063-invalid-glob-metacharacters-cannot-survive",
+    "id": "spec-REC-058-invalid-glob-metacharacters-cannot-survive",
     "family": "REC",
     "rule_statement": "A slug MUST NOT be able to contain a glob metacharacter.",
     "valid": false,
     "kind": "slug_scenario",
-    "path": "slugs/spec-REC-063-invalid-glob-metacharacters-cannot-survive.json",
+    "path": "slugs/spec-REC-058-invalid-glob-metacharacters-cannot-survive.json",
     "notes": "The question text contains `*`, `.`, `[`, `]` and `?` -- every metacharacter the REC-067 lookup glob is built from. Because REC-058 restricts output to [a-z0-9-], NONE of them can survive into the slug. This is the property REC-068's pattern construction relies on: if a slug could smuggle a `*` into the glob, the anchored digit-class pattern would be defeated from the other end.",
     "verdict_kind": "field_expectation",
     "expect": {
@@ -1209,7 +1209,7 @@
       "slug_must_not_equal": "which-*.md-files-should-the-[0-9]-matcher-pick-up"
     },
     "spec_rule_ids": [
-      "REC-063"
+      "REC-058"
     ]
   },
   {
@@ -1793,20 +1793,20 @@
     ]
   },
   {
-    "id": "spec-REC-063-valid-ordinary-question-slug-is-glob-safe",
+    "id": "spec-REC-058-valid-ordinary-question-slug-is-glob-safe",
     "family": "REC",
     "rule_statement": "A slug MUST NOT be able to contain a glob metacharacter.",
     "valid": true,
     "kind": "slug_scenario",
-    "path": "slugs/spec-REC-063-valid-ordinary-question-slug-is-glob-safe.json",
-    "notes": "The positive control for REC-063: an ordinary question produces a slug drawn only from [a-z0-9-]. This is the property REC-068's lookup pattern is built on -- the slug is interpolated directly into a glob, so it must never be able to contribute a metacharacter.",
+    "path": "slugs/spec-REC-058-valid-ordinary-question-slug-is-glob-safe.json",
+    "notes": "The positive control for REC-058: an ordinary question produces a slug drawn only from [a-z0-9-]. This is the property REC-067's lookup pattern is built on -- the slug is interpolated directly into a glob, so it must never be able to contribute a metacharacter.",
     "verdict_kind": "field_expectation",
     "expect": {
       "slug": "should-the-reconciliation-service-retry-failed-batches",
       "slug_length": 54
     },
     "spec_rule_ids": [
-      "REC-063"
+      "REC-058"
     ]
   },
   {

@@ -2,7 +2,6 @@
   "rule": "VER-001",
   "spec_rule_ids": [
     "VER-005",
-    "VER-006",
     "REC-031",
     "REC-046"
   ],

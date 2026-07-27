@@ -55,16 +55,16 @@
       "pattern": "^[a-z]+$"
     },
     "deliberation": {
-      "description": "[REC-141] The key spelling for REC-101's Deliberation column. [REC-101] The table is the sole normative source for the value; it is not restated here. [REC-125] An ABSENT status and an UNRECOGNIZED status are BOTH `unstated`, and neither MUST be read as `open`. [REC-103] An open record MUST be ingested and MUST be marked open.",
-      "x-rule": ["REC-141", "REC-101", "REC-125", "REC-103"],
+      "description": "[REC-141] The key spelling for REC-101's Deliberation column. [REC-101] The table is the sole normative source: absent and unrecognized statuses are both `unstated`, neither is `open`, and open records are ingested and marked open.",
+      "x-rule": ["REC-141", "REC-101"],
       "x-layer": "intent-node",
       "x-name-source": "rule",
       "type": "string",
       "enum": ["open", "resolved", "unstated"]
     },
     "offered": {
-      "description": "[REC-141] The key spelling for REC-101's Offered column. [REC-101] The table is the sole normative source for the value; it is not restated here. [REC-109] `draft` and `proposed` MUST NOT be treated as equivalent, and this is the field that distinguishes them.",
-      "x-rule": ["REC-141", "REC-101", "REC-109"],
+      "description": "[REC-141] The key spelling for REC-101's Offered column. [REC-101] The table is the sole normative source and distinguishes `draft` from `proposed` through this field.",
+      "x-rule": ["REC-141", "REC-101"],
       "x-layer": "intent-node",
       "x-name-source": "rule",
       "type": "boolean"
@@ -132,8 +132,8 @@
       }
     },
     "identifier": {
-      "description": "[REC-075] The citational record identifier from the inline `**Id:** <value>` field. [REC-076] Read verbatim; MUST NOT be regenerated and MUST NOT be derived from the title, the body or the filename. [REC-077] Stable across an edit to any other part of the record. [REC-078] Unique within a corpus; two records sharing one leaves neither as the referent. Absent when no `Id` line was written.",
-      "x-rule": ["REC-075", "REC-076", "REC-077", "REC-078"],
+      "description": "[REC-075] The citational record identifier from the inline `**Id:** <value>` field. [REC-076] Read verbatim; MUST NOT be regenerated or derived from mutable record content and remains stable across edits. [REC-078] Unique within a corpus; two records sharing one leaves neither as the referent. Absent when no `Id` line was written.",
+      "x-rule": ["REC-075", "REC-076", "REC-078"],
       "x-layer": "parsed-record",
       "x-name-source": "corpus",
       "type": "string"

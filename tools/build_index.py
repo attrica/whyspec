@@ -22,7 +22,7 @@ FAMILIES = ("REC", "PROV", "ENV", "VER")
 # marked here. Generating the marks is what makes that sentence true rather than aspirational.
 OUT_OF_SCOPE = {
     "VER-001": "governance", "VER-002": "governance", "VER-003": "governance",
-    "VER-004": "governance", "VER-005": "governance", "VER-006": "governance",
+    "VER-004": "governance", "VER-005": "governance",
     "VER-007": "governance", "VER-008": "governance",
     "ENV-008": "consumer", "ENV-009": "consumer", "ENV-038": "consumer",
     "ENV-039": "consumer",

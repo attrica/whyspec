@@ -1,5 +1,5 @@
 {
-  "rule": "REC-126",
+  "rule": "REC-062 + REC-069",
   "statement": "An implementation MUST NOT derive the slug from the chosen option when the question reduces to an empty slug.",
   "scenario": "Two unrelated decisions captured on the same day, both with an empty question, whose chosen options differ. A conforming implementation sends both to the same literal destination; a chosen-derived implementation invents two plausible-looking but wrong names.",
   "today": "2026-05-14",

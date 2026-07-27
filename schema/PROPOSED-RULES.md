@@ -32,7 +32,7 @@ and label, so the assumption path is never exercised.
 Why this shape: it is the exact analogue of the decision node, where "source location and
 label are both the record title". The last sentence is load-bearing — if the stripped
 fields were inputs, editing a review date would fork the node, which is the harm
-[REC-073] and [REC-077] exist to prevent.
+[REC-073] and [REC-076] exist to prevent.
 
 ---
 
@@ -297,7 +297,7 @@ cites" and named no key. [ENV-048] closes that gap with `decision_id`.
 ### A3 — the keys carrying §4.6.1's axes and [REC-119]'s marking (`REC-136`)
 
 [REC-101] names two properties (deliberation state, disposition) and a third column
-(offered); [REC-103] requires an open record to be "marked open"; [REC-118] requires a
+(offered), including the open-state marking; [REC-118] requires a
 self-ratification to be "marked"; [REC-119] requires an uncorroborated ratification to be
 marked. **Only `disposition` is given a key spelling by any rule** ([ENV-022]). The others
 are named as obligations with no field, so two conforming implementations can both satisfy
@@ -320,7 +320,7 @@ remaining fields it can still produce one from.
 | Where | Says | Should say |
 |---|---|---|
 | [REC-031], §4.6 | "See **[ENV-026]** for the general absent-versus-null convention" | **[ENV-038]**. ENV-026 is the `changed` basename-ambiguity rule; the convention is §6.6. |
-| §4.11.2, rationale under [REC-126] | "which is why **[REC-062]** derives the slug from the question in the first place" | **[REC-056]**. REC-062 is the empty-slug fallback. |
+| §4.11.2, rationale under [REC-069] | "which is why **[REC-062]** derives the slug from the question in the first place" | **[REC-056]**. REC-062 is the empty-slug fallback. |
 | §4.11.2, same paragraph | "**[REC-064]**'s existing-record lookup will find and update the earlier file" | **[REC-067]**. A `<today>-decision.md` destination is matched by the dated-record rule, not the legacy-name rule. |
 | §8, gap G6 | "Four failure paths on the tool-call transport omit it (**[ENV-012]**)" | **[ENV-002]** is the rule broken; ENV-012 is the consumer-side corollary. §6.4 cites both correctly. |
 | §7.5 | "The record identifier (§4.13), **actor** (§4.14)" | §4.14 is *Attribution*. |
@@ -332,12 +332,12 @@ implementation unsatisfiable because "`superseded` written as a status resolved 
 therefore to no disposition, therefore to no currency — while the conformance corpus
 required it to remain current", and presents the rewritten [REC-033] as the resolution.
 
-**The rewrite does not reach that chain.** [REC-125] still routes an *unrecognized* status
+**The rewrite does not reach that chain.** [REC-101] still routes an *unrecognized* status
 to `open`, and [REC-112] still says "Currency is defined only for records whose disposition
 is `adopted`; an open or declined record has no currency." A record carrying
 `**Status:** Superseded` therefore still lands exactly where the note says it must not.
 What [REC-033]'s rewrite fixed is the narrower contradiction with §4.6.1's own table. The
-note should either be narrowed to that, or [REC-125] should exempt a status naming a
+note should either be narrowed to that, or [REC-101] should exempt a status naming a
 relation the graph derives.
 
 ### Corpus drift worth a separate pass

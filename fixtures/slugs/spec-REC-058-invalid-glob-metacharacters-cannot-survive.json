@@ -1,5 +1,5 @@
 {
-  "rule": "REC-063",
+  "rule": "REC-058",
   "statement": "A slug MUST NOT be able to contain a glob metacharacter.",
   "input_text": "Which *.md files should the [0-9] matcher pick up?",
   "max_len": 60,

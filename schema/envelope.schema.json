@@ -266,10 +266,9 @@
   "$defs": {
     "error_envelope": {
       "title": "Error variant (any command)",
-      "description": "[ENV-011] An envelope reporting a failure MUST carry `command`, `status` and a human-readable `message`, and MUST NOT be required to carry any variant-specific key. [ENV-012] A consumer MUST NOT assume a variant key is present merely because `command` names a variant that normally has it -- the error variant of every command is a legitimate shape with none of them. [ENV-007] The two input-failure tokens available to any command.",
+      "description": "[ENV-011] An envelope reporting a failure MUST carry `command`, `status` and a human-readable `message`, MUST NOT require variant-specific keys, and consumers cannot assume those keys from `command` alone. [ENV-007] The two input-failure tokens available to any command.",
       "x-rule": [
         "ENV-011",
-        "ENV-012",
         "ENV-007"
       ],
       "type": "object",
@@ -1704,19 +1703,17 @@
           ]
         },
         "record": {
-          "description": "[ENV-034] The path AS GIVEN, from which node identity derives. [ENV-035] Reporting only the absolute path hides the spelling that identity was derived from. [REC-073] Identity hashes the canonical spelling of this path.",
+          "description": "[ENV-034] The path AS GIVEN, which is required alongside the absolute destination because node identity derives from this spelling. [REC-073] Identity hashes the canonical spelling of this path.",
           "x-rule": [
             "ENV-034",
-            "ENV-035",
             "REC-073"
           ],
           "type": "string"
         },
         "record_abs": {
-          "description": "[ENV-034] The resolved absolute destination. [ENV-035] Reporting only the relative path lets a success envelope hide a write into an unrelated working tree.",
+          "description": "[ENV-034] The resolved absolute destination, required alongside the relative spelling so a success envelope cannot hide a write into an unrelated working tree.",
           "x-rule": [
-            "ENV-034",
-            "ENV-035"
+            "ENV-034"
           ],
           "type": "string"
         },
