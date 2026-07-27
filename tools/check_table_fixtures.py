@@ -31,7 +31,14 @@ SOLE_SOURCE = re.compile(
 TABLE_DIVIDER = re.compile(r"^:?-{3,}:?$")
 
 # Increment only deliberately. A shrinking harvest is a checker failure.
-EXPECTED_ASSERTIONS = 37
+EXPECTED_ASSERTIONS = 63
+
+# A normative table can name its rows and values, but it cannot say where a
+# fixture carries the input that selects a row. Keep that irreducible seam
+# explicit. Everything after selection remains table-derived.
+SELECTOR_REGISTRY: dict[str, tuple[str, ...]] = {
+    "REC-101": ("status",),
+}
 
 
 def clean_markdown(value: str) -> str:
@@ -63,16 +70,9 @@ def cell_value(value: str) -> Any:
 class NormativeTable:
     rule_id: str
     selector_field: str
+    selector_paths: tuple[str, ...]
     fields: tuple[str, ...]
     rows: dict[str, dict[str, Any]]
-
-    @property
-    def selector_candidates(self) -> tuple[str, ...]:
-        candidates = [self.selector_field]
-        for prefix in ("normalized_", "parsed_"):
-            if self.selector_field.startswith(prefix):
-                candidates.append(self.selector_field.removeprefix(prefix))
-        return tuple(dict.fromkeys(candidates))
 
     def select(self, value: Any) -> tuple[str, dict[str, Any]]:
         if value is None and "absent" in self.rows:
@@ -92,6 +92,7 @@ class Observation:
     selector: Any
     path: str
     role: str
+    forbidden_group: str | None
 
 
 class Report:
@@ -166,6 +167,7 @@ def discover_tables(text: str) -> list[NormativeTable]:
                 NormativeTable(
                     rule_id=rule_id,
                     selector_field=selector_field,
+                    selector_paths=SELECTOR_REGISTRY.get(rule_id, ()),
                     fields=fields[1:],
                     rows=rows,
                 )
@@ -182,9 +184,10 @@ def observations(expect: dict[str, Any], table: NormativeTable) -> list[Observat
         path: tuple[str, ...],
         inherited_selector: Any,
         inherited_role: str,
+        inherited_forbidden_group: str | None,
     ) -> None:
         selector = inherited_selector
-        for candidate in table.selector_candidates:
+        for candidate in table.selector_paths:
             if candidate in node:
                 selector = node[candidate]
                 break
@@ -195,10 +198,12 @@ def observations(expect: dict[str, Any], table: NormativeTable) -> list[Observat
             key = key_for(raw_key)
             item_path = ".".join((*path, raw_key))
             role = inherited_role
+            forbidden_group = inherited_forbidden_group
             field = key
             if key.endswith("_must_not_equal"):
                 field = key.removesuffix("_must_not_equal")
                 role = "must_not_equal"
+                forbidden_group = item_path
             if field in table.fields and not isinstance(value, dict):
                 found.append(
                     Observation(
@@ -207,15 +212,22 @@ def observations(expect: dict[str, Any], table: NormativeTable) -> list[Observat
                         selector=selector,
                         path=item_path,
                         role=role,
+                        forbidden_group=forbidden_group,
                     )
                 )
             if isinstance(value, dict):
                 child_role = role
                 if key.endswith("_must_not_equal"):
                     child_role = "counterexample"
-                walk(value, (*path, raw_key), selector, child_role)
+                walk(
+                    value,
+                    (*path, raw_key),
+                    selector,
+                    child_role,
+                    forbidden_group,
+                )
 
-    walk(expect, ("expect",), None, "expected")
+    walk(expect, ("expect",), None, "expected", None)
     return found
 
 
@@ -241,29 +253,26 @@ def compare_fixture(
             continue
         resolved.append((item, row[item.field], row_name))
 
-    if entry["valid"]:
-        for item, wanted, row_name in resolved:
-            if item.role != "expected":
-                continue
+    forbidden: dict[str, list[tuple[Observation, Any, str]]] = {}
+    for item, wanted, row_name in resolved:
+        if item.role == "expected":
             report.check(
                 item.value == wanted,
                 f"{entry['id']}: {item.field} expected {item.value!r}, "
                 f"but {table.rule_id} row {row_name!r} requires {wanted!r}",
             )
-    else:
-        report.check(
-            any(item.value != wanted for item, wanted, _row_name in resolved),
-            f"{entry['id']}: invalid fixture agrees with every compared "
-            f"{table.rule_id} table column; counter-example is dead",
-        )
-        for item, wanted, row_name in resolved:
-            if item.role != "must_not_equal":
-                continue
-            report.check(
-                item.value == wanted,
-                f"{entry['id']}: {item.path} is {item.value!r}, but it must name "
-                f"the conformant {table.rule_id} {row_name!r} value {wanted!r}",
+        else:
+            assert item.forbidden_group is not None
+            forbidden.setdefault(item.forbidden_group, []).append(
+                (item, wanted, row_name)
             )
+
+    for group, items in forbidden.items():
+        report.check(
+            any(item.value != wanted for item, wanted, _row_name in items),
+            f"{entry['id']}: {group} equals the conformant {table.rule_id} "
+            "projection; counter-example is dead",
+        )
     return True
 
 
@@ -283,6 +292,10 @@ def main() -> int:
     )
 
     for table in tables:
+        report.check(
+            bool(table.selector_paths),
+            f"{table.rule_id}: sole-source table has no selector registry entry",
+        )
         fixture_count = 0
         for entry in manifest["fixtures"]:
             mapped = entry.get("spec_rule_ids", entry.get("spec_rules", []))
