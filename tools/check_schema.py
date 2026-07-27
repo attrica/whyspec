@@ -58,18 +58,48 @@ def rule_bodies(spec: str) -> dict[str, str]:
     return {m.group(1): flat(m.group(2)) for m in RULE_RE.finditer(spec)}
 
 
-def table_rows(spec: str, header: str) -> list[tuple[str, str]]:
-    """Rows of the first markdown table whose header line contains `header`."""
+def table_records(spec: str, header: str) -> list[dict[str, str]]:
+    """Rows keyed by their markdown column header.
+
+    Returning only the first two cells silently redirected Check G from the
+    ``Yields`` column to ``Required`` as soon as that table gained its third
+    column. Header-addressed cells remain correct when columns are inserted or
+    reordered, and an extractor that finds no table returns no rows so its caller
+    can report a normal checker failure.
+    """
     lines = spec.splitlines()
-    start = next(i for i, l in enumerate(lines) if header in l)
-    rows = []
+    start = next((i for i, line in enumerate(lines) if header in line), None)
+    if start is None:
+        return []
+    headings = [
+        flat(cell).replace("`", "").strip().lower()
+        for cell in lines[start].strip().strip("|").split("|")
+    ]
+    rows: list[dict[str, str]] = []
     for line in lines[start + 2:]:
         if not line.startswith("|"):
             break
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) >= 2:
-            rows.append((flat(cells[0]).replace("`", ""), flat(cells[1])))
+        rows.append({
+            name: flat(cells[index])
+            for index, name in enumerate(headings)
+            if index < len(cells)
+        })
     return rows
+
+
+def table_rows(spec: str, header: str) -> list[tuple[str, str]]:
+    """Compatibility view of the first two named table columns."""
+    records = table_records(spec, header)
+    if not records:
+        return []
+    columns = list(records[0])
+    if len(columns) < 2:
+        return []
+    return [
+        (row.get(columns[0], "").replace("`", ""), row.get(columns[1], ""))
+        for row in records
+    ]
 
 
 def keys_after(text: str, trigger: str, occurrence: int = 0, take: int = 0) -> list[str]:
@@ -406,11 +436,10 @@ def check_vocabularies(rules: dict, schemas: dict[Path, dict], rep: Report) -> N
 def check_section_yields(spec: str, record: dict, rep: Report) -> None:
     """G — REC-018's "Yields" column against parsed-record property names."""
     props = record["properties"]
-    rows = table_rows(spec, "| Heading | Required | Yields |")
+    rows = table_records(spec, "| Heading |")
     rep.check(bool(rows), "G REC-018's section table was not found")
     for row in rows:
-        line = " | ".join(row)
-        cell = line.split("|")[-1]
+        cell = row.get("yields", "")
         for field in TICKED.findall(cell):
             if field in ("REC-021",) or field.startswith("§"):
                 continue
