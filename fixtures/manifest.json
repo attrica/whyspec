@@ -10689,6 +10689,125 @@
    "spec_rule_ids": [
     "REC-144"
    ]
+  },
+  {
+   "id": "spec-REC-145-valid-madr-section-aliases",
+   "family": "REC",
+   "rule_statement": "MADR spellings are aliases of Context, Decision and Alternatives.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-145-valid-madr-section-aliases.md",
+   "notes": "A real MADR record. Context and Problem Statement, Considered Options and Decision Outcome carry the same obligations as Context, Alternatives and Decision. 46 of 64 real records in the ADR tools' own directories use this template.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "adr",
+    "title": "Use Prettier for the code style",
+    "status": "accepted",
+    "alternatives": 3,
+    "recommendation": null,
+    "supersedes": [],
+    "assumptions": 0
+   },
+   "spec_rule_ids": [
+    "REC-145",
+    "REC-147"
+   ]
+  },
+  {
+   "id": "spec-REC-145-invalid-alias-must-not-shadow-canonical",
+   "family": "REC",
+   "rule_statement": "MADR spellings are aliases of Context, Decision and Alternatives.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-145-invalid-alias-must-not-shadow-canonical.md",
+   "notes": "Both spellings present. The canonical heading is authoritative: question MUST be the Context body, not the alias body. An implementation checking the alias first silently prefers the wrong section.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "adr",
+    "title": "Retention of audit logs",
+    "status": null,
+    "alternatives": 0,
+    "recommendation": null,
+    "supersedes": [],
+    "assumptions": 0,
+    "question_must_not_equal": "How long should audit logs be kept?",
+    "question": "Regulator guidance changed in March."
+   },
+   "spec_rule_ids": [
+    "REC-145"
+   ]
+  },
+  {
+   "id": "spec-REC-146-valid-heading-with-html-comment",
+   "family": "REC",
+   "rule_statement": "A trailing HTML comment on a section heading MUST be ignored when matching.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-146-valid-heading-with-html-comment.md",
+   "notes": "The MADR template emits `<!-- optional -->` on its own headings, so a parser matching headings exactly rejects the template's own output.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "adr",
+    "title": "Adopt a single retry budget",
+    "status": "accepted",
+    "alternatives": 0,
+    "recommendation": null,
+    "supersedes": [],
+    "assumptions": 0
+   },
+   "spec_rule_ids": [
+    "REC-146"
+   ]
+  },
+  {
+   "id": "spec-REC-147-valid-status-as-list-item",
+   "family": "REC",
+   "rule_statement": "Status MAY be written as a list item; it is read where no inline field exists.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-147-valid-status-as-list-item.md",
+   "notes": "MADR writes status as `- Status: value`. A parser reading only the inline field and the Status section reports no status for a record that plainly states one. Rejected chosen deliberately: a status that changes ingestion must be read correctly.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "adr",
+    "title": "Serve reads from a replica",
+    "status": "rejected",
+    "alternatives": 0,
+    "recommendation": null,
+    "supersedes": [],
+    "assumptions": 0
+   },
+   "spec_rule_ids": [
+    "REC-147"
+   ]
+  },
+  {
+   "id": "spec-REC-147-invalid-inline-field-wins-over-list-item",
+   "family": "REC",
+   "rule_statement": "Status MAY be written as a list item; it is read where no inline field exists.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-147-invalid-inline-field-wins-over-list-item.md",
+   "notes": "Both forms present and disagreeing. The inline field is authoritative. An implementation preferring the list item flips the record from accepted to rejected, which changes whether it is ingested at all.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "adr",
+    "title": "Serve reads from a replica",
+    "status": "accepted",
+    "alternatives": 0,
+    "recommendation": null,
+    "supersedes": [],
+    "assumptions": 0,
+    "status_must_not_equal": "rejected"
+   },
+   "spec_rule_ids": [
+    "REC-147"
+   ]
   }
  ]
 }

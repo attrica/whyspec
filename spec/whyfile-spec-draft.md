@@ -229,8 +229,13 @@ stop, whitespace, then a non-empty title. It denotes an `adr` record with `autho
 ### 4.1.2 The ADR section signature
 
 **[REC-143]** A level-1 heading of any other shape **MUST** be accepted as a record heading **if
-and only if** the document also contains all three of `## Status`, `## Context` and
-`## Consequences`. This is the **ADR section signature**.
+and only if** the document carries an **ADR section signature**, which is either:
+
+- all three of `## Status`, `## Context` and `## Consequences` (the Nygard shape), **or**
+- `## Context and Problem Statement` (the MADR shape).
+
+The MADR heading stands alone because the `Decision` gate of [REC-008] has already been satisfied,
+and no document but an ADR pairs that heading with a decision.
 
 **[REC-144]** The signature **MUST NOT** be weakened to a subset. A document carrying only
 `## Decision` alongside an arbitrary heading **MUST NOT** be treated as a record: that shape is
@@ -241,6 +246,30 @@ decision into a governing record.
 > without also admitting notes. Verified: relaxing the heading rule this way recovered 32 real
 > records from the tool corpora while adding **zero** false positives across 3,390 markdown files
 > in nineteen real repositories.
+
+### 4.1.3 Section aliases
+
+**[REC-145]** A parser **MUST** accept the following alternative spellings as the sections named,
+and **MUST** treat them as carrying the same obligation:
+
+| Canonical section | Also spelled |
+|---|---|
+| `Context` | `Context and Problem Statement` |
+| `Decision` | `Decision Outcome` |
+| `Alternatives` / `Alternatives considered` | `Considered Options` |
+
+These are the MADR spellings. Measured across the ADR directories of the three principal ADR tools,
+46 of 64 real records used the MADR template, and a format recognising only one template's spelling
+of a section recognises neither in practice.
+
+**[REC-146]** A section heading **MAY** carry a trailing HTML comment, and a parser **MUST** ignore
+it when matching the heading. `## Decision Drivers <!-- optional -->` is emitted by the MADR
+template itself, so a parser that matches headings exactly rejects the template's own output.
+
+**[REC-147]** `Status` **MAY** additionally be written as a list item, `- Status: <value>`, and a
+parser **MUST** read it where no inline `**Status:**` field is present. This is the form MADR uses;
+a parser reading only the inline field and the `## Status` section reports no status for a record
+that plainly states one.
 
 ### 4.2 ADR heading grammar
 
@@ -2010,8 +2039,11 @@ Every normative rule, with its one-line statement.
 | REC-140 | A Decision section whose body is empty MUST yield rationale as an empty string, not an absent key. |
 | REC-141 | The properties REC-101 determines MUST be carried on the parsed record and the intent node under these key spellings: deliberation, offered, and…. |
 | REC-142 | A numbered heading MUST match <one or more digits>. <title> — digits, a full stop, whitespace, then a non-empty title. |
-| REC-143 | A level-1 heading of any other shape MUST be accepted as a record heading if and only if the document also contains all three of ## Status, ##…. |
+| REC-143 | A level-1 heading of any other shape MUST be accepted as a record heading if and only if the document carries an ADR section signature, which is…. |
 | REC-144 | The signature MUST NOT be weakened to a subset. |
+| REC-145 | A parser MUST accept the following alternative spellings as the sections named, and MUST treat them as carrying the same obligation: — see the rule body for the enumeration. |
+| REC-146 | A section heading MAY carry a trailing HTML comment, and a parser MUST ignore it when matching the heading. |
+| REC-147 | Status MAY additionally be written as a list item, - Status: <value>, and a parser MUST read it where no inline Status: field is present. |
 
 #### Provenance
 

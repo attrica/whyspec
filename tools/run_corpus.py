@@ -35,18 +35,27 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 205,
-    "fixture_paths": 340,
-    "manifest_entries": 367,
-    "mapped_rule_ids": 186,
+    "rules": 208,
+    "fixture_paths": 345,
+    "manifest_entries": 372,
+    "mapped_rule_ids": 189,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 273,
+    "computed": 278,
     "drift_checked": 94,
 }
 EXPECTED_MUST_NOT_EQUAL = {
-    "fixtures": 73,
-    "assertions": 88,
+    "fixtures": 75,
+    "assertions": 90,
+}
+
+# REC-145. Same obligation, different spelling -- measured against 84 real ADRs from the three
+# principal tools, where 52 used the MADR template.
+SECTION_ALIASES = {
+    "Context": ("Context and Problem Statement",),
+    "Decision": ("Decision Outcome",),
+    "Alternatives": ("Considered Options",),
+    "Alternatives considered": ("Considered Options",),
 }
 
 COMPUTED = "computed"
@@ -635,7 +644,8 @@ def parse_record(data: bytes) -> dict[str, Any]:
         end = text.find("\n---", 4)
         if end >= 0:
             text = text[end + 4:].lstrip("\n")
-    decision = re.search(r"^## Decision\s*$", text, re.I | re.M)
+    decision = re.search(r"^## (?:Decision|Decision Outcome)\s*(?:<!--.*?-->)?\s*$",
+                         text, re.I | re.M)
     if not decision:
         return {"parses": False, "is_valid_utf8": True}
     # H1 recognition, relaxed after measuring 84 real ADRs from the three main ADR tools
@@ -666,10 +676,18 @@ def parse_record(data: bytes) -> dict[str, Any]:
             bare = candidate            # remember the first, keep scanning for a declared form
     sig = False
     if not (adr or dec or num):
-        sig = all(
-            re.search(rf"^## {name}\s*$", text, re.I | re.M)
-            for name in ("Status", "Context", "Consequences")
-        )
+        def has(*names):
+            return all(
+                re.search(rf"^## {n}\s*(?:<!--.*?-->)?\s*$", text, re.I | re.M) for n in names
+            )
+        # Nygard signature, or the MADR pair. Both are distinctive enough to separate a record
+        # from notes; "Context and Problem Statement" beside "Decision Outcome" is not a shape
+        # anything but an ADR produces.
+        # "Context and Problem Statement" is MADR-specific enough to stand alone: the Decision
+        # gate above already ran, and no document but an ADR pairs that heading with a decision.
+        # Measured: a real MADR record spells its outcome "## Decision" rather than
+        # "## Decision Outcome", and requiring the pair rejected it.
+        sig = has("Status", "Context", "Consequences") or has("Context and Problem Statement")
         if not (bare and sig):
             return {"parses": False, "is_valid_utf8": True}
     if adr:
@@ -685,14 +703,23 @@ def parse_record(data: bytes) -> dict[str, Any]:
         return {"parses": False, "is_valid_utf8": True}
 
     def section(name: str) -> str | None:
-        match = re.search(
-            rf"^## {re.escape(name)}\s*$\n(.*?)(?=^#{{1,6}} |\Z)",
-            text,
-            re.I | re.M | re.S,
-        )
-        return match.group(1).strip() if match else None
+        # MADR spells three canonical sections differently. The alias table is normative
+        # (REC-145): the same obligation, a different heading. MADR headings may also carry a
+        # trailing HTML comment -- "## Decision Drivers <!-- optional -->" is emitted by the MADR
+        # template itself -- so the heading match tolerates one.
+        for spelling in (name, *SECTION_ALIASES.get(name, ())):
+            match = re.search(
+                rf"^## {re.escape(spelling)}\s*(?:<!--.*?-->)?\s*$\n(.*?)(?=^#{{1,6}} |\Z)",
+                text,
+                re.I | re.M | re.S,
+            )
+            if match:
+                return match.group(1).strip()
+        return None
 
     status_match = re.search(r"^\*\*Status:\*\*\s*(.*)$", text, re.I | re.M)
+    if not status_match:                       # MADR: "- Status: accepted" as a list item
+        status_match = re.search(r"^[-*]\s*Status:\s*(.*)$", text, re.I | re.M)
     status_section = section("Status")
     raw_status = status_match.group(1) if status_match else status_section
     status_token = re.search(r"[A-Za-z]+", raw_status or "")
