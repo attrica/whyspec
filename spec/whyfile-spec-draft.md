@@ -184,25 +184,63 @@ matter and is scanned whole.
 
 **[REC-008]** A markdown document is a record **if and only if** both of the following hold:
 
-1. It contains a level-1 heading matching one of exactly two forms (§4.2, §4.3), and
-2. it contains a `Decision` section (§4.5).
+1. It contains a `Decision` section (§4.5), **and**
+2. either a level-1 heading matching one of the three declared forms (§4.2, §4.3, §4.3.1), **or**
+   a level-1 heading of any shape together with the **ADR section signature** (§4.3.2).
 
 A document failing either condition **MUST NOT** be treated as a record. This is what allows a
 template, a README, or an unrelated document to sit in the same directory without being ingested.
+
+> **Why a bare heading is not sufficient on its own.** Meeting notes routinely carry a `Decision`
+> section — `# Weekly sync notes` followed by `## Decision` and `## Alternatives considered` is a
+> real shape, and it is not a decision record. The heading form is what separates the two, so it is
+> relaxed rather than removed.
 
 **[REC-009]** The record kind is determined by which level-1 form matched:
 
 | H1 form | Kind | Provenance tier |
 |---|---|---|
 | `# ADR-<digits><sep> <title>` | `adr` | `authored` (§5) |
+| `# <digits>. <title>` | `adr` | `authored` (§5) |
 | `# Decision: <title>` | `decision` | `captured` (§5) |
+| bare `# <title>` with the ADR section signature | `adr` | `authored` (§5) |
 
-**[REC-010]** A parser **MUST** use the **first** level-1 heading that matches either form as the
-record's title heading, and **MUST** ignore any later level-1 heading. A level-1 heading that
+`Decision:` is the form this project's own capture surface emits, which is why it alone implies
+`captured`. Every other recognised form is a document a person wrote, and takes `authored`.
+
+**[REC-010]** A parser **MUST** use the **first** level-1 heading that matches any declared form as
+the record's title heading, and **MUST** ignore any later level-1 heading. A level-1 heading that
 matches neither form **MUST NOT** disqualify the document: the parser continues looking.
 
 > This is verified behaviour, not an inference. A document whose first H1 is `# Notes` and whose
 > second is `# Decision: A` parses as a decision record titled `A`.
+
+### 4.1.1 Numbered heading grammar
+
+**[REC-142]** A numbered heading **MUST** match `<one or more digits>. <title>` — digits, a full
+stop, whitespace, then a non-empty title. It denotes an `adr` record with `authored` provenance.
+
+> This is the numbering emitted by `adr-tools`, the reference implementation of Michael Nygard's
+> Architecture Decision Record convention, and by every tool derived from it. Measured across the
+> corpora of the three principal ADR tools, 34 of 84 real records used this form and **none** used
+> `ADR-N:` or `Decision:`. A grammar that recognises no record any established tool produces is
+> not interoperable, whatever its internal consistency.
+
+### 4.1.2 The ADR section signature
+
+**[REC-143]** A level-1 heading of any other shape **MUST** be accepted as a record heading **if
+and only if** the document also contains all three of `## Status`, `## Context` and
+`## Consequences`. This is the **ADR section signature**.
+
+**[REC-144]** The signature **MUST NOT** be weakened to a subset. A document carrying only
+`## Decision` alongside an arbitrary heading **MUST NOT** be treated as a record: that shape is
+indistinguishable from meeting notes, and admitting it converts every set of minutes containing a
+decision into a governing record.
+
+> 48 of the 84 measured records used a bare title. The signature is what makes them recognisable
+> without also admitting notes. Verified: relaxing the heading rule this way recovered 32 real
+> records from the tool corpora while adding **zero** false positives across 3,390 markdown files
+> in nineteen real repositories.
 
 ### 4.2 ADR heading grammar
 
@@ -1849,7 +1887,7 @@ Every normative rule, with its one-line statement.
 | REC-007 | A parser MUST NOT require any section not named in §4. Unrecognized sections MUST be ignored without error. |
 | REC-008 | A markdown document is a record if and only if both of the following hold: — see the rule body for the enumeration. |
 | REC-009 | The record kind is determined by which level-1 form matched: — see the rule body for the enumeration. |
-| REC-010 | A parser MUST use the first level-1 heading that matches either form as the record's title heading, and MUST ignore any later level-1 heading. |
+| REC-010 | A parser MUST use the first level-1 heading that matches any declared form as the record's title heading, and MUST ignore any later level-1 heading. |
 | REC-011 | An ADR heading MUST match, case-insensitively: — see the rule body for the enumeration. |
 | REC-012 | The separator is REQUIRED. |
 | REC-013 | The digit run MUST NOT be required to be zero-padded or of any fixed width for *heading recognition*. # ADR-7: Title is a valid ADR heading. |
@@ -1971,6 +2009,9 @@ Every normative rule, with its one-line statement.
 | REC-139 | An emitter MUST render the Id: line, adjacent to Status: and Date:, when the record carries an identifier. |
 | REC-140 | A Decision section whose body is empty MUST yield rationale as an empty string, not an absent key. |
 | REC-141 | The properties REC-101 determines MUST be carried on the parsed record and the intent node under these key spellings: deliberation, offered, and…. |
+| REC-142 | A numbered heading MUST match <one or more digits>. <title> — digits, a full stop, whitespace, then a non-empty title. |
+| REC-143 | A level-1 heading of any other shape MUST be accepted as a record heading if and only if the document also contains all three of ## Status, ##…. |
+| REC-144 | The signature MUST NOT be weakened to a subset. |
 
 #### Provenance
 

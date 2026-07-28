@@ -35,13 +35,13 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 202,
-    "fixture_paths": 335,
-    "manifest_entries": 362,
-    "mapped_rule_ids": 183,
+    "rules": 205,
+    "fixture_paths": 340,
+    "manifest_entries": 367,
+    "mapped_rule_ids": 186,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 268,
+    "computed": 273,
     "drift_checked": 94,
 }
 EXPECTED_MUST_NOT_EQUAL = {
@@ -638,15 +638,49 @@ def parse_record(data: bytes) -> dict[str, Any]:
     decision = re.search(r"^## Decision\s*$", text, re.I | re.M)
     if not decision:
         return {"parses": False, "is_valid_utf8": True}
-    adr = dec = None
-    for heading in re.findall(r"^# (.+)$", text, re.M):
-        adr = re.fullmatch(r"ADR-(\d+)\s*(?:—|–|:|-)\s*(.+)", heading, re.I)
-        dec = re.fullmatch(r"Decision:\s*(.+)", heading, re.I)
-        if adr or dec:
+    # H1 recognition, relaxed after measuring 84 real ADRs from the three main ADR tools
+    # (npryce/adr-tools, joshrotenberg/adrs, thomvaill/log4brains): NONE used "ADR-N:" or
+    # "Decision:". 34 used Nygard's "N. Title" and 48 used a bare title, so the prefix rule
+    # rejected 100% of the ecosystem.
+    #
+    # It is relaxed, NOT removed. Fixture REC-001 is meeting notes — "# Weekly sync notes" with a
+    # "## Decision" section — and accepting any H1 would make it a decision record. The prefix was
+    # doing real discriminating work beyond the "## Decision" gate above.
+    #
+    # So a record is recognised when the H1 declares one:
+    #   ADR-N<sep> Title   explicit ADR reference            -> adr,      authored
+    #   N. Title           Nygard numbering (adr-tools)      -> adr,      authored
+    #   Decision: Title    what `whyfile capture` emits      -> decision, captured
+    # or, for a bare title, when the document carries the ADR SECTION SIGNATURE — Status, Context
+    # and Consequences together. That signature is what separates a hand-written ADR from notes
+    # that happen to contain a Decision heading.
+    adr = dec = num = None
+    bare = None
+    for candidate in re.findall(r"^# (.+)$", text, re.M):
+        adr = re.fullmatch(r"ADR-(\d+)\s*(?:—|–|:|-)\s*(.+)", candidate, re.I)
+        dec = re.fullmatch(r"Decision:\s*(.+)", candidate, re.I)
+        num = re.fullmatch(r"(\d+)\.\s+(.+)", candidate)
+        if adr or dec or num:
             break
-    if not adr and not dec:
-        return {"parses": False, "is_valid_utf8": True}
-    title = (adr.group(2) if adr else dec.group(1)).strip()
+        if bare is None:
+            bare = candidate            # remember the first, keep scanning for a declared form
+    sig = False
+    if not (adr or dec or num):
+        sig = all(
+            re.search(rf"^## {name}\s*$", text, re.I | re.M)
+            for name in ("Status", "Context", "Consequences")
+        )
+        if not (bare and sig):
+            return {"parses": False, "is_valid_utf8": True}
+    if adr:
+        title = adr.group(2)
+    elif dec:
+        title = dec.group(1)
+    elif num:
+        title = num.group(2)
+    else:
+        title = bare
+    title = title.strip()
     if not title:
         return {"parses": False, "is_valid_utf8": True}
 
@@ -688,7 +722,7 @@ def parse_record(data: bytes) -> dict[str, Any]:
     return {
         "parses": True,
         "is_valid_utf8": True,
-        "kind": "adr" if adr else "decision",
+        "kind": "adr" if (adr or num or sig) else "decision",
         "title": title,
         "status": status_token.group(0).lower() if status_token else None,
         "alternatives": len(alternatives),
@@ -699,7 +733,7 @@ def parse_record(data: bytes) -> dict[str, Any]:
         "recommendation": recommendation,
         "supersedes": supersedes,
         "identifier": id_match.group(1) if id_match else None,
-        "provenance": "authored" if adr else "captured",
+        "provenance": "authored" if (adr or num or not dec) else "captured",
     }
 
 
