@@ -10808,6 +10808,61 @@
    "spec_rule_ids": [
     "REC-147"
    ]
+  },
+  {
+   "id": "spec-REC-148-invalid-unfilled-template-is-not-a-record",
+   "family": "REC",
+   "rule_statement": "A placeholder title means an unfilled template, which MUST NOT be a record.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-148-invalid-unfilled-template-is-not-a-record.md",
+   "notes": "The verbatim adr-tools template. It carries the full Nygard section signature because the template HAS every heading -- they are simply unfilled. REC-008's rationale requires a template to sit in an ADR directory without being ingested; observed in a real repository where two of seven apparent records were templates.",
+   "verdict_kind": "parse_rejects",
+   "expect": {
+    "parses": false
+   },
+   "spec_rule_ids": [
+    "REC-148"
+   ]
+  },
+  {
+   "id": "spec-REC-148-invalid-bracketed-placeholder-title",
+   "family": "REC",
+   "rule_statement": "A placeholder title means an unfilled template, which MUST NOT be a record.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-148-invalid-bracketed-placeholder-title.md",
+   "notes": "The MADR template brackets its whole title. A wholly bracketed title is a placeholder, not a decision.",
+   "verdict_kind": "parse_rejects",
+   "expect": {
+    "parses": false
+   },
+   "spec_rule_ids": [
+    "REC-148"
+   ]
+  },
+  {
+   "id": "spec-REC-148-valid-filled-record-with-capitalised-title",
+   "family": "REC",
+   "rule_statement": "A placeholder title means an unfilled template, which MUST NOT be a record.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-148-valid-filled-record-with-capitalised-title.md",
+   "notes": "The control. A real record whose title shares no word with the placeholder vocabulary MUST still parse -- the rule keys on the placeholder words themselves, not on capitalisation, so an ordinary title is unaffected.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "adr",
+    "title": "Use EKS as the default container platform",
+    "status": "accepted",
+    "alternatives": 0,
+    "recommendation": null,
+    "supersedes": [],
+    "assumptions": 0
+   },
+   "spec_rule_ids": [
+    "REC-148"
+   ]
   }
  ]
 }

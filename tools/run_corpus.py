@@ -35,13 +35,13 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 208,
-    "fixture_paths": 345,
-    "manifest_entries": 372,
-    "mapped_rule_ids": 189,
+    "rules": 209,
+    "fixture_paths": 348,
+    "manifest_entries": 375,
+    "mapped_rule_ids": 190,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 278,
+    "computed": 281,
     "drift_checked": 94,
 }
 EXPECTED_MUST_NOT_EQUAL = {
@@ -56,6 +56,16 @@ SECTION_ALIASES = {
     "Decision": ("Decision Outcome",),
     "Alternatives": ("Considered Options",),
     "Alternatives considered": ("Considered Options",),
+}
+
+# REC-148. An unfilled template is not a record. REC-008's own rationale says a template must be
+# able to sit in the ADR directory without being ingested, and relaxing the heading rule broke
+# that: `# NUMBER. TITLE` is a bare title carrying the full Nygard signature, because the template
+# HAS all the section headings -- they are simply empty. Observed in a real repository, where two
+# of seven "records" were the adr-tools and MADR templates.
+TEMPLATE_TOKENS = {
+    "NUMBER", "TITLE", "DATE", "STATUS", "CONTEXT", "DECISION", "CONSEQUENCES",
+    "SHORT", "PROBLEM", "SOLUTION", "TEMPLATE", "OPTION", "DRIVER",
 }
 
 COMPUTED = "computed"
@@ -700,6 +710,15 @@ def parse_record(data: bytes) -> dict[str, Any]:
         title = bare
     title = title.strip()
     if not title:
+        return {"parses": False, "is_valid_utf8": True}
+    # A placeholder title means an unfilled template. Two forms are used in practice: the
+    # adr-tools style, whose words are all drawn from the placeholder vocabulary
+    # ("NUMBER. TITLE"), and the MADR style, which brackets the whole title
+    # ("[short title of solved problem and solution]").
+    words = re.findall(r"[A-Za-z]+", title)
+    if words and all(w.upper() in TEMPLATE_TOKENS and w.isupper() for w in words):
+        return {"parses": False, "is_valid_utf8": True}
+    if re.fullmatch(r"\[.*\]", title.strip()):
         return {"parses": False, "is_valid_utf8": True}
 
     def section(name: str) -> str | None:

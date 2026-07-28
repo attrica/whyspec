@@ -271,6 +271,19 @@ parser **MUST** read it where no inline `**Status:**` field is present. This is 
 a parser reading only the inline field and the `## Status` section reports no status for a record
 that plainly states one.
 
+### 4.1.4 Unfilled templates
+
+**[REC-148]** A record whose title is a **placeholder MUST NOT** be treated as a record. A title is
+a placeholder when every alphabetic word in it is an upper-case template token (`NUMBER`, `TITLE`,
+`DATE`, `STATUS`, `CONTEXT`, `DECISION`, `CONSEQUENCES`, `SHORT`, `PROBLEM`, `SOLUTION`, `TEMPLATE`,
+`OPTION`, `DRIVER`), or when the whole title is enclosed in square brackets.
+
+> [REC-008] states that a template must be able to sit in a record directory without being
+> ingested. A template satisfies every structural test — it carries the full section signature,
+> because a template *is* the set of headings — so structure alone cannot exclude it. Only the
+> unfilled title can. Measured: in one real repository two of seven apparent records were the
+> `adr-tools` and MADR templates.
+
 ### 4.2 ADR heading grammar
 
 **[REC-011]** An ADR heading **MUST** match, case-insensitively:
@@ -2044,6 +2057,7 @@ Every normative rule, with its one-line statement.
 | REC-145 | A parser MUST accept the following alternative spellings as the sections named, and MUST treat them as carrying the same obligation: — see the rule body for the enumeration. |
 | REC-146 | A section heading MAY carry a trailing HTML comment, and a parser MUST ignore it when matching the heading. |
 | REC-147 | Status MAY additionally be written as a list item, - Status: <value>, and a parser MUST read it where no inline Status: field is present. |
+| REC-148 | A record whose title is a placeholder MUST NOT be treated as a record. |
 
 #### Provenance
 
