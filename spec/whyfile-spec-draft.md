@@ -1189,10 +1189,34 @@ and whitespace normalization of [REC-023] **MUST NOT** be applied.
 > The general lesson is worth keeping: a normalization written for human prose cannot be reused
 > unexamined on a machine-readable value that shares the document's markup characters.
 
-**[REC-083]** Each item **MUST** be an **artifact reference**. This version defines exactly one
-kind of artifact reference: a **repository-relative path glob**. Other kinds are reserved and
-undefined; an implementation **MUST NOT** invent one, and adding a kind requires a version marker
-(§7).
+**[REC-083]** Each item **MUST** be an **artifact reference**. This version defines exactly two
+kinds of artifact reference: a **repository-relative path glob**, and a **symbol reference**
+([REC-151]). Other kinds are reserved and undefined; an implementation **MUST NOT** invent one,
+and adding a kind requires a version marker (§7).
+
+**[REC-151]** A **symbol reference** **MUST** be written `<path>#<symbol>` — a repository-relative
+path carrying no glob metacharacter, a single `#`, and a non-empty symbol name — and resolves to
+that symbol within that file. An item containing no `#` **MUST** be read as a path glob. An item
+containing a `#` **MUST** be read as a symbol reference **even when it is malformed**, so that a
+mistyped reference reports through [REC-086] rather than silently degrading into a glob. [REC-086]
+governs the unresolved case unchanged.
+
+> **Why a second kind, and why this one.** The path glob was the only kind specified because no
+> second one was needed yet. Two things need it now, and they arrived from opposite directions. In
+> the wild, in-code rationale is the only rationale practice observed at scale — 41,758 instances
+> against zero conforming records — and it explains a *symbol*, not a directory. Independently, the
+> capture surface's declared scope already spoke of symbols, so the two layers disagreed about what
+> a scope could be.
+>
+> The disambiguation rule reads a malformed reference as a malformed *symbol* reference rather than
+> as a glob. That looks like the unhelpful reading and is the safe one: a symbol reference is a
+> legal path string, so the alternative is for `src/edge/handler.py#validte_request` to become a
+> glob matching nothing, and to surface under [REC-086] as *scope that has gone stale* — a typo
+> wearing the costume of decay. Reading it as a symbol reference reports the same empty resolution
+> with the reference kind intact, which is what makes the report actionable.
+>
+> [REC-086] gains rather than loses precision here. A symbol reference that stops resolving is a
+> rename detector; a glob that stops matching is a much blunter instrument for the same job.
 
 **[REC-084]** An absent `## Governs` section **MUST** be read as *scope not declared*. It
 **MUST NOT** be read as *governs nothing*.
@@ -2032,7 +2056,7 @@ Every normative rule, with its one-line statement.
 | REC-080 | <kind> MUST be one of exactly human or agent. <role> MUST be one of exactly drafted, decided, or ratified. |
 | REC-081 | A record MAY carry any number of attributions, including several sharing a role. An absent attribution MUST be read as *unrecorded*. |
 | REC-082 | A record MAY carry a ## Governs section listing the artifacts the decision governs, one per list item. |
-| REC-083 | Each item MUST be an artifact reference. This version defines exactly one kind of artifact reference: a repository-relative path glob. |
+| REC-083 | Each item MUST be an artifact reference. |
 | REC-084 | An absent ## Governs section MUST be read as *scope not declared*. It MUST NOT be read as *governs nothing*. |
 | REC-086 | An artifact reference that resolves to zero artifacts MUST be reported as a distinct, named state — neither silently dropped nor treated as an error. |
 | REC-087 | A record MAY carry a ## Relations section, one relation per list item, in the form <relation> <identifier>. |
@@ -2093,6 +2117,7 @@ Every normative rule, with its one-line statement.
 | REC-148 | A record whose title is a placeholder MUST NOT be treated as a record. A title is a placeholder when any of the following hold: — see the rule body for the enumeration. |
 | REC-149 | The only front-matter key a parser MAY interpret is title, and it MUST be used only where the document has no level-1 heading at all. |
 | REC-150 | status MUST NOT be read from front matter, even where the body states no status. |
+| REC-151 | A symbol reference MUST be written <path>#<symbol> — a repository-relative path carrying no glob metacharacter, a single #, and a non-empty symbol…. |
 
 #### Provenance
 

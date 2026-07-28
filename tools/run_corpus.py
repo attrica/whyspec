@@ -35,13 +35,13 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 211,
-    "fixture_paths": 351,
-    "manifest_entries": 378,
-    "mapped_rule_ids": 192,
+    "rules": 212,
+    "fixture_paths": 353,
+    "manifest_entries": 380,
+    "mapped_rule_ids": 193,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 284,
+    "computed": 286,
     "drift_checked": 94,
 }
 EXPECTED_MUST_NOT_EQUAL = {
@@ -788,6 +788,21 @@ def parse_record(data: bytes) -> dict[str, Any]:
         for line in (assumptions_body or "").splitlines()
         if (match := re.match(r"^\s*(?:[-*]|\d+\.)\s*(.*)$", line))
     ]
+    # Governs items are taken verbatim per REC-082 (no emphasis-stripping, no whitespace
+    # normalization) with empty items dropped per REC-025. The section's ABSENCE is a
+    # distinct state from an empty section -- REC-084 reads it as "scope not declared",
+    # never as "governs nothing" -- so `declared` tracks the section, not the item count.
+    governs_body = section("Governs")
+    governs = (
+        None
+        if governs_body is None
+        else [
+            item
+            for line in governs_body.splitlines()
+            if (match := re.match(r"^\s*(?:[-*]|\d+\.)\s*(.*)$", line))
+            and (item := match.group(1).strip())
+        ]
+    )
     id_match = re.search(r"^\*\*Id:\*\*\s*(\S+)", text, re.I | re.M)
     question = section("Context")
     rationale = section("Decision")
@@ -806,6 +821,18 @@ def parse_record(data: bytes) -> dict[str, Any]:
         "alternatives": len(alternatives),
         "alternatives_list": alternatives,
         "assumptions": len(assumptions),
+        # None, not [] -- REC-084 reads an absent section as "scope not declared", and an
+        # empty list is the "governs nothing" reading it explicitly forbids. The corpus
+        # caught this the moment the expectation became enforced.
+        "governs": governs,
+        "governs_declared": governs_body is not None,
+        # REC-151: a `#` makes it a symbol reference even when malformed. Classifying a
+        # mistyped one as a glob would report a typo as stale scope under REC-086.
+        "governs_reference_kinds": (
+            None
+            if governs is None
+            else ["symbol" if "#" in i else "path_glob" for i in governs]
+        ),
         "question": question,
         "rationale": rationale,
         "recommendation": recommendation,
@@ -815,12 +842,35 @@ def parse_record(data: bytes) -> dict[str, Any]:
     }
 
 
+CONTAINMENT = {
+    "_must_only_contain": lambda got, want: set(got) <= set(want),
+    "_must_not_contain": lambda got, want: not set(got) & set(want),
+    "_must_contain": lambda got, want: set(want) <= set(got),
+}
+
+
 def compare_known_expectations(actual: dict[str, Any], expect: dict[str, Any]) -> None:
     aliases = {
         "alternatives_count": "alternatives",
         "assumptions_count": "assumptions",
     }
     for key, expected in expect.items():
+        # A containment assertion names a base field plus a suffix, so it never matches a
+        # computed key by name and fell through both `continue`s below. That is how
+        # REC-083's fixture pair came to pass with a `service:` reference sitting in its
+        # Governs section. Handled first, and deliberately NOT extended to the
+        # `_must_not_equal` family, which check_must_not_equal_expectations owns.
+        suffix = next((s for s in CONTAINMENT if key.endswith(s)), None)
+        if suffix:
+            base = key[: -len(suffix)]
+            base = aliases.get(base, base)
+            if base not in actual:
+                continue  # the parser genuinely does not compute this field
+            if not isinstance(actual[base], list):
+                fail(f"{key}: {base} is {type(actual[base]).__name__}, not a list")
+            if not CONTAINMENT[suffix](actual[base], expected):
+                fail(f"{key}: {actual[base]!r} violates {expected!r}")
+            continue
         source = aliases.get(key, key)
         if key in {"alternatives_list", "provenance"}:
             # These are covered by dedicated scenario/vector fixtures. The retained

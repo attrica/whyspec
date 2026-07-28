@@ -6609,7 +6609,7 @@
    "id": "spec-REC-083-valid-path-glob-references",
    "family": "REC",
    "rule_id": "REC-083",
-   "rule_statement": "Each `## Governs` item MUST be an artifact reference; this version defines exactly one kind, a repository-relative path glob, and an implementation MUST NOT invent another.",
+   "rule_statement": "Each `## Governs` item MUST be an artifact reference; this version defines exactly two kinds, a repository-relative path glob and a symbol reference, and an implementation MUST NOT invent another.",
    "valid": true,
    "kind": "record",
    "path": "models/spec-REC-083-valid-path-glob-references.md",
@@ -6636,7 +6636,7 @@
    "id": "spec-REC-083-invalid-no-other-reference-kind",
    "family": "REC",
    "rule_id": "REC-083",
-   "rule_statement": "Each `## Governs` item MUST be an artifact reference; this version defines exactly one kind, a repository-relative path glob, and an implementation MUST NOT invent another.",
+   "rule_statement": "Each `## Governs` item MUST be an artifact reference; this version defines exactly two kinds, a repository-relative path glob and a symbol reference, and an implementation MUST NOT invent another.",
    "valid": false,
    "kind": "record",
    "path": "models/spec-REC-083-invalid-no-other-reference-kind.md",
@@ -6659,6 +6659,57 @@
    },
    "spec_rule_ids": [
     "REC-083"
+   ]
+  },
+  {
+   "id": "spec-REC-151-valid-symbol-reference",
+   "family": "REC",
+   "rule_id": "REC-151",
+   "rule_statement": "A symbol reference MUST be written `<path>#<symbol>`. An item with no `#` MUST be read as a path glob; an item with a `#` MUST be read as a symbol reference even when malformed, so a mistyped reference reports through REC-086 rather than degrading into a glob.",
+   "valid": true,
+   "kind": "record",
+   "path": "models/spec-REC-151-valid-symbol-reference.md",
+   "notes": "A path glob and a symbol reference in one Governs section. The two kinds coexist and are distinguished solely by the presence of `#`, so this pins that adding the second kind did not reclassify the first.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "decision",
+    "governs_declared": true,
+    "governs": [
+     "src/edge/**/*.py",
+     "src/edge/handler.py#validate_request"
+    ],
+    "governs_reference_kinds": [
+     "path_glob",
+     "symbol"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-151",
+    "REC-083"
+   ]
+  },
+  {
+   "id": "spec-REC-151-invalid-malformed-symbol-is-not-a-glob",
+   "family": "REC",
+   "rule_id": "REC-151",
+   "rule_statement": "A symbol reference MUST be written `<path>#<symbol>`. An item with no `#` MUST be read as a path glob; an item with a `#` MUST be read as a symbol reference even when malformed, so a mistyped reference reports through REC-086 rather than degrading into a glob.",
+   "valid": false,
+   "kind": "record",
+   "path": "models/spec-REC-151-invalid-malformed-symbol-is-not-a-glob.md",
+   "notes": "`src/edge/handler.py#` carries a `#` and an empty symbol, so it is a malformed symbol reference. It is a legal path string, so the tempting reading is a path glob -- which would surface a typo under REC-086 as scope that had gone stale. This fixture pins the classification as `symbol`, keeping the reference kind intact in the empty-resolution report. The rule does not say what becomes of a malformed item, so nothing beyond its kind is asserted.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "governs_reference_kinds": [
+     "symbol"
+    ],
+    "governs_reference_kinds_must_not_contain": [
+     "path_glob"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-151"
    ]
   },
   {
