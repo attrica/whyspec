@@ -151,9 +151,30 @@ section a heading names.
 
 ### 3.2 What is not read
 
-**[REC-006]** YAML front matter, if present, **MUST NOT** be interpreted by a conforming parser.
-Front matter is human and external-tooling metadata. A record's meaning **MUST** be fully
-determined by its markdown body.
+**[REC-006]** YAML front matter, if present, **MAY** be interpreted, but **only** as a
+lower-precedence source that can never override the markdown body, and **only** for the keys named
+in [REC-149]. Every other key **MUST NOT** be interpreted.
+
+> **This rule was reversed on evidence.** It previously forbade interpreting front matter at all, on
+> the reasoning that a record's meaning must be fully determined by its body. That reasoning holds
+> for anything the body can express — and fails for a title the body never states. A project with
+> 2,421 contributors keeps its architecture decision records with no level-1 heading at all, the
+> title living solely in front matter; twelve genuine records were unreadable by construction of
+> this rule. Front matter is not merely external tooling's metadata: it is a semi-structured
+> documentation surface teams actually use.
+>
+> The precedence direction is what makes the reversal safe. Front matter never wins, so no record's
+> meaning can be changed by a value a static-site generator wrote.
+
+**[REC-149]** The only front-matter key a parser **MAY** interpret is `title`, and it **MUST** be
+used only where the document has no level-1 heading at all. Where an H1 exists, the H1 title
+**MUST** win.
+
+**[REC-150]** `status` **MUST NOT** be read from front matter, even where the body states no status.
+A status determines whether a record is ingested at all, so a `status:` key written by external
+tooling for its own purposes could silently remove records from a corpus. This asymmetry with
+[REC-149] is deliberate: a wrong title is visible and harmless, a wrong status is invisible and
+deletes.
 
 **[REC-132]** Where a document's first line is exactly `---`, the bytes from that line through the
 next line that is exactly `---`, inclusive, are **YAML front matter** and **MUST** be removed before
@@ -274,9 +295,21 @@ that plainly states one.
 ### 4.1.4 Unfilled templates
 
 **[REC-148]** A record whose title is a **placeholder MUST NOT** be treated as a record. A title is
-a placeholder when every alphabetic word in it is an upper-case template token (`NUMBER`, `TITLE`,
-`DATE`, `STATUS`, `CONTEXT`, `DECISION`, `CONSEQUENCES`, `SHORT`, `PROBLEM`, `SOLUTION`, `TEMPLATE`,
-`OPTION`, `DRIVER`), or when the whole title is enclosed in square brackets.
+a placeholder when any of the following hold:
+
+- every alphabetic word in it is an upper-case template token (`NUMBER`, `TITLE`, `DATE`, `STATUS`,
+  `CONTEXT`, `DECISION`, `CONSEQUENCES`, `SHORT`, `PROBLEM`, `SOLUTION`, `TEMPLATE`, `OPTION`,
+  `DRIVER`);
+- it contains a **shape placeholder** — a word standing for a value's form rather than naming a
+  field: `NNN`, `NNNN`, `NN`, `XXX`, `XXXX`, `YYYY`, `MM`, `DD`. One is decisive, because these do
+  not occur in real titles;
+- the whole title is enclosed in square brackets, or it contains a bracketed segment whose words are
+  all template tokens — a template numbered in sequence with its siblings reads `ADR000: [TITLE]`.
+
+> This is a **heuristic and will never be complete**: a template is structurally identical to the
+> records it is a template for, so only its unfilled text distinguishes it. Four distinct
+> placeholder conventions were observed across four repositories, and a fifth is likely. A parser
+> **MUST NOT** treat template exclusion as a guarantee.
 
 > [REC-008] states that a template must be able to sit in a record directory without being
 > ingested. A template satisfies every structural test — it carries the full section signature,
@@ -1925,7 +1958,7 @@ Every normative rule, with its one-line statement.
 | REC-003 | A parser MUST tolerate a leading UTF-8 byte-order mark (U+FEFF) and MUST NOT let its presence change the parse. |
 | REC-004 | A parser MUST treat a line matching ^(#{1,6})\s+(.+)$ as a heading, where the count of # characters is the heading level and the remainder, trimmed…. |
 | REC-005 | Heading text MUST be matched case-insensitively when a parser is deciding which section a heading names. |
-| REC-006 | YAML front matter, if present, MUST NOT be interpreted by a conforming parser. Front matter is human and external-tooling metadata. |
+| REC-006 | YAML front matter, if present, MAY be interpreted, but only as a lower-precedence source that can never override the markdown body, and only for the…. |
 | REC-007 | A parser MUST NOT require any section not named in §4. Unrecognized sections MUST be ignored without error. |
 | REC-008 | A markdown document is a record if and only if both of the following hold: — see the rule body for the enumeration. |
 | REC-009 | The record kind is determined by which level-1 form matched: — see the rule body for the enumeration. |
@@ -2057,7 +2090,9 @@ Every normative rule, with its one-line statement.
 | REC-145 | A parser MUST accept the following alternative spellings as the sections named, and MUST treat them as carrying the same obligation: — see the rule body for the enumeration. |
 | REC-146 | A section heading MAY carry a trailing HTML comment, and a parser MUST ignore it when matching the heading. |
 | REC-147 | Status MAY additionally be written as a list item, - Status: <value>, and a parser MUST read it where no inline Status: field is present. |
-| REC-148 | A record whose title is a placeholder MUST NOT be treated as a record. |
+| REC-148 | A record whose title is a placeholder MUST NOT be treated as a record. A title is a placeholder when any of the following hold: — see the rule body for the enumeration. |
+| REC-149 | The only front-matter key a parser MAY interpret is title, and it MUST be used only where the document has no level-1 heading at all. |
+| REC-150 | status MUST NOT be read from front matter, even where the body states no status. |
 
 #### Provenance
 

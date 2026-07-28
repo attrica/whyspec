@@ -10863,6 +10863,78 @@
    "spec_rule_ids": [
     "REC-148"
    ]
+  },
+  {
+   "id": "spec-REC-149-valid-front-matter-title-when-no-h1",
+   "family": "REC",
+   "rule_statement": "Front-matter title is used only where the document has no level-1 heading.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-149-valid-front-matter-title-when-no-h1.md",
+   "notes": "A real shape: a 2,421-contributor project keeps its ADRs with no H1 at all, the title living solely in front matter. Twelve genuine records were unreadable while front matter was uninterpretable.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "adr",
+    "title": "ADR004: Module Export Structure",
+    "status": null,
+    "alternatives": 0,
+    "recommendation": null,
+    "supersedes": [],
+    "assumptions": 0
+   },
+   "spec_rule_ids": [
+    "REC-006",
+    "REC-149"
+   ]
+  },
+  {
+   "id": "spec-REC-149-invalid-front-matter-title-must-not-beat-h1",
+   "family": "REC",
+   "rule_statement": "Front-matter title is used only where the document has no level-1 heading.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-149-invalid-front-matter-title-must-not-beat-h1.md",
+   "notes": "Front matter names the OPPOSITE decision to the H1. The body wins. An implementation preferring front matter reports the rejected option as the record's title.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "decision",
+    "title": "Keep the write-ahead log on local disk",
+    "status": null,
+    "alternatives": 0,
+    "recommendation": null,
+    "supersedes": [],
+    "assumptions": 0,
+    "title_must_not_equal": "Move the log to network storage"
+   },
+   "spec_rule_ids": [
+    "REC-149"
+   ]
+  },
+  {
+   "id": "spec-REC-150-invalid-front-matter-status-must-not-be-read",
+   "family": "REC",
+   "rule_statement": "Status MUST NOT be read from front matter, even where the body states none.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-150-invalid-front-matter-status-must-not-be-read.md",
+   "notes": "The body states no status, so a parser reading front matter as a fallback would take 'rejected' and exclude the record from ingest entirely. The asymmetry with the title key is deliberate: a wrong title is visible and harmless, a wrong status is invisible and deletes.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "adr",
+    "title": "ADR009: Retain audit logs for twelve months",
+    "status": null,
+    "alternatives": 0,
+    "recommendation": null,
+    "supersedes": [],
+    "assumptions": 0,
+    "status_must_not_equal": "rejected"
+   },
+   "spec_rule_ids": [
+    "REC-150"
+   ]
   }
  ]
 }

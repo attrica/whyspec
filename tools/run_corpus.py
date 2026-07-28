@@ -35,18 +35,18 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 209,
-    "fixture_paths": 348,
-    "manifest_entries": 375,
-    "mapped_rule_ids": 190,
+    "rules": 211,
+    "fixture_paths": 351,
+    "manifest_entries": 378,
+    "mapped_rule_ids": 192,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 281,
+    "computed": 284,
     "drift_checked": 94,
 }
 EXPECTED_MUST_NOT_EQUAL = {
-    "fixtures": 75,
-    "assertions": 90,
+    "fixtures": 77,
+    "assertions": 92,
 }
 
 # REC-145. Same obligation, different spelling -- measured against 84 real ADRs from the three
@@ -67,6 +67,11 @@ TEMPLATE_TOKENS = {
     "NUMBER", "TITLE", "DATE", "STATUS", "CONTEXT", "DECISION", "CONSEQUENCES",
     "SHORT", "PROBLEM", "SOLUTION", "TEMPLATE", "OPTION", "DRIVER",
 }
+
+# Shape placeholders stand for a value's FORM rather than naming a field: "ADR-NNN: Title",
+# "YYYY-MM-DD". They do not occur in real titles, so a single one is decisive where the
+# vocabulary check needs every word to match.
+SHAPE_PLACEHOLDERS = {"NNN", "NNNN", "NN", "XXX", "XXXX", "YYYY", "MM", "DD", "YYYY-MM-DD"}
 
 COMPUTED = "computed"
 DRIFT_CHECKED = "drift_checked"
@@ -650,10 +655,23 @@ def parse_record(data: bytes) -> dict[str, Any]:
         return {"parses": False, "is_valid_utf8": False}
     if text.startswith("\ufeff"):
         text = text[1:]
+    front = ""
     if text.startswith("---\n"):
         end = text.find("\n---", 4)
         if end >= 0:
+            front = text[4:end]
             text = text[end + 4:].lstrip("\n")
+    # REC-006 revised. Front matter is interpreted, but only as a LOWER-PRECEDENCE source that can
+    # never override the body, and only for `title`. A real project (2,421 authors) keeps ADRs whose
+    # only title is in front matter, so refusing to read it made 12 genuine records unreadable.
+    #
+    # `status` stays body-only, deliberately. A status decides whether a record is ingested at all,
+    # so external tooling writing `status:` for its own purposes could silently delete records from
+    # the graph. No repository measured needs front-matter status; twelve need front-matter title.
+    front_title = None
+    fm = re.search(r"^title:\s*(.+?)\s*$", front, re.M)
+    if fm:
+        front_title = fm.group(1).strip().strip("'\"")
     decision = re.search(r"^## (?:Decision|Decision Outcome)\s*(?:<!--.*?-->)?\s*$",
                          text, re.I | re.M)
     if not decision:
@@ -685,6 +703,8 @@ def parse_record(data: bytes) -> dict[str, Any]:
         if bare is None:
             bare = candidate            # remember the first, keep scanning for a declared form
     sig = False
+    if not (adr or dec or num) and bare is None and front_title:
+        bare = front_title            # no H1 at all: front matter supplies the title
     if not (adr or dec or num):
         def has(*names):
             return all(
@@ -697,7 +717,10 @@ def parse_record(data: bytes) -> dict[str, Any]:
         # gate above already ran, and no document but an ADR pairs that heading with a decision.
         # Measured: a real MADR record spells its outcome "## Decision" rather than
         # "## Decision Outcome", and requiring the pair rejected it.
-        sig = has("Status", "Context", "Consequences") or has("Context and Problem Statement")
+        # Status is NOT part of the signature: a real ADR corpus omits it entirely, keeping status
+        # in front matter or nowhere. Context with Consequences, on top of the Decision gate, is
+        # already a shape notes do not have -- the meeting-notes fixture carries neither.
+        sig = has("Context", "Consequences") or has("Context and Problem Statement")
         if not (bare and sig):
             return {"parses": False, "is_valid_utf8": True}
     if adr:
@@ -720,6 +743,15 @@ def parse_record(data: bytes) -> dict[str, Any]:
         return {"parses": False, "is_valid_utf8": True}
     if re.fullmatch(r"\[.*\]", title.strip()):
         return {"parses": False, "is_valid_utf8": True}
+    # A placeholder may also sit INSIDE an otherwise real-looking title: a template numbered in
+    # sequence with its siblings reads "ADR000: [TITLE]". Observed in a real repository, where the
+    # template parsed alongside the twelve genuine records it is the template for.
+    if any(w.upper() in SHAPE_PLACEHOLDERS for w in re.findall(r"[A-Za-z]+", title)):
+        return {"parses": False, "is_valid_utf8": True}
+    for seg in re.findall(r"\[([^\]]*)\]", title):
+        words = re.findall(r"[A-Za-z]+", seg)
+        if words and all(w.upper() in TEMPLATE_TOKENS and w.isupper() for w in words):
+            return {"parses": False, "is_valid_utf8": True}
 
     def section(name: str) -> str | None:
         # MADR spells three canonical sections differently. The alias table is normative
