@@ -36,12 +36,12 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
     "rules": 212,
-    "fixture_paths": 353,
-    "manifest_entries": 380,
+    "fixture_paths": 354,
+    "manifest_entries": 381,
     "mapped_rule_ids": 193,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 286,
+    "computed": 287,
     "drift_checked": 94,
 }
 EXPECTED_MUST_NOT_EQUAL = {

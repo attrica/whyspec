@@ -252,11 +252,24 @@ stop, whitespace, then a non-empty title. It denotes an `adr` record with `autho
 **[REC-143]** A level-1 heading of any other shape **MUST** be accepted as a record heading **if
 and only if** the document carries an **ADR section signature**, which is either:
 
-- all three of `## Status`, `## Context` and `## Consequences` (the Nygard shape), **or**
+- both `## Context` and `## Consequences` (the Nygard shape), **or**
 - `## Context and Problem Statement` (the MADR shape).
 
 The MADR heading stands alone because the `Decision` gate of [REC-008] has already been satisfied,
 and no document but an ADR pairs that heading with a decision.
+
+`## Status` is **not** part of the signature, and requiring it would be a defect rather than a
+tightening: a real ADR corpus omits `Status` entirely, keeping it in front matter or nowhere.
+`Context` with `Consequences`, on top of the `Decision` gate, is already a shape notes do not
+have — the meeting-notes counter-example for [REC-001] carries neither.
+
+> This paragraph exists because the rule said *all three* for a day while every implementation
+> required *two*. What let the contradiction sit there is worth recording: **none of [REC-143]'s
+> own fixtures discriminated** — every one of them carried `Status`, so they passed under either
+> reading. The behaviour was in fact pinned, but only incidentally, by fixtures written for
+> [REC-149] and [REC-150] whose bodies happen to omit `Status`. A rule whose own counter-examples
+> cannot tell it apart from a stricter rule is not tested by them, however green the corpus looks.
+> The discriminating case is now a fixture of [REC-143] itself.
 
 **[REC-144]** The signature **MUST NOT** be weakened to a subset. A document carrying only
 `## Decision` alongside an arbitrary heading **MUST NOT** be treated as a record: that shape is

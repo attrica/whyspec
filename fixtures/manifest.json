@@ -10689,7 +10689,7 @@
   {
    "id": "spec-REC-143-valid-bare-title-with-section-signature",
    "family": "REC",
-   "rule_statement": "A bare H1 is a record heading if and only if Status, Context and Consequences are all present.",
+   "rule_statement": "A bare H1 is a record heading if and only if the ADR section signature is present: Context with Consequences, or Context and Problem Statement. Status is NOT part of it.",
    "valid": true,
    "kind": "record",
    "path": "records/spec-REC-143-valid-bare-title-with-section-signature.md",
@@ -10712,7 +10712,7 @@
   {
    "id": "spec-REC-143-invalid-bare-title-without-signature",
    "family": "REC",
-   "rule_statement": "A bare H1 is a record heading if and only if Status, Context and Consequences are all present.",
+   "rule_statement": "A bare H1 is a record heading if and only if the ADR section signature is present: Context with Consequences, or Context and Problem Statement. Status is NOT part of it.",
    "valid": false,
    "kind": "record",
    "path": "records/spec-REC-143-invalid-bare-title-without-signature.md",
@@ -10720,6 +10720,29 @@
    "verdict_kind": "parse_rejects",
    "expect": {
     "parses": false
+   },
+   "spec_rule_ids": [
+    "REC-143"
+   ]
+  },
+  {
+   "id": "spec-REC-143-valid-signature-without-status",
+   "family": "REC",
+   "rule_statement": "A bare H1 is a record heading if and only if the ADR section signature is present: Context with Consequences, or Context and Problem Statement. Status is NOT part of it.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-143-valid-signature-without-status.md",
+   "notes": "The discriminating case for the Nygard half of the signature: Context and Consequences with NO Status. Every other REC-143 fixture carries Status, so none of them can tell the two-heading rule from a three-heading one -- which is how the rule TEXT came to say 'all three' while every implementation required two. The behaviour was pinned only incidentally, by REC-149 and REC-150 fixtures whose bodies omit Status. A real ADR corpus omits Status entirely.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "adr",
+    "title": "Adopt a single retry budget",
+    "status": null,
+    "alternatives": 0,
+    "recommendation": null,
+    "supersedes": [],
+    "assumptions": 0
    },
    "spec_rule_ids": [
     "REC-143"
