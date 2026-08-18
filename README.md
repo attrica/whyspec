@@ -14,6 +14,11 @@ This repository specifies three things, and nothing else:
 - **the result envelope** — the shape of an answer to a query
 - **the provenance vocabulary** — the tiers a claim can come from, and what each is worth
 
+It also carries the **capture-decision skill**
+([`skills/capture-decision/SKILL.md`](skills/capture-decision/SKILL.md)): the teachable form of
+the convention — where a record goes, the shape it takes, and the traps that silently un-record
+it. Every parser-behaviour claim in it is validated against the reference implementation.
+
 It also carries a machine-checkable `fixtures/` corpus: valid and invalid examples whose
 mapping to the normative rule inventory is reported in generated coverage, so a conforming
 implementation can be verified rather than asserted.
