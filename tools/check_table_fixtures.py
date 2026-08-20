@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 ROOT = Path(__file__).resolve().parent.parent
-SPEC = ROOT / "spec" / "whyfile-spec-draft.md"
+SPEC = ROOT / "spec" / "whyspec-draft.md"
 MANIFEST = ROOT / "fixtures" / "manifest.json"
 
 RULE_MARKER = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)

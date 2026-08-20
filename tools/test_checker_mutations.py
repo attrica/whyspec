@@ -41,7 +41,7 @@ def change_json(path: Path, edit: Callable[[dict], None]) -> None:
 
 
 def duplicate_rule(root: Path) -> None:
-    path = root / "spec" / "whyfile-spec-draft.md"
+    path = root / "spec" / "whyspec-draft.md"
     text = path.read_text()
     marker = "**[REC-001]**"
     insert = "\n\n**[REC-001]** Duplicate identifiers are forbidden.\n"
@@ -74,7 +74,7 @@ def delete_named_property(root: Path) -> None:
 
 
 def shift_yields_column(root: Path) -> None:
-    spec = root / "spec" / "whyfile-spec-draft.md"
+    spec = root / "spec" / "whyspec-draft.md"
     replace_once(
         spec,
         "| Heading | Required | Yields |\n"
@@ -118,7 +118,7 @@ def admit_foreign_variant(root: Path) -> None:
 
 
 def zero_row_extractor(root: Path) -> None:
-    path = root / "spec" / "whyfile-spec-draft.md"
+    path = root / "spec" / "whyspec-draft.md"
     replace_once(path, "| `command` | Status tokens |", "| Operation | Result vocabulary |")
 
 
@@ -177,7 +177,7 @@ def space_identity_join(root: Path) -> None:
 
 
 def alter_normative_table_cell(root: Path) -> None:
-    path = root / "spec" / "whyfile-spec-draft.md"
+    path = root / "spec" / "whyspec-draft.md"
     replace_once(
         path,
         "| `accepted` | resolved | yes | **adopted** | ground-truth intent | yes | **yes** |",
@@ -276,7 +276,7 @@ MUTANTS = (
 
 def main() -> int:
     survivors: list[str] = []
-    with tempfile.TemporaryDirectory(prefix="whyfile-spec-mutants-") as temp:
+    with tempfile.TemporaryDirectory(prefix="whyspec-mutants-") as temp:
         base = Path(temp)
         for number, mutant in enumerate(MUTANTS, 1):
             target = base / f"{number:02d}-{mutant.name}"

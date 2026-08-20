@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://whyfile.example/schema/parsed-record.schema.json",
-  "title": "Whyfile parsed record",
-  "description": "The object a conforming parser yields from ONE record. Derived from spec/whyfile-spec-draft.md; every property names the rule that mandates it. Where the specification is silent the property is either absent from this schema or explicitly flagged with x-gap -- nothing here is invented to fill a hole.",
+  "$id": "https://whyspec.example/schema/parsed-record.schema.json",
+  "title": "Whyspec parsed record",
+  "description": "The object a conforming parser yields from ONE record. Derived from spec/whyspec-draft.md; every property names the rule that mandates it. Where the specification is silent the property is either absent from this schema or explicitly flagged with x-gap -- nothing here is invented to fill a hole.",
   "$comment": "LAYERING. The specification does not cleanly separate 'the parsed record' from 'the intent node it becomes' (§2, gap G7): REC-107 speaks of both in one sentence, REC-045 places resolution_delta on the node, PROV-005/006 place provenance there, REC-112 derives currency corpus-wide. This schema carries all of them in one object and tags each with x-layer so an implementation that keeps two objects can split on that tag. NAME SPELLINGS. Several rules name a property in prose without fixing its JSON key. Where the prose fixes the spelling, x-name-source is 'rule'. Where only the conformance corpus fixes it, x-name-source is 'corpus' and the gap is listed in schema/PROPOSED-RULES.md.",
   "type": "object",
   "required": [

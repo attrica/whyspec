@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://whyfile.example/schema/transport-envelope.schema.json",
-  "title": "Whyfile result-envelope transport profile",
+  "$id": "https://whyspec.example/schema/transport-envelope.schema.json",
+  "title": "Whyspec result-envelope transport profile",
   "description": "[ENV-040] A transport credential is outside the core envelope and is validated as a separate profile. Validate the object with this schema and validate the projection without `graph_identity` against the core envelope schema.",
   "x-rule": [
     "ENV-040"

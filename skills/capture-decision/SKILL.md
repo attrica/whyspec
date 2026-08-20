@@ -3,13 +3,13 @@ name: capture-decision
 description: >
   Use when a decision has just been made or is being discussed — an approach
   chosen over alternatives, a constraint accepted, a thing deliberately not
-  done. Captures it as a Whyfile decision record: a small markdown file, in
+  done. Captures it as a why record: a small markdown file, in
   this repository, that says what was decided and why, in the shape the
-  Whyfile spec defines and WhyDB reads. Trigger whenever work settles a
+  Whyspec spec defines and Attrica reads. Trigger whenever work settles a
   question that someone could later reopen without knowing it was settled.
 ---
 
-# Capture a decision as a Whyfile
+# Capture a decision as a why record
 
 A codebase remembers what it does and forgets why. When a decision lands —
 in a conversation, a review, a refactor — capture it before it evaporates.
@@ -106,7 +106,7 @@ The record above is the act. The convention is one line in this repository's
 agent instructions (`AGENTS.md`, `CLAUDE.md`, or whatever your client
 loads):
 
-> A decision worth keeping gets a Whyfile record in `docs/decisions/`, in
+> A decision worth keeping gets a why record in `docs/decisions/`, in
 > the shape the capture-decision skill teaches.
 
 Add that line once and every future session inherits the habit. A minimal

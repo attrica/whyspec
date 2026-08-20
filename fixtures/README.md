@@ -1,6 +1,6 @@
-# Whyfile conformance fixture corpus (B2)
+# Whyspec conformance fixture corpus (B2)
 
-This corpus exists so that an agent given **only** the Whyfile specification -- with no
+This corpus exists so that an agent given **only** the Whyspec specification -- with no
 access to the reference implementation -- can build a record parser and envelope validator
 and mechanically check it against the mapped normative rules. Every fixture was verified
 against the reference implementation (whyfile the reference implementation) before being written here; none of

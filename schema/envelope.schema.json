@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://whyfile.example/schema/envelope.schema.json",
-  "title": "Whyfile result envelope",
+  "$id": "https://whyspec.example/schema/envelope.schema.json",
+  "title": "Whyspec result envelope",
   "description": "[ENV-001] A query result MUST be a single JSON object -- not an array, not a stream of objects, not a bare value. [ENV-005] Modelled as a TAGGED UNION discriminated by `command` over a universal core of {command, status}, never as one struct with many optional fields. Key sets are taken from the §6.1 table and the ENV-0nn enumerations; every property names the rule that mandates it.",
   "$comment": "The core command variants are closed tagged-union members: each known command accepts only its own declared top-level keys. `command` itself has no enum because [VER-004] makes adding a command a vocabulary extension and [ENV-008] requires consumers to fail safely on an unknown tag. Transport metadata is outside this core schema and is specified by the separate transport profile. Nested result entries remain open where their governing rule does not state an exact key set.",
   "type": "object",

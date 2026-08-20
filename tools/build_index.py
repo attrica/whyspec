@@ -15,7 +15,7 @@ import re
 import sys
 from pathlib import Path
 
-SPEC = Path(__file__).resolve().parent.parent / "spec" / "whyfile-spec-draft.md"
+SPEC = Path(__file__).resolve().parent.parent / "spec" / "whyspec-draft.md"
 FAMILIES = ("REC", "PROV", "ENV", "VER")
 
 # 9 excludes three classes from the conformance obligation and states that they are
