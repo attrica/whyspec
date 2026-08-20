@@ -1,6 +1,6 @@
 # Contributing
 
-This repository holds the Whyfile specification and its conformance fixtures. It does not
+This repository holds the Whyspec specification and its conformance fixtures. It does not
 hold the implementation.
 
 ## Developer Certificate of Origin
@@ -15,6 +15,19 @@ This appends a `Signed-off-by:` line certifying that you wrote the contribution 
 otherwise have the right to submit it under the repository's license. The full text is the
 [Developer Certificate of Origin 1.1](https://developercertificate.org/). Commits without a
 sign-off cannot be merged.
+
+## Before opening a PR
+
+CI (`.github/workflows/conformance.yml`) runs five checks; run them locally first so a failure
+isn't a surprise:
+
+```bash
+python3 tools/check_schema.py
+python3 tools/check_table_fixtures.py
+python3 tools/build_index.py --check
+python3 tools/run_corpus.py --check
+python3 tools/test_checker_mutations.py
+```
 
 ## What a good change looks like
 

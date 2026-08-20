@@ -1,4 +1,4 @@
-# The Whyfile Format Specification
+# The Whyspec Specification
 
 **Version:** 0.1 — working draft; pre-publication baseline, not a record-format marker
 **Status:** Draft. Not frozen. Not a standard. Rule ids are stable within this draft and are
@@ -10,18 +10,18 @@ referenced by the conformance corpus; rule *text* may still change.
 
 ### 1.1 What this document is
 
-This is the normative description of the **Whyfile format**: a plain-markdown record of a
+This is the normative description of the **why record format**: a plain-markdown record of a
 decision — what was chosen, what else was on the table, and why — that lives in the repository
 whose code the decision governs.
 
 The format exists because the reasoning behind code is the part that does not survive. Diffs
-survive, tests survive, the argument that produced them does not. A Whyfile makes that argument a
-file: greppable, reviewable, diffable, and mechanically ingestible into a queryable decision
-layer.
+survive, tests survive, the argument that produced them does not. A why record makes that
+argument a file: greppable, reviewable, diffable, and mechanically ingestible into a queryable
+decision layer.
 
 This document specifies three things and only three:
 
-1. **The record format** — how a Whyfile is written and how a conforming parser reads it.
+1. **The record format** — how a why record is written and how a conforming parser reads it.
 2. **The result envelope** — the shape of a JSON answer returned by a query over records.
 3. **The provenance vocabulary** — the trust tiers a piece of recorded intent can carry, and their
    ordering.
@@ -80,15 +80,16 @@ implementations should be free to differ.
 
 ## 2. Terminology
 
-**Whyfile** (capitalized, one word) — a decision record in this format. Capitalized like
-`Makefile` or `Dockerfile`. Plural **Whyfiles**. Conventionally stored under `docs/decisions/`.
+**why record** — a decision record in this format. Lowercase and generic, like "an OpenAPI
+document" — not a proper noun. Conventionally stored under `docs/decisions/`.
 
-**whyfile** (lowercase) — the command and package name. When this document says "whyfile", it
-means the tool; when it says "a Whyfile", it means a record.
+**`why`** — the command and package name, always lowercase and set in monospace.
 
-**WhyDB** — the brand. *Why this, not that.*
+**Whyspec** — the name of this specification.
 
-**Record** — a Whyfile. Used interchangeably.
+**Attrica** — the hosted product built on this specification. *Why this, not that.*
+
+**Record** — a why record. Used interchangeably.
 
 **Record kind** — one of the two forms a record may take: an **ADR record** or a **decision
 record** (§4.1).
@@ -116,11 +117,15 @@ migration in every adopting repository.
 
 Documents predating the 0.8 line use "Whyfile" to name a **configuration artifact** — a
 repository's checked-in tool contract — rather than a decision record. That artifact was renamed
-to `whyfile.config.json`, and the bare capitalized name it briefly held was retired.
+to `why.config.toml`, and the bare capitalized name it briefly held was retired.
 
-The term was therefore **re-purposed, not continuous**. "Whyfile" in this specification always
-means a decision record. A reader encountering the older sense in an archived document is looking
-at a different thing that happened to share a name.
+"Whyfile" was then re-purposed to name the decision record itself, capitalized in the style of
+`Makefile` or `Dockerfile`, and this specification carried that name and that convention through
+its early drafts. The term has since been retired a second time: this document and its project
+are now named **Whyspec**, and an individual record is a **why record** — lowercase, generic, not
+a proper noun. "Whyfile" survives only as the literal reserved root filename in [REC-001] above,
+and in archived documents using one of the two earlier senses. A reader encountering it elsewhere
+is looking at a different thing that happened to share a name.
 
 ---
 
@@ -1974,7 +1979,7 @@ omitting the rule is not. An action prohibition in particular stays a **MUST NOT
 unfixturable is not grounds for weakening it, and the rule against renaming exists to prevent an
 identity-forking defect that no amount of output checking would catch.
 
-Conformance is demonstrated against the **Whyfile conformance corpus** — a set of fixture records
+Conformance is demonstrated against the **Whyspec conformance corpus** — a set of fixture records
 and expected parse results, each keyed to the rule ids in this document. The corpus is the
 executable form of this specification: where the prose and a fixture disagree, that disagreement is
 a defect in one of them and **MUST** be resolved rather than papered over.

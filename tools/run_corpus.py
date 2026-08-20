@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FIXTURES = ROOT / "fixtures"
 MANIFEST = FIXTURES / "manifest.json"
 COVERAGE = FIXTURES / "coverage.md"
-SPEC = ROOT / "spec" / "whyfile-spec-draft.md"
+SPEC = ROOT / "spec" / "whyspec-draft.md"
 TRANSPORT_PROFILE = ROOT / "profiles" / "transport.md"
 SPEC_FILES = (SPEC, TRANSPORT_PROFILE)
 ENVELOPE_SCHEMA = ROOT / "schema" / "envelope.schema.json"
@@ -688,7 +688,7 @@ def parse_record(data: bytes) -> dict[str, Any]:
     # So a record is recognised when the H1 declares one:
     #   ADR-N<sep> Title   explicit ADR reference            -> adr,      authored
     #   N. Title           Nygard numbering (adr-tools)      -> adr,      authored
-    #   Decision: Title    what `whyfile capture` emits      -> decision, captured
+    #   Decision: Title    what `why capture` emits          -> decision, captured
     # or, for a bare title, when the document carries the ADR SECTION SIGNATURE — Status, Context
     # and Consequences together. That signature is what separates a hand-written ADR from notes
     # that happen to contain a Decision heading.

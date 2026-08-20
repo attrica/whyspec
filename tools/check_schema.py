@@ -40,7 +40,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SPEC = ROOT / "spec" / "whyfile-spec-draft.md"
+SPEC = ROOT / "spec" / "whyspec-draft.md"
 TRANSPORT_SPEC = ROOT / "profiles" / "transport.md"
 ENVELOPE = ROOT / "schema" / "envelope.schema.json"
 TRANSPORT = ROOT / "schema" / "transport-envelope.schema.json"
