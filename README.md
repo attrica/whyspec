@@ -108,9 +108,9 @@ stable. Nothing here should be treated as frozen until a version is tagged.
 ## License
 
 Specification text and fixtures are licensed under Apache-2.0 — see [LICENSE](LICENSE) and
-[NOTICE](NOTICE). The **name** "WhyDB", the name "whyfile", and the phrase
-"whyfile-compatible" are trademarks of Four Birds Limited and are not licensed by
-Apache-2.0; see [TRADEMARKS.md](TRADEMARKS.md).
+[NOTICE](NOTICE). The names "Attrica" and "Whyspec", the historical names "WhyDB" and
+"whyfile", and the compatibility phrases built on them are trademarks of Four Birds Limited and
+are not licensed by Apache-2.0; see [TRADEMARKS.md](TRADEMARKS.md).
 
 Contributions require a Developer Certificate of Origin sign-off — see
 [CONTRIBUTING.md](CONTRIBUTING.md).
