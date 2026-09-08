@@ -4,7 +4,7 @@
   "files": [
     "2026-04-02-should-reads-hit-a-replica.md",
     "2026-04-05-when-should-the-export-run.md",
-    "Whyfile",
+    "DECISIONS",
     "notes.txt",
     ".2026-04-06-hidden-draft.md"
   ],
@@ -18,5 +18,5 @@
     "Keep the nightly export window"
   ],
   "expected_ingest_errors": 0,
-  "note": "Three of the five entries hold a syntactically perfect decision record and none of the three is a candidate: `Whyfile` is the reserved bare root name (REC-001), `notes.txt` does not end in `.md`, and the dotted file begins with `.`. An implementation that feeds every file to the parser produces 5 nodes where 2 are correct."
+  "note": "Three of the five entries hold a syntactically perfect decision record and none of the three is a candidate: `DECISIONS` has no `.md` extension, `notes.txt` does not end in `.md`, and the dotted file begins with `.`. An implementation that feeds every file to the parser produces 5 nodes where 2 are correct."
 }

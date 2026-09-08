@@ -105,32 +105,6 @@ decision layer. The format specifies the parse; the node is what a query answers
 **Envelope** — the recall envelope (§6), the text that delivers governing decisions to a writer; the
 reserved command envelopes are described in Appendix A.
 
-### 2.1 The bare root filename `Whyfile` is reserved
-
-**[REC-001]** The bare, extensionless filename `Whyfile` at a repository root is **RESERVED** by
-this specification and is **explicitly unclaimed**. An implementation **MUST NOT** assign it a
-meaning, and a repository **SHOULD NOT** create a file with that name expecting any implementation
-to read it.
-
-The reservation is forward-looking. A future index, manifest, or repository-level contract may
-want the classic `Makefile` position at the root, and that position is only available if nothing
-has quietly taken it first. Reserving it costs one sentence now; retrofitting it later costs a
-migration in every adopting repository.
-
-### 2.2 Historical note: the term was re-purposed
-
-Documents predating the 0.8 line use "Whyfile" to name a **configuration artifact** — a
-repository's checked-in tool contract — rather than a decision record. That artifact was renamed
-to `why.config.toml`, and the bare capitalized name it briefly held was retired.
-
-"Whyfile" was then re-purposed to name the decision record itself, capitalized in the style of
-`Makefile` or `Dockerfile`, and this specification carried that name and that convention through
-its early drafts. The term has since been retired a second time: this document and its project
-are now named **Whyspec**, and an individual record is a **why record** — lowercase, generic, not
-a proper noun. "Whyfile" survives only as the literal reserved root filename in [REC-001] above,
-and in archived documents using one of the two earlier senses. A reader encountering it elsewhere
-is looking at a different thing that happened to share a name.
-
 ---
 
 ## 3. Document model
@@ -282,7 +256,7 @@ and no document but an ADR pairs that heading with a decision.
 `## Status` is **not** part of the signature, and requiring it would be a defect rather than a
 tightening: a real ADR corpus omits `Status` entirely, keeping it in front matter or nowhere.
 `Context` with `Consequences`, on top of the `Decision` gate, is already a shape notes do not
-have — the meeting-notes counter-example for [REC-001] carries neither.
+have — the meeting-notes counter-example carries neither.
 
 **[REC-144]** The signature **MUST NOT** be weakened to a subset. A document carrying only
 `## Decision` alongside an arbitrary heading **MUST NOT** be treated as a record: that shape is
@@ -896,16 +870,15 @@ directory it is pointed at, and **MUST NOT** infer a record's kind from its dire
 from the H1 ([REC-009]) and nothing else.
 
 **[REC-131]** A directory ingest **MUST** consider exactly those entries in the directory whose name
-ends in `.md` and does not begin with `.`. Every other entry — including the reserved bare `Whyfile`
-([REC-001]) — is **not a candidate** and contributes nothing. An implementation **MAY** descend into
+ends in `.md` and does not begin with `.`. Every other entry is **not a candidate** and contributes nothing. An implementation **MAY** descend into
 subdirectories, and where it does it **MUST** apply this same rule at every level. A candidate that
 fails [REC-008] is ignored without error ([REC-007]).
 
-> The consequence of an unbounded candidate set is testable rather than theoretical: an extensionless `Whyfile` whose body is a syntactically valid decision record parses
-> as one, so an implementation that feeds every file to the parser produces two nodes where one is
-> correct — and [REC-001] requires that file to mean nothing.
+> The consequence of an unbounded candidate set is testable rather than theoretical: an extensionless
+> file whose body is a syntactically valid decision record parses as one, so an implementation that
+> feeds every file to the parser produces a node from a file nobody wrote as a record.
 >
-> The `.md` filter is what makes [REC-001]'s reservation self-enforcing rather than a special case an
+> The `.md` filter is what keeps the candidate set a property of the directory rather than a special case an
 > implementer has to remember. Recursion is left a MAY because [REC-057] already forbids inferring
 > anything from a record's location, so depth cannot change a parse.
 
@@ -1876,7 +1849,6 @@ Every normative rule, with its one-line statement.
 
 | Id | Statement |
 |---|---|
-| REC-001 | The bare, extensionless filename Whyfile at a repository root is RESERVED by this specification and is explicitly unclaimed. |
 | REC-002 | A record MUST be a UTF-8 encoded markdown document. |
 | REC-003 | A parser MUST tolerate a leading UTF-8 byte-order mark (U+FEFF) and MUST NOT let its presence change the parse. |
 | REC-004 | A parser MUST treat a line matching ^(#{1,6})\s+(.+)$ as a heading, where the count of # characters is the heading level and the remainder, trimmed…. |

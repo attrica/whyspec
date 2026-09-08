@@ -5285,46 +5285,6 @@
    ]
   },
   {
-   "id": "spec-REC-001-valid-reserved-name-unread",
-   "family": "REC",
-   "rule_statement": "The bare root filename `Whyfile` is RESERVED and explicitly unclaimed; implementations MUST NOT assign it a meaning.",
-   "valid": true,
-   "kind": "record_dir",
-   "path": "dirs/spec-REC-001-reserved-whyfile-name/",
-   "notes": "See expected.json. Exactly 1 decision node -- the reserved `Whyfile` contributes nothing.",
-   "verdict_kind": "field_expectation",
-   "expect": {
-    "decision_node_count": 1,
-    "decision_titles": [
-     "Use a shared cache layer"
-    ]
-   },
-   "spec_rule_ids": [
-    "REC-001"
-   ]
-  },
-  {
-   "id": "spec-REC-001-invalid-reserved-name-must-not-be-read",
-   "family": "REC",
-   "rule_statement": "The bare root filename `Whyfile` is RESERVED and explicitly unclaimed; implementations MUST NOT assign it a meaning.",
-   "valid": false,
-   "kind": "record_dir",
-   "path": "dirs/spec-REC-001-reserved-whyfile-name/",
-   "notes": "See expected.json. An implementation that assigns the reserved bare root filename a meaning returns 2 decision nodes. That output MUST be rejected: the name is reserved so a future repository-level contract can take the classic root position, and it is only available if nothing has quietly claimed it first.",
-   "verdict_kind": "field_expectation",
-   "expect": {
-    "decision_node_count": 1,
-    "decision_titles": [
-     "Use a shared cache layer"
-    ]
-   },
-   "spec_rule_ids": [
-    "REC-001"
-   ],
-   "superseded_by": "spec-REC-001-valid-reserved-name-unread",
-   "redundant": "same path and same expect as the keeper; retained only so the id does not dangle. Re-point at a distinct input or remove once no report references it."
-  },
-  {
    "id": "spec-REC-033-valid-non-rejected-statuses-all-ingested",
    "family": "REC",
    "rule_statement": "No status value other than `rejected` is normative; implementations MUST NOT attach behaviour to any other value.",
@@ -9868,10 +9828,9 @@
    "id": "spec-REC-131-valid-candidate-set-is-md-and-not-dotted",
    "rule_id": "REC-131",
    "family": "REC",
-   "rule_statement": "A directory ingest MUST consider exactly those entries in the directory whose name ends in .md and does not begin with . ; every other entry, including the reserved bare `Whyfile`, is not a candidate and contributes nothing.",
+   "rule_statement": "A directory ingest MUST consider exactly those entries in the directory whose name ends in .md and does not begin with . ; every other entry, including the extensionless `DECISIONS` file, is not a candidate and contributes nothing.",
    "spec_rule_ids": [
-    "REC-131",
-    "REC-001"
+    "REC-131"
    ],
    "valid": true,
    "kind": "record_dir",
@@ -9899,7 +9858,7 @@
    "id": "spec-REC-131-invalid-gate-failure-raised-as-an-error",
    "rule_id": "REC-131",
    "family": "REC",
-   "rule_statement": "A directory ingest MUST consider exactly those entries in the directory whose name ends in .md and does not begin with . ; every other entry, including the reserved bare `Whyfile`, is not a candidate and contributes nothing.",
+   "rule_statement": "A directory ingest MUST consider exactly those entries in the directory whose name ends in .md and does not begin with . ; every other entry, including the extensionless `DECISIONS` file, is not a candidate and contributes nothing.",
    "spec_rule_ids": [
     "REC-131",
     "REC-007",
