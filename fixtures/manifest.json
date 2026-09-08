@@ -5,7 +5,8 @@
   "FIL": "Record filename scheme -- how a captured record's filename is chosen and matched over time. Renamed from VER after the two families collided; VER now means SPECIFICATION versioning and nothing else. In the normative spec these rules live under REC-056..REC-070.",
   "PROV": "Provenance -- the trust-tier vocabulary and how it ranks/aggregates.",
   "ENV": "Result envelope -- the per-command JSON shape returned by the CLI.",
-  "VER": "Specification versioning -- when a change to the format requires a version marker and a migration note, and what absence is allowed to mean afterwards."
+  "VER": "Specification versioning -- when a change to the format requires a version marker and a migration note, and what absence is allowed to mean afterwards.",
+  "INT": "Intent-layer profile -- the intention record, attestation record and recall line a harness exchanges with an implementation; optional, claimed separately from the core."
  },
  "rules": [
   {
@@ -11634,6 +11635,344 @@
    "spec_rule_ids": [
     "VER-011",
     "REC-129"
+   ]
+  },
+  {
+   "id": "spec-INT-002-valid-intention-agent-declared",
+   "family": "INT",
+   "rule_id": "INT-002",
+   "rule_statement": "An intention record carries declared_at, tree_sha, scope, goal, approach, matched, matched_total, session and origin.",
+   "valid": true,
+   "kind": "intent_object",
+   "path": "intent/intention-agent-declared.json",
+   "notes": "A complete agent-declared intention: scope in the \u00a74.15 grammar, resolved counts recorded, goal and approach supplied.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "object": "intention",
+    "conformant": true,
+    "required_keys": [
+     "declared_at",
+     "tree_sha",
+     "scope",
+     "goal",
+     "approach",
+     "matched",
+     "matched_total",
+     "session",
+     "origin"
+    ]
+   },
+   "spec_rule_ids": [
+    "INT-002",
+    "INT-004"
+   ]
+  },
+  {
+   "id": "spec-INT-003-valid-harness-derived-capped",
+   "family": "INT",
+   "rule_id": "INT-003",
+   "rule_statement": "origin is present and exactly agent or harness-reads; a harness-derived record carries scope_capped as a boolean, true when the cap was applied.",
+   "valid": true,
+   "kind": "intent_object",
+   "path": "intent/intention-harness-derived-capped.json",
+   "notes": "A harness-derived intention whose scope was capped to the edited directory: origin harness-reads, scope_capped true (the key is present on every harness-derived record), goal and approach null until the writer supplies them (INT-004).",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "object": "intention",
+    "conformant": true,
+    "constraints": [
+     {
+      "path": "origin",
+      "op": "eq",
+      "value": "harness-reads"
+     },
+     {
+      "path": "scope_capped",
+      "op": "eq",
+      "value": true
+     }
+    ]
+   },
+   "spec_rule_ids": [
+    "INT-003",
+    "INT-004"
+   ]
+  },
+  {
+   "id": "spec-INT-003-invalid-origin-missing",
+   "family": "INT",
+   "rule_id": "INT-003",
+   "rule_statement": "origin is present and exactly agent or harness-reads; a harness-derived record carries scope_capped as a boolean, true when the cap was applied.",
+   "valid": false,
+   "kind": "intent_object",
+   "path": "intent/intention-missing-origin.json",
+   "notes": "No origin. Absence would leave a reader unable to tell a declared scope from an observed one, so the key is required on every record.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "object": "intention",
+    "conformant": false,
+    "violates": [
+     "INT-003"
+    ],
+    "failing_condition": {
+     "path": "origin",
+     "op": "absent"
+    }
+   },
+   "spec_rule_ids": [
+    "INT-003"
+   ]
+  },
+  {
+   "id": "spec-INT-005-invalid-writer-supplies-binding-status",
+   "family": "INT",
+   "rule_id": "INT-005",
+   "rule_statement": "Binding status and binding versions are layer-owned; a writer never supplies them.",
+   "valid": false,
+   "kind": "intent_object",
+   "path": "intent/intention-writer-sets-binding-status.json",
+   "notes": "The writer asserts binding_status: checked. Layer-owned fields never come from the writer; a store MUST refuse this.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "object": "intention",
+    "conformant": false,
+    "violates": [
+     "INT-005"
+    ],
+    "failing_condition": {
+     "path": "binding_status",
+     "op": "present"
+    }
+   },
+   "spec_rule_ids": [
+    "INT-005"
+   ]
+  },
+  {
+   "id": "spec-INT-007-valid-supersession-enters-proposed",
+   "family": "INT",
+   "rule_id": "INT-007",
+   "rule_statement": "Every superseded entry in an attestation carries state proposed when written; the layer, never the writer, moves it.",
+   "valid": true,
+   "kind": "intent_object",
+   "path": "intent/attestation-proposed-supersession.json",
+   "notes": "A complete attestation answering an intention: one record conformed, one superseded at state proposed with a reason, one ungoverned glob.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "object": "attestation",
+    "conformant": true,
+    "required_keys": [
+     "attested_at",
+     "tree_sha",
+     "edited_files",
+     "intention",
+     "conformed",
+     "superseded",
+     "none",
+     "session"
+    ],
+    "constraints": [
+     {
+      "path": "superseded[*].state",
+      "op": "eq",
+      "value": "proposed"
+     }
+    ]
+   },
+   "spec_rule_ids": [
+    "INT-006",
+    "INT-007",
+    "INT-008"
+   ]
+  },
+  {
+   "id": "spec-INT-007-invalid-supersession-written-as-accepted",
+   "family": "INT",
+   "rule_id": "INT-007",
+   "rule_statement": "Every superseded entry in an attestation carries state proposed when written; the layer, never the writer, moves it.",
+   "valid": false,
+   "kind": "intent_object",
+   "path": "intent/attestation-supersession-accepted.json",
+   "notes": "The writer writes state accepted. That is the writer granting itself the authority to retire a binding; the schema and the store both refuse it.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "object": "attestation",
+    "conformant": false,
+    "violates": [
+     "INT-007"
+    ],
+    "failing_condition": {
+     "path": "superseded[*].state",
+     "op": "eq",
+     "value": "accepted"
+    }
+   },
+   "spec_rule_ids": [
+    "INT-007"
+   ]
+  },
+  {
+   "id": "spec-INT-010-valid-recall-edit-pushed",
+   "family": "INT",
+   "rule_id": "INT-010",
+   "rule_statement": "A recall line carries at, session, tool_use_id, path, records, push_outcome, tree_sha, injected_chars and coupling, and reason exactly when push_outcome is resolution_failed.",
+   "valid": true,
+   "kind": "intent_object",
+   "path": "intent/recall-edit-pushed.json",
+   "notes": "A first-edit push that delivered one record: pushed, records non-empty, coupling edit, no reason.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "object": "recall",
+    "conformant": true,
+    "required_keys": [
+     "at",
+     "session",
+     "tool_use_id",
+     "path",
+     "records",
+     "push_outcome",
+     "tree_sha",
+     "injected_chars",
+     "coupling"
+    ],
+    "forbidden_keys": [
+     "reason"
+    ]
+   },
+   "spec_rule_ids": [
+    "INT-010",
+    "INT-011",
+    "INT-012"
+   ]
+  },
+  {
+   "id": "spec-INT-011-valid-none-governs-is-logged",
+   "family": "INT",
+   "rule_id": "INT-011",
+   "rule_statement": "push_outcome is pushed (records non-empty), none_governs, or resolution_failed; a per-edit resolution always produces a line, a plan-gate resolution one line per delivered record and none when nothing is delivered.",
+   "valid": true,
+   "kind": "intent_object",
+   "path": "intent/recall-intention-none-governs.json",
+   "notes": "A per-edit resolution that found nothing governing the path is still a line: none_governs with empty records. Here the same outcome shape is shown with coupling intention and a null tool_use_id, the form a plan-gate line takes; a plan gate that delivers nothing logs no line at all (INT-011).",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "object": "recall",
+    "conformant": true,
+    "constraints": [
+     {
+      "path": "push_outcome",
+      "op": "eq",
+      "value": "none_governs"
+     },
+     {
+      "path": "coupling",
+      "op": "eq",
+      "value": "intention"
+     }
+    ]
+   },
+   "spec_rule_ids": [
+    "INT-011",
+    "INT-012"
+   ]
+  },
+  {
+   "id": "spec-INT-010-valid-failed-with-reason",
+   "family": "INT",
+   "rule_id": "INT-010",
+   "rule_statement": "A recall line carries at, session, tool_use_id, path, records, push_outcome, tree_sha, injected_chars and coupling, and reason exactly when push_outcome is resolution_failed.",
+   "valid": true,
+   "kind": "intent_object",
+   "path": "intent/recall-failed-with-reason.json",
+   "notes": "A resolution that could not run, with its reason. Distinct from none_governs: the layer degraded, nothing is known about the path.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "object": "recall",
+    "conformant": true,
+    "required_keys": [
+     "reason"
+    ]
+   },
+   "spec_rule_ids": [
+    "INT-010",
+    "INT-011"
+   ]
+  },
+  {
+   "id": "spec-INT-010-invalid-failed-without-reason",
+   "family": "INT",
+   "rule_id": "INT-010",
+   "rule_statement": "A recall line carries at, session, tool_use_id, path, records, push_outcome, tree_sha, injected_chars and coupling, and reason exactly when push_outcome is resolution_failed.",
+   "valid": false,
+   "kind": "intent_object",
+   "path": "intent/recall-failed-without-reason.json",
+   "notes": "resolution_failed with no reason. Honest silence needs the cause; a failure without one is indistinguishable from a bug in the logger.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "object": "recall",
+    "conformant": false,
+    "violates": [
+     "INT-010"
+    ],
+    "failing_condition": {
+     "path": "reason",
+     "op": "absent"
+    }
+   },
+   "spec_rule_ids": [
+    "INT-010"
+   ]
+  },
+  {
+   "id": "spec-INT-011-invalid-pushed-with-no-records",
+   "family": "INT",
+   "rule_id": "INT-011",
+   "rule_statement": "push_outcome is pushed (records non-empty), none_governs, or resolution_failed; a per-edit resolution always produces a line, a plan-gate resolution one line per delivered record and none when nothing is delivered.",
+   "valid": false,
+   "kind": "intent_object",
+   "path": "intent/recall-pushed-with-no-records.json",
+   "notes": "pushed with an empty records array. Either something was delivered, in which case name it, or nothing was, in which case the outcome is none_governs.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "object": "recall",
+    "conformant": false,
+    "violates": [
+     "INT-011"
+    ],
+    "failing_condition": {
+     "path": "records",
+     "op": "eq",
+     "value": []
+    }
+   },
+   "spec_rule_ids": [
+    "INT-011"
+   ]
+  },
+  {
+   "id": "spec-INT-012-invalid-unknown-coupling",
+   "family": "INT",
+   "rule_id": "INT-012",
+   "rule_statement": "coupling is present and exactly edit, intention, or the reserved spawn.",
+   "valid": false,
+   "kind": "intent_object",
+   "path": "intent/recall-unknown-coupling.json",
+   "notes": "coupling land. The set is closed; the land coupling point is not part of this version and an unknown value MUST be rejected rather than read as one of the three.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "object": "recall",
+    "conformant": false,
+    "violates": [
+     "INT-012"
+    ],
+    "failing_condition": {
+     "path": "coupling",
+     "op": "eq",
+     "value": "land"
+    }
+   },
+   "spec_rule_ids": [
+    "INT-012"
    ]
   }
  ]

@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SPEC = ROOT / "spec" / "whyspec-draft.md"
 MANIFEST = ROOT / "fixtures" / "manifest.json"
 
-RULE_MARKER = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
+RULE_MARKER = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER|INT)-\d{3})\]\*\*", re.M)
 SOLE_SOURCE = re.compile(
     r"(?:sole\b.{0,40}\bsource|this table governs)",
     re.I | re.S,

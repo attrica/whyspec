@@ -45,6 +45,10 @@ This repository specifies three things, and nothing else:
 - **the result envelope** — the shape of an answer to a query
 - **the provenance vocabulary** — the tiers a claim can come from, and what each is worth
 
+One optional profile sits beside them: the [intent-layer profile](profiles/intent-layer.md), the
+shapes of the intention record, attestation record and recall line a harness exchanges with an
+implementation while an agent works. Conformance to it is claimed separately.
+
 ## Whyspec and MADR
 
 Whyspec is a superset of [MADR](https://adr.github.io/madr/), not a rival to it: a record

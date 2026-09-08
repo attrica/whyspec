@@ -1,0 +1,43 @@
+{
+  "attested_at": "2026-09-08T09:41:00Z",
+  "tree_sha": "9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c",
+  "edited_files": [
+    "src/edge/handler.py",
+    "config/app.toml"
+  ],
+  "intention": {
+    "declared_at": "2026-09-08T09:12:00Z",
+    "tree_sha": "3f2a9c1d7e5b4a6f8c0d1e2f3a4b5c6d7e8f9a0b",
+    "scope": [
+      "src/edge/",
+      "config/*.toml"
+    ],
+    "goal": "Move request validation to the edge handler",
+    "approach": "Add the validator at the handler and delete per-service checks",
+    "matched": {
+      "src/edge/": 2,
+      "config/*.toml": 1
+    },
+    "matched_total": 3,
+    "session": "sess-0417",
+    "origin": "agent"
+  },
+  "conformed": [
+    {
+      "record": "docs/decisions/2026-05-02-validate-at-the-edge.md",
+      "blob": "5d41402abc4b2a76b9719d911017c592aa1b2c3d"
+    }
+  ],
+  "superseded": [
+    {
+      "record": "docs/decisions/2026-03-11-per-service-validation.md",
+      "blob": "7d793037a0760186574b0282f2f435e7a1b2c3d4",
+      "why": "Validation now happens once at the edge; per-service checks are removed.",
+      "state": "proposed"
+    }
+  ],
+  "none": [
+    "config/*.toml"
+  ],
+  "session": "sess-0417"
+}
