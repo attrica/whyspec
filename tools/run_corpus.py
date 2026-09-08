@@ -35,28 +35,32 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 217,
-    "fixture_paths": 360,
-    "manifest_entries": 393,
-    "mapped_rule_ids": 198,
+    "rules": 218,
+    "fixture_paths": 364,
+    "manifest_entries": 397,
+    "mapped_rule_ids": 199,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 301,
+    "computed": 305,
     "drift_checked": 92,
 }
 EXPECTED_MUST_NOT_EQUAL = {
-    "fixtures": 83,
-    "assertions": 98,
+    "fixtures": 85,
+    "assertions": 100,
 }
 
 # REC-145. Same obligation, different spelling -- measured against 84 real ADRs from the three
 # principal tools, where 52 used the MADR template.
 SECTION_ALIASES = {
     "Context": ("Context and Problem Statement",),
-    "Decision": ("Decision Outcome",),
+    "Decision": ("Decision Outcome", "Amendment"),
     "Alternatives": ("Considered Options",),
     "Alternatives considered": ("Considered Options",),
 }
+
+# REC-157. A scope alias counts only when its body yields items; prose under one is
+# scope NOT DECLARED, never governs-nothing. The canonical heading is never in this tuple.
+GOVERNS_ALIASES = ("Governed paths", "Governs files")
 
 # REC-148. An unfilled template is not a record. REC-008's own rationale says a template must be
 # able to sit in the ADR directory without being ingested, and relaxing the heading rule broke
@@ -672,7 +676,9 @@ def parse_record(data: bytes) -> dict[str, Any]:
     fm = re.search(r"^title:\s*(.+?)\s*$", front, re.M)
     if fm:
         front_title = fm.group(1).strip().strip("'\"")
-    decision = re.search(r"^## (?:Decision|Decision Outcome)\s*(?:<!--.*?-->)?\s*$",
+    # REC-145: the Decision gate accepts every spelling of the operative section, `Amendment`
+    # included -- a constitutive record shaped Context / Amendment / Consequences is a record.
+    decision = re.search(r"^## (?:Decision|Decision Outcome|Amendment)\s*(?:<!--.*?-->)?\s*$",
                          text, re.I | re.M)
     if not decision:
         return {"parses": False, "is_valid_utf8": True}
@@ -792,17 +798,24 @@ def parse_record(data: bytes) -> dict[str, Any]:
     # normalization) with empty items dropped per REC-025. The section's ABSENCE is a
     # distinct state from an empty section -- REC-084 reads it as "scope not declared",
     # never as "governs nothing" -- so `declared` tracks the section, not the item count.
-    governs_body = section("Governs")
-    governs = (
-        None
-        if governs_body is None
-        else [
+    def governs_items(body: str) -> list[str]:
+        return [
             item
-            for line in governs_body.splitlines()
+            for line in body.splitlines()
             if (match := re.match(r"^\s*(?:[-*]|\d+\.)\s*(.*)$", line))
             and (item := match.group(1).strip())
         ]
-    )
+
+    governs_body = section("Governs")
+    governs = None if governs_body is None else governs_items(governs_body)
+    if governs is None:
+        # REC-157: an alias counts only when it yields items; a prose body under an alias
+        # leaves scope NOT DECLARED rather than declaring it empty.
+        for alias in GOVERNS_ALIASES:
+            alias_body = section(alias)
+            if alias_body is not None and governs_items(alias_body):
+                governs = governs_items(alias_body)
+                break
     id_match = re.search(r"^\*\*Id:\*\*\s*(\S+)", text, re.I | re.M)
     question = section("Context")
     rationale = section("Decision")
@@ -825,7 +838,7 @@ def parse_record(data: bytes) -> dict[str, Any]:
         # empty list is the "governs nothing" reading it explicitly forbids. The corpus
         # caught this the moment the expectation became enforced.
         "governs": governs,
-        "governs_declared": governs_body is not None,
+        "governs_declared": governs is not None,
         # REC-151: a `#` makes it a symbol reference even when malformed. Classifying a
         # mistyped one as a glob would report a typo as stale scope under REC-086.
         "governs_reference_kinds": (
