@@ -1236,6 +1236,87 @@ governs the unresolved case unchanged.
 > [REC-086] gains rather than loses precision here. A symbol reference that stops resolving is a
 > rename detector; a glob that stops matching is a much blunter instrument for the same job.
 
+#### 4.15.1 Path glob forms and resolution
+
+**[REC-152]** A path glob item **MUST** be read as exactly one of three forms, decided by its text
+after [REC-153]'s normalization:
+
+| Form | Written as | Resolves to |
+|---|---|---|
+| **file** | a repository-relative path with no trailing `/` and no glob metacharacter | the artifact at exactly that path, or nothing |
+| **directory** | a repository-relative path ending in `/` | every artifact whose path begins with that prefix, at any depth |
+| **glob** | an item containing any of `*`, `?`, `[`, `{` | every artifact the pattern matches, where `*` and `?` **MUST NOT** match a `/` and `**` matches across separators |
+
+The forms are tested in this order: a trailing `/` first, then the presence of a glob
+metacharacter, then exact path equality — so `src/*/` is a **directory** whose prefix contains a
+literal `*`, not a glob. A **file** form that names a directory — a bare directory name with no
+trailing `/` — names no artifact and **MUST NOT** be read as governing the directory's contents. A **glob** that cannot be
+compiled **MUST** resolve to zero artifacts. In every case a zero resolution is reported under
+[REC-086].
+
+> **Why three forms and not a smarter reader.** The declaration failure this rule answers was
+> measured before it was written: when sessions were asked to declare a scope, every one did, and a
+> third of the declarations resolved to nothing under the reader's rule — paths that did not exist,
+> and bare directory names with no glob. Agents think in directories; the reader thinks in paths. The alternative — reading `src/edge` as `src/edge/` when a directory of that
+> name exists — makes the meaning of an item depend on the tree at the moment it is read, so the
+> same declaration governs one set of files today and a different set after a rename. A trailing
+> slash costs one character and keeps the meaning in the text. The glob rule follows the same
+> principle from the other side: a `*` that crosses a separator turns `src/*.py` into a recursive
+> claim nobody wrote.
+
+**[REC-153]** Before classification under [REC-152] and [REC-151], a reader **MUST** derive the
+reference from the item text [REC-082] yields, in this order:
+
+1. where the item contains a code span, the contents from its first backtick to its last are the
+   reference and everything outside them is annotation;
+2. otherwise, where the item ends in `)`, the parenthetical from its last `(` to the end is
+   annotation and is removed;
+3. a leading `./` is removed;
+4. an item that is empty, or contains whitespace, after steps 1–3 is **not an artifact reference**
+   and **MUST** resolve to zero artifacts.
+
+An implementation that resolves at file granularity ([REC-155]) drops the symbol suffix — the
+first `#` and everything after it — between steps 2 and 3, so that a reader implementing this
+rule alone and one implementing [REC-155] agree on the match set for every item.
+
+A writer **SHOULD** emit the bare reference, with no code span and no annotation; the tolerance
+exists for readers and is not a second syntax.
+
+> [REC-082] yields the item verbatim so that a glob's `**` survives the prose normalizer. This rule
+> is the other half: what a *reader* does with what it was given. Models writing a `## Governs`
+> item unprompted wrap the path in a code span or follow it with a reason in parentheses, and a
+> reader that matches those literally resolves nothing and reports a decision that governs
+> nothing. Step 4 is the limit of the tolerance: prose that mentions a path — "everything under
+> `src/` except the vendored tree" — declares no scope, and guessing one would push a decision
+> onto files nobody scoped it to.
+
+**[REC-154]** An artifact reference is repository-relative. A writer **MUST NOT** begin an item
+with `/`. A reader **MUST NOT** interpret a leading `/` as the repository root: an item beginning
+with `/` matches no repository-relative path, resolves to zero artifacts under [REC-152], and is
+reported under [REC-086].
+
+> Stated on both sides because the two failures differ. A writer who means the repository root
+> and writes `/src/` has written a path no repository-relative artifact carries; a reader that
+> quietly strips the slash has made the declaration mean something its text does not say, and the
+> next reader — a different implementation, or a person — cannot tell it was repaired. The empty
+> resolution is visible; the repair is not, which is [REC-086]'s argument applied one rule earlier.
+
+**[REC-155]** An implementation that resolves scope at **file** granularity **MAY** resolve a
+symbol reference ([REC-151]) to the file it names, by the path before its `#`. The reference
+**MUST** still be yielded and reported as a symbol reference; only its resolution is coarsened.
+
+**[REC-156]** [REC-152]–[REC-155] govern declared scope items. A checker that resolves **prose
+referents** in a record's other sections — a path mentioned in a rationale, cited from a sub-root,
+or given as a bare filename — **MAY** resolve them more tolerantly, but tolerance **MUST NOT**
+confer governance: a referent resolved from prose is evidence about the record's currency, never
+a declared scope binding, and [PROV-013] and [PROV-015] apply to it as to any inferred edge.
+
+> Two inputs, two rules. The declared grammar exists so that a writer can be held to it; the
+> tolerant resolver exists because the records already in the world were not written to any
+> grammar — measured across external corpora, more than half name no locating referent at all —
+> and a checker that read the rest strictly could measure nothing. Letting the tolerant rule leak
+> into governance would be the phantom-intent failure this format exists to prevent.
+
 **[REC-084]** An absent `## Governs` section **MUST** be read as *scope not declared*. It
 **MUST NOT** be read as *governs nothing*.
 
@@ -2136,6 +2217,11 @@ Every normative rule, with its one-line statement.
 | REC-149 | The only front-matter key a parser MAY interpret is title, and it MUST be used only where the document has no level-1 heading at all. |
 | REC-150 | status MUST NOT be read from front matter, even where the body states no status. |
 | REC-151 | A symbol reference MUST be written <path>#<symbol> — a repository-relative path carrying no glob metacharacter, a single #, and a non-empty symbol…. |
+| REC-152 | A path glob item MUST be read as exactly one of three forms, decided by its text after REC-153's normalization: — see the rule body for the enumeration. |
+| REC-153 | Before classification under REC-152 and REC-151, a reader MUST derive the reference from the item text REC-082 yields, in this order: — see the rule body for the enumeration. |
+| REC-154 | An artifact reference is repository-relative. A writer MUST NOT begin an item with /. |
+| REC-155 | An implementation that resolves scope at file granularity MAY resolve a symbol reference (REC-151) to the file it names, by the path before its #. |
+| REC-156 | REC-152–REC-155 govern declared scope items. |
 
 #### Provenance
 

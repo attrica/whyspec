@@ -1,0 +1,22 @@
+{
+  "record_text": "# Decision: Validate requests at the edge\n\n**Status:** Accepted\n\n## Context\n\nWhere should request validation live?\n\n## Decision\n\nRequest validation runs at the edge handler, before any service call.\n\n## Governs\n\n- src/edge/handler.py#validate_request\n",
+  "corpus_files": [
+    "src/edge/handler.py",
+    "src/edge/deep/parse.py",
+    "src/main.py",
+    "src/util/io.py",
+    "config/app.toml",
+    "src/legacy/keys.py"
+  ],
+  "rule": "REC-155",
+  "statement": "An implementation resolving scope at file granularity MAY resolve a symbol reference to the file it names; the reference MUST still be yielded and reported as a symbol reference.",
+  "note": "One symbol reference. At file granularity it resolves to `src/edge/handler.py`; its reference kind stays `symbol` so a report never presents it as a path glob.",
+  "expected": {
+    "governs_matched_counts": [
+      1
+    ],
+    "governs_reference_kinds": [
+      "symbol"
+    ]
+  }
+}

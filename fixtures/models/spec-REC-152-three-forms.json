@@ -1,0 +1,22 @@
+{
+  "record_text": "# Decision: Validate requests at the edge\n\n**Status:** Accepted\n\n## Context\n\nWhere should request validation live?\n\n## Decision\n\nRequest validation runs at the edge handler, before any service call.\n\n## Governs\n\n- src/edge/handler.py\n- src/edge/\n- src/*.py\n- src/**/*.py\n",
+  "corpus_files": [
+    "src/edge/handler.py",
+    "src/edge/deep/parse.py",
+    "src/main.py",
+    "src/util/io.py",
+    "config/app.toml",
+    "src/legacy/keys.py"
+  ],
+  "rule": "REC-152",
+  "statement": "A path glob item MUST be read as exactly one of three forms: file (exact path), directory (trailing slash, prefix at any depth), or glob (`*` and `?` never cross `/`; `**` does).",
+  "note": "Four items, one per form plus the recursive glob. `src/edge/` descends to `deep/parse.py`; `src/*.py` stops at the first separator and matches `src/main.py` only; `src/**/*.py` reaches all five Python files.",
+  "expected": {
+    "governs_matched_counts": [
+      1,
+      2,
+      1,
+      5
+    ]
+  }
+}

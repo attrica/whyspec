@@ -11010,6 +11010,328 @@
    "spec_rule_ids": [
     "REC-150"
    ]
+  },
+  {
+   "id": "spec-REC-152-three-forms-valid",
+   "family": "REC",
+   "rule_id": "REC-152",
+   "rule_statement": "A path glob item MUST be read as exactly one of three forms: file (exact path), directory (trailing slash, prefix at any depth), or glob (`*` and `?` never cross `/`; `**` does).",
+   "valid": true,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-152-three-forms.json",
+   "notes": "One item per form: exact file, trailing-slash directory descending one level, single-star glob stopping at the separator, recursive glob reaching every Python file.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "governs_resolution_count": 4,
+    "governs_matched_counts": [
+     1,
+     2,
+     1,
+     5
+    ],
+    "raises": false,
+    "errors": []
+   },
+   "spec_rule_ids": [
+    "REC-152"
+   ]
+  },
+  {
+   "id": "spec-REC-152-three-forms-invalid",
+   "family": "REC",
+   "rule_id": "REC-152",
+   "rule_statement": "A path glob item MUST be read as exactly one of three forms: file (exact path), directory (trailing slash, prefix at any depth), or glob (`*` and `?` never cross `/`; `**` does).",
+   "valid": false,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-152-three-forms.json",
+   "notes": "The non-conformant reading lets `*` cross `/`, so `src/*.py` reports the same five files as `src/**/*.py` and a one-level claim becomes a recursive one nobody wrote.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "governs_resolution_count": 4,
+    "governs_matched_counts": [
+     1,
+     2,
+     1,
+     5
+    ],
+    "governs_matched_counts_must_not_equal": [
+     1,
+     2,
+     5,
+     5
+    ],
+    "raises": false,
+    "errors": []
+   },
+   "spec_rule_ids": [
+    "REC-152"
+   ]
+  },
+  {
+   "id": "spec-REC-152-bare-directory-valid",
+   "family": "REC",
+   "rule_id": "REC-152",
+   "rule_statement": "A file form that names a directory -- a bare directory name with no trailing slash -- names no artifact and MUST NOT be read as governing the directory's contents.",
+   "valid": true,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-152-bare-directory.json",
+   "notes": "A bare directory name is the file form and resolves to zero; the same name with a trailing slash governs its contents. Both appear in the report with distinct states (REC-086).",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "governs_resolution_count": 2,
+    "governs_matched_counts": [
+     0,
+     2
+    ],
+    "governs_resolution_states_distinct": true,
+    "raises": false,
+    "errors": []
+   },
+   "spec_rule_ids": [
+    "REC-152",
+    "REC-086"
+   ]
+  },
+  {
+   "id": "spec-REC-152-bare-directory-invalid",
+   "family": "REC",
+   "rule_id": "REC-152",
+   "rule_statement": "A file form that names a directory -- a bare directory name with no trailing slash -- names no artifact and MUST NOT be read as governing the directory's contents.",
+   "valid": false,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-152-bare-directory.json",
+   "notes": "The tempting repair reads `src/edge` as `src/edge/` because a directory of that name exists, making the declaration's meaning depend on the tree at read time. Both counts MUST NOT be 2.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "governs_resolution_count": 2,
+    "governs_matched_counts": [
+     0,
+     2
+    ],
+    "governs_matched_counts_must_not_equal": [
+     2,
+     2
+    ],
+    "raises": false,
+    "errors": []
+   },
+   "spec_rule_ids": [
+    "REC-152",
+    "REC-086"
+   ]
+  },
+  {
+   "id": "spec-REC-153-presentation-valid",
+   "family": "REC",
+   "rule_id": "REC-153",
+   "rule_statement": "Before classification a reader MUST derive the reference: code-span contents win; else a trailing parenthetical is removed; a leading ./ is removed; an item empty or containing whitespace after that is not an artifact reference and resolves to zero.",
+   "valid": true,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-153-presentation.json",
+   "notes": "Code span, trailing parenthetical and `./` prefix each resolve as the bare reference; the prose line resolves to zero.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "governs_resolution_count": 4,
+    "governs_matched_counts": [
+     1,
+     2,
+     1,
+     0
+    ],
+    "raises": false,
+    "errors": []
+   },
+   "spec_rule_ids": [
+    "REC-153"
+   ]
+  },
+  {
+   "id": "spec-REC-153-presentation-invalid",
+   "family": "REC",
+   "rule_id": "REC-153",
+   "rule_statement": "Before classification a reader MUST derive the reference: code-span contents win; else a trailing parenthetical is removed; a leading ./ is removed; an item empty or containing whitespace after that is not an artifact reference and resolves to zero.",
+   "valid": false,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-153-presentation.json",
+   "notes": "Two failures in one forbidden vector: matching the dressed items literally resolves nothing for the three real references, and guessing a scope from prose that mentions `src/` pushes the decision onto five files nobody scoped it to.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "governs_resolution_count": 4,
+    "governs_matched_counts": [
+     1,
+     2,
+     1,
+     0
+    ],
+    "governs_matched_counts_must_not_equal": [
+     0,
+     0,
+     0,
+     5
+    ],
+    "raises": false,
+    "errors": []
+   },
+   "spec_rule_ids": [
+    "REC-153"
+   ]
+  },
+  {
+   "id": "spec-REC-154-leading-slash-valid",
+   "family": "REC",
+   "rule_id": "REC-154",
+   "rule_statement": "A writer MUST NOT begin an item with /; a reader MUST NOT interpret a leading / as the repository root, so such an item resolves to zero artifacts.",
+   "valid": true,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-154-leading-slash.json",
+   "notes": "The rooted spelling resolves to zero and is reported; the repository-relative spelling resolves to the file.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "governs_resolution_count": 2,
+    "governs_matched_counts": [
+     0,
+     1
+    ],
+    "raises": false,
+    "errors": []
+   },
+   "spec_rule_ids": [
+    "REC-154",
+    "REC-086"
+   ]
+  },
+  {
+   "id": "spec-REC-154-leading-slash-invalid",
+   "family": "REC",
+   "rule_id": "REC-154",
+   "rule_statement": "A writer MUST NOT begin an item with /; a reader MUST NOT interpret a leading / as the repository root, so such an item resolves to zero artifacts.",
+   "valid": false,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-154-leading-slash.json",
+   "notes": "A reader that strips the leading slash silently repairs the declaration to mean something its text does not say, and the next reader cannot tell. The rooted item MUST NOT resolve.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "governs_resolution_count": 2,
+    "governs_matched_counts": [
+     0,
+     1
+    ],
+    "governs_matched_counts_must_not_equal": [
+     1,
+     1
+    ],
+    "raises": false,
+    "errors": []
+   },
+   "spec_rule_ids": [
+    "REC-154",
+    "REC-086"
+   ]
+  },
+  {
+   "id": "spec-REC-155-symbol-file-granularity-valid",
+   "family": "REC",
+   "rule_id": "REC-155",
+   "rule_statement": "An implementation resolving scope at file granularity MAY resolve a symbol reference to the file it names; the reference MUST still be yielded and reported as a symbol reference.",
+   "valid": true,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-155-symbol-file-granularity.json",
+   "notes": "At file granularity the symbol reference resolves to its file while keeping its kind.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "governs_resolution_count": 1,
+    "governs_matched_counts": [
+     1
+    ],
+    "governs_reference_kinds": [
+     "symbol"
+    ],
+    "raises": false,
+    "errors": []
+   },
+   "spec_rule_ids": [
+    "REC-155",
+    "REC-151"
+   ]
+  },
+  {
+   "id": "spec-REC-155-symbol-file-granularity-invalid",
+   "family": "REC",
+   "rule_id": "REC-155",
+   "rule_statement": "An implementation resolving scope at file granularity MAY resolve a symbol reference to the file it names; the reference MUST still be yielded and reported as a symbol reference.",
+   "valid": false,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-155-symbol-file-granularity.json",
+   "notes": "Two wrong readings: treating the item as a glob (which REC-151 forbids) or refusing to resolve a symbol reference at all at file granularity, reporting a live file as stale scope.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "governs_resolution_count": 1,
+    "governs_matched_counts": [
+     1
+    ],
+    "governs_reference_kinds": [
+     "symbol"
+    ],
+    "governs_reference_kinds_must_not_contain": [
+     "path_glob"
+    ],
+    "governs_matched_counts_must_not_equal": [
+     0
+    ],
+    "raises": false,
+    "errors": []
+   },
+   "spec_rule_ids": [
+    "REC-155",
+    "REC-151"
+   ]
+  },
+  {
+   "id": "spec-REC-156-prose-referent-is-not-scope-valid",
+   "family": "REC",
+   "rule_id": "REC-156",
+   "rule_statement": "REC-152 to REC-155 govern declared scope items; a checker MAY resolve prose referents more tolerantly, but tolerance MUST NOT confer governance.",
+   "valid": true,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-156-prose-referent-is-not-scope.json",
+   "notes": "Declared scope resolves exactly one reference; the existing path named in the rationale is not among them.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "governs_resolution_count": 1,
+    "governs_matched_counts": [
+     2
+    ],
+    "raises": false,
+    "errors": []
+   },
+   "spec_rule_ids": [
+    "REC-156"
+   ]
+  },
+  {
+   "id": "spec-REC-156-prose-referent-is-not-scope-invalid",
+   "family": "REC",
+   "rule_id": "REC-156",
+   "rule_statement": "REC-152 to REC-155 govern declared scope items; a checker MAY resolve prose referents more tolerantly, but tolerance MUST NOT confer governance.",
+   "valid": false,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-156-prose-referent-is-not-scope.json",
+   "notes": "A checker whose tolerant prose resolution leaks into governance reports two scope references and binds the decision to a file nobody declared. The prose referent is currency evidence, never scope.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "governs_resolution_count": 1,
+    "governs_resolution_count_must_not_equal": [
+     2
+    ],
+    "governs_matched_counts": [
+     2
+    ],
+    "raises": false,
+    "errors": []
+   },
+   "spec_rule_ids": [
+    "REC-156"
+   ]
   }
  ]
 }

@@ -1,0 +1,20 @@
+{
+  "record_text": "# Decision: Validate requests at the edge\n\n**Status:** Accepted\n\n## Context\n\nWhere should request validation live?\n\n## Decision\n\nRequest validation runs at the edge handler, before any service call.\n\n## Governs\n\n- src/edge\n- src/edge/\n",
+  "corpus_files": [
+    "src/edge/handler.py",
+    "src/edge/deep/parse.py",
+    "src/main.py",
+    "src/util/io.py",
+    "config/app.toml",
+    "src/legacy/keys.py"
+  ],
+  "rule": "REC-152",
+  "statement": "A file form that names a directory -- a bare directory name with no trailing slash -- names no artifact and MUST NOT be read as governing the directory's contents.",
+  "note": "The same directory written twice. Without the slash it is the file form and no artifact sits at exactly that path, so it resolves to zero and reports under REC-086; with the slash it governs both files beneath it.",
+  "expected": {
+    "governs_matched_counts": [
+      0,
+      2
+    ]
+  }
+}

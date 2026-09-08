@@ -1,0 +1,22 @@
+{
+  "record_text": "# Decision: Validate requests at the edge\n\n**Status:** Accepted\n\n## Context\n\nWhere should request validation live?\n\n## Decision\n\nRequest validation runs at the edge handler, before any service call.\n\n## Governs\n\n- `src/edge/handler.py`\n- src/edge/ (request validation)\n- ./config/*.toml\n- everything under src/ except the vendored tree\n",
+  "corpus_files": [
+    "src/edge/handler.py",
+    "src/edge/deep/parse.py",
+    "src/main.py",
+    "src/util/io.py",
+    "config/app.toml",
+    "src/legacy/keys.py"
+  ],
+  "rule": "REC-153",
+  "statement": "Before classification a reader MUST derive the reference: code-span contents win; else a trailing parenthetical is removed; a leading ./ is removed; an item empty or containing whitespace after that is not an artifact reference and resolves to zero.",
+  "note": "Three dressed items and one line of prose. The code span, the parenthetical annotation and the `./` prefix all resolve as their bare forms; the prose mentions `src/` but declares nothing and MUST resolve to zero rather than be read as the directory.",
+  "expected": {
+    "governs_matched_counts": [
+      1,
+      2,
+      1,
+      0
+    ]
+  }
+}

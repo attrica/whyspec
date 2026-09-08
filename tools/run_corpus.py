@@ -35,18 +35,18 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 212,
-    "fixture_paths": 354,
-    "manifest_entries": 381,
-    "mapped_rule_ids": 193,
+    "rules": 217,
+    "fixture_paths": 360,
+    "manifest_entries": 393,
+    "mapped_rule_ids": 198,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 287,
-    "drift_checked": 94,
+    "computed": 301,
+    "drift_checked": 92,
 }
 EXPECTED_MUST_NOT_EQUAL = {
-    "fixtures": 77,
-    "assertions": 92,
+    "fixtures": 83,
+    "assertions": 98,
 }
 
 # REC-145. Same obligation, different spelling -- measured against 84 real ADRs from the three
@@ -849,6 +849,117 @@ CONTAINMENT = {
 }
 
 
+# ---------------------------------------------------------------------------
+# 4.15.1 -- declared scope resolution (REC-152 to REC-155), computed for every
+# `record_scenario` that carries `corpus_files`. The rule is the reader's: it is the
+# behaviour a push resolves against, so a fixture here is a claim about which files a
+# decision governs, not about how the item was parsed (REC-082 owns that).
+
+GLOB_METACHARACTERS = set("*?[{")
+
+
+def scope_reference(item: str) -> str | None:
+    """REC-153: the reference inside a Governs item, or None when it declares none.
+
+    A code span wins; failing that a trailing parenthetical is annotation; then the
+    symbol suffix is dropped for file-granularity resolution (REC-155) and a leading
+    `./` removed. Empty or whitespace-bearing text after that is prose, not scope.
+    """
+    text = item.strip()
+    first, last = text.find("`"), text.rfind("`")
+    if first != -1 and last > first:
+        inner = text[first + 1:last].strip()
+    elif text.endswith(")") and "(" in text:
+        inner = text[: text.rfind("(")].strip()
+    else:
+        inner = text
+    inner = inner.split("#", 1)[0].strip()
+    if inner.startswith("./"):
+        inner = inner[2:]
+    if not inner or any(c.isspace() for c in inner):
+        return None
+    return inner
+
+
+def glob_regex(pattern: str) -> "re.Pattern[str] | None":
+    """REC-152 glob form: `*` and `?` never cross `/`; `**` does. None when uncompilable."""
+    out: list[str] = []
+    i = 0
+    n = len(pattern)
+    while i < n:
+        c = pattern[i]
+        if c == "*":
+            if pattern.startswith("**", i):
+                i += 2
+                if i < n and pattern[i] == "/":
+                    out.append("(?:.*/)?")
+                    i += 1
+                elif out and out[-1] == "/":
+                    out.pop()
+                    out.append("(?:/.*)?")
+                else:
+                    out.append(".*")
+                continue
+            out.append("[^/]*")
+        elif c == "?":
+            out.append("[^/]")
+        elif c == "[":
+            close = pattern.find("]", i + 1)
+            if close == -1:
+                return None
+            body = pattern[i + 1:close]
+            if body.startswith("!"):
+                body = "^" + body[1:]
+            out.append("[" + body.replace("\\", "\\\\") + "]")
+            i = close + 1
+            continue
+        elif c == "{":
+            close = pattern.find("}", i + 1)
+            if close == -1:
+                return None
+            alternatives = pattern[i + 1:close].split(",")
+            out.append("(?:" + "|".join(re.escape(a) for a in alternatives) + ")")
+            i = close + 1
+            continue
+        else:
+            out.append(re.escape(c))
+        i += 1
+    try:
+        return re.compile("^" + "".join(out) + "$")
+    except re.error:
+        return None
+
+
+def scope_item_matches(item: str, path: str) -> bool:
+    """REC-152 and REC-154: file, directory, or glob form; a leading `/` matches nothing."""
+    reference = scope_reference(item)
+    if reference is None:
+        return False
+    if reference.endswith("/"):
+        return path.startswith(reference)
+    if GLOB_METACHARACTERS & set(reference):
+        compiled = glob_regex(reference)
+        return bool(compiled and compiled.match(path))
+    return reference == path
+
+
+def resolve_scope(items: list[str], corpus_files: list[str]) -> dict[str, Any]:
+    """Every item resolves to a named state; a zero match is `unresolved`, never dropped (REC-086)."""
+    matched = [[f for f in corpus_files if scope_item_matches(item, f)] for item in items]
+    counts = [len(m) for m in matched]
+    states = ["resolved" if c else "unresolved" for c in counts]
+    return {
+        "governs_resolution_count": len(items),
+        "governs_matched_counts": counts,
+        "governs_matched_paths": [sorted(m) for m in matched],
+        "governs_resolution_states": states,
+        "governs_resolution_states_distinct": len(set(states)) == len(set(bool(c) for c in counts)),
+        "governs_reference_kinds": ["symbol" if "#" in i else "path_glob" for i in items],
+        "raises": False,
+        "errors": [],
+    }
+
+
 def compare_known_expectations(actual: dict[str, Any], expect: dict[str, Any]) -> None:
     aliases = {
         "alternatives_count": "alternatives",
@@ -1161,6 +1272,17 @@ def fixture_verdict(
         if not computed:
             fail("identity scenario did not execute a derived operation")
         return COMPUTED
+    if kind == "record_scenario":
+        document = load_json(path)
+        if "corpus_files" in document and "record_text" in document:
+            parsed = parse_record(document["record_text"].encode("utf-8"))
+            # Only a record that declares scope has anything to resolve; a relation
+            # scenario that also carries a corpus stays a drift check below.
+            if parsed.get("governs") is not None:
+                actual = resolve_scope(parsed["governs"], document["corpus_files"])
+                compare_known_expectations(actual, expect)
+                json_scenario_verdict(entry, document)
+                return COMPUTED
     if path.is_file() and path.suffix == ".json":
         json_scenario_verdict(entry, load_json(path))
         return DRIFT_CHECKED
