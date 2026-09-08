@@ -26,22 +26,24 @@ MANIFEST = FIXTURES / "manifest.json"
 COVERAGE = FIXTURES / "coverage.md"
 SPEC = ROOT / "spec" / "whyspec-draft.md"
 TRANSPORT_PROFILE = ROOT / "profiles" / "transport.md"
-SPEC_FILES = (SPEC, TRANSPORT_PROFILE)
+INTENT_PROFILE = ROOT / "profiles" / "intent-layer.md"
+SPEC_FILES = (SPEC, TRANSPORT_PROFILE, INTENT_PROFILE)
 ENVELOPE_SCHEMA = ROOT / "schema" / "envelope.schema.json"
 TRANSPORT_SCHEMA = ROOT / "schema" / "transport-envelope.schema.json"
+INTENT_SCHEMA = ROOT / "schema" / "intent-layer.schema.json"
 
-RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
+RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER|INT)-\d{3})\]\*\*", re.M)
 
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 222,
-    "fixture_paths": 371,
-    "manifest_entries": 407,
-    "mapped_rule_ids": 201,
+    "rules": 234,
+    "fixture_paths": 383,
+    "manifest_entries": 419,
+    "mapped_rule_ids": 211,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 315,
+    "computed": 327,
     "drift_checked": 92,
 }
 EXPECTED_MUST_NOT_EQUAL = {
@@ -319,6 +321,11 @@ def schema_errors(
     if isinstance(value, list) and "items" in schema:
         for index, item in enumerate(value):
             errors.extend(schema_errors(item, schema["items"], root, f"{path}[{index}]"))
+    if isinstance(value, list):
+        if len(value) < schema.get("minItems", 0):
+            errors.append(f"{path}: too few items")
+        if "maxItems" in schema and len(value) > schema["maxItems"]:
+            errors.append(f"{path}: too many items")
 
     if isinstance(value, str) and "pattern" in schema:
         if re.search(schema["pattern"], value) is None:
@@ -331,6 +338,10 @@ def schema_errors(
 
     for subschema in schema.get("allOf", []):
         errors.extend(schema_errors(value, subschema, root, path))
+    if "anyOf" in schema and not any(
+        not schema_errors(value, subschema, root, path) for subschema in schema["anyOf"]
+    ):
+        errors.append(f"{path}: matched no anyOf branch")
     if "oneOf" in schema:
         matches = sum(
             not schema_errors(value, subschema, root, path)
@@ -1338,6 +1349,32 @@ def fixture_verdict(
                 compare_known_expectations(actual, expect)
                 json_scenario_verdict(entry, document)
                 return COMPUTED
+    if kind == "intent_object":
+        # Intent-layer profile: validate the document against the $def named by
+        # expect.object, then the manifest's own key and constraint assertions.
+        document = load_json(path)
+        intent_schema = load_json(INTENT_SCHEMA)
+        target = {"$ref": f"#/$defs/{expect['object']}", "$defs": intent_schema["$defs"]}
+        errors = schema_errors(document, target)
+        conformant = expect.get("conformant", entry["valid"])
+        if conformant:
+            if errors:
+                fail("schema rejected valid object: " + "; ".join(errors[:3]))
+            missing = set(expect.get("required_keys", [])) - set(document)
+            present = set(expect.get("forbidden_keys", [])) & set(document)
+            if missing:
+                fail(f"missing required keys {sorted(missing)}")
+            if present:
+                fail(f"carries forbidden keys {sorted(present)}")
+            for constraint in expect.get("constraints", []):
+                if not constraint_holds(document, constraint):
+                    fail(f"semantic constraint did not hold: {constraint}")
+        else:
+            condition = expect.get("failing_condition")
+            seen = condition is not None and constraint_holds(document, condition)
+            if not errors and not seen:
+                fail("counter-example was accepted and its failing condition was not observed")
+        return COMPUTED
     if path.is_file() and path.suffix == ".json":
         json_scenario_verdict(entry, load_json(path))
         return DRIFT_CHECKED
