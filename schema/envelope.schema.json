@@ -524,7 +524,7 @@
             "ENV-015",
             "ENV-016"
           ],
-          "x-conflict": "ENV-016's 'list of strings' cannot carry the per-item disposition and rationale that REC-097--REC-099 require. See PROPOSED-RULES.md, REC-133.",
+          "x-conflict": "ENV-016's 'list of strings' cannot carry the per-item disposition and rationale that REC-097--REC-099 require. See REC-133.",
           "type": "array",
           "items": {
             "type": "string"
