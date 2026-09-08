@@ -1,0 +1,7 @@
+{
+  "coupling": "edit",
+  "records": 1,
+  "source_decision": "Request validation runs at the edge handler, before any service call. Services may assume validated input and drop their own checks; the edge is the one place a malformed request can be rejected before it costs anything.",
+  "delivered_decision": "Request validation runs at the edge handler, before any service call. Services may assume validated input",
+  "text": "Recorded decisions govern `src/edge/handler.py`. They were written by someone who is not in this session; read them before changing the file, and if this change departs from one, say so and record why.\n\n## Validate requests at the edge (accepted, 2026-05-02) — docs/decisions/2026-05-02-validate-at-the-edge.md\nRequest validation runs at the edge handler, before any service call. Services may assume validated input\n"
+}

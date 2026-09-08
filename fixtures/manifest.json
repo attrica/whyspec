@@ -1743,7 +1743,8 @@
      ],
      "core_conformant": true
     }
-   }
+   },
+   "reserved": true
   },
   {
    "id": "ENV-001-invalid-missing-status",
@@ -1771,7 +1772,8 @@
      "path": "status",
      "op": "absent"
     }
-   }
+   },
+   "reserved": true
   },
   {
    "id": "ENV-002-valid-why",
@@ -1849,7 +1851,8 @@
      }
     ]
    },
-   "notes": ""
+   "notes": "",
+   "reserved": true
   },
   {
    "id": "ENV-002-invalid-why-missing-score-stats",
@@ -1874,7 +1877,8 @@
      "path": "score_stats",
      "op": "absent"
     }
-   }
+   },
+   "reserved": true
   },
   {
    "id": "ENV-003-valid-list-intent",
@@ -1931,7 +1935,8 @@
      }
     ]
    },
-   "notes": ""
+   "notes": "",
+   "reserved": true
   },
   {
    "id": "ENV-003-invalid-list-intent-missing-filter",
@@ -1956,7 +1961,8 @@
      "path": "filter",
      "op": "absent"
     }
-   }
+   },
+   "reserved": true
   },
   {
    "id": "ENV-004-valid-coverage",
@@ -2066,7 +2072,8 @@
      ]
     }
    },
-   "notes": ""
+   "notes": "",
+   "reserved": true
   },
   {
    "id": "ENV-004-invalid-coverage-missing-golden",
@@ -2091,7 +2098,8 @@
      "path": "golden",
      "op": "absent"
     }
-   }
+   },
+   "reserved": true
   },
   {
    "id": "ENV-005-valid-check",
@@ -2121,7 +2129,8 @@
      "count"
     ]
    },
-   "notes": ""
+   "notes": "",
+   "reserved": true
   },
   {
    "id": "ENV-005-invalid-check-missing-violations",
@@ -2146,7 +2155,8 @@
      "path": "violations",
      "op": "absent"
     }
-   }
+   },
+   "reserved": true
   },
   {
    "id": "ENV-006-valid-no-graph-identity-in-cli-envelope",
@@ -2235,7 +2245,8 @@
      }
     ]
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-007-invalid-top-level-array",
@@ -2259,7 +2270,8 @@
      "op": "is_array"
     }
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-008-valid-union-carries-only-its-own-variant-keys",
@@ -2294,7 +2306,8 @@
      "since"
     ]
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-008-invalid-struct-of-optionals-foreign-nulls",
@@ -2328,7 +2341,8 @@
     },
     "why_it_fails": "An explicit null means 'applicable here, value unavailable'. `filter` is not applicable to `why` at all, so it must be OMITTED, not nulled. Nulling every other command's keys is the one-struct-of-optionals model the union forbids."
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-009-valid-coverage-explain-variant",
@@ -2369,7 +2383,8 @@
      "present_means": "per-file explain variant"
     }
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-009-invalid-coverage-hybrid-both-shapes",
@@ -2400,7 +2415,8 @@
     },
     "why_it_fails": "The two `coverage` shapes are disjoint and share no key beyond command and status. An envelope carrying both makes the secondary discriminator undecidable."
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-010-valid-error-variant-no-variant-keys",
@@ -2433,7 +2449,8 @@
     ],
     "why_it_passes": "The error variant of every command is a legitimate shape with none of that command's variant keys. Absent `results`/`score_stats` is conformant here."
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-010-invalid-failure-envelope-omits-command",
@@ -2460,7 +2477,8 @@
     },
     "engine_divergence": "This is the shape four failure paths on the tool-call transport actually emit (the wrong-repository refusal). The specification keeps `command` a MUST and records the divergence; this fixture is the counter-example, NOT a conformance target."
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-011-valid-why-result-thirteen-fields",
@@ -2508,7 +2526,8 @@
      }
     ]
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-011-invalid-why-result-missing-distinctive-matches",
@@ -2533,7 +2552,8 @@
      "op": "absent"
     }
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-012-valid-alternatives-list-of-strings",
@@ -2566,7 +2586,8 @@
      }
     ]
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-012-invalid-alternatives-bare-string",
@@ -2592,7 +2613,8 @@
     },
     "why_it_fails": "A bare string is not a list. A consumer that iterates it walks the string character by character; a legacy scalar must be coerced to a one-element list before it is ever iterated."
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-013-valid-evidence-fields-well-formed",
@@ -2635,7 +2657,8 @@
      }
     ]
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-013-invalid-coverage-out-of-range-and-distinctive-not-a-subset",
@@ -2672,7 +2695,8 @@
      ]
     }
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-014-valid-topically-weak-above-cutoff",
@@ -2712,7 +2736,8 @@
     ],
     "why_it_passes": "`topically_weak` is an abstention ABOVE the cutoff: the top hit cleared the score threshold but its match evidence does not support treating it as an answer. A consumer must not read it as `ok`."
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-014-invalid-topically-weak-below-cutoff",
@@ -2738,7 +2763,8 @@
      "value_path": "cutoff"
     }
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-015-valid-weak-match-below-cutoff-with-margin",
@@ -2782,7 +2808,8 @@
      }
     ]
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-015-invalid-weak-match-above-cutoff",
@@ -2808,7 +2835,8 @@
      "value_path": "cutoff"
     }
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-016-valid-list-intent-entry-nine-fields",
@@ -2850,7 +2878,8 @@
      }
     ]
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-016-invalid-list-intent-entry-missing-confidence-score",
@@ -2875,7 +2904,8 @@
      "op": "absent"
     }
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-017-valid-explain-ambiguous-no-resolved",
@@ -2922,7 +2952,8 @@
      ]
     }
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-017-invalid-explain-ambiguous-auto-selected-resolved",
@@ -2949,7 +2980,8 @@
     },
     "why_it_fails": "Ambiguity is not a partial answer. Reporting `ambiguous` while also naming a `resolved` node silently picks one of the candidates for the consumer."
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-018-valid-intent-debt-explicit-nulls",
@@ -3048,7 +3080,8 @@
      ]
     }
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-018-invalid-intent-debt-uncomputable-reported-as-zero",
@@ -3077,7 +3110,8 @@
     },
     "why_it_fails": "A zero claims 'we measured and found none'. These two components are not computed at all, so an explicit null is the only honest report."
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-019-valid-capture-resolution-delta-explicit-null",
@@ -3130,7 +3164,8 @@
      }
     ]
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-019-invalid-capture-resolution-delta-omitted",
@@ -3159,7 +3194,8 @@
     },
     "why_it_fails": "This is the spec's deliberate exception to omitted-versus-null: the consumer is asking a yes/no question that a missing key cannot answer."
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-020-valid-changed-basename-ambiguity-reported",
@@ -3203,7 +3239,8 @@
      }
     ]
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-020-invalid-changed-basename-ambiguity-silently-resolved",
@@ -3244,7 +3281,8 @@
      ]
     }
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-021-valid-digest-four-keys",
@@ -3270,7 +3308,8 @@
      "superseded"
     ]
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-021-invalid-digest-missing-superseded",
@@ -3295,7 +3334,8 @@
      "op": "absent"
     }
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-022-valid-violation-cites-decision",
@@ -3330,7 +3370,8 @@
      }
     ]
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-022-invalid-violation-without-decision-citation",
@@ -3360,7 +3401,8 @@
     },
     "why_it_fails": "A rule whose failure cannot name the decision that motivated it is a lint, not a conformance check."
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-023-valid-transport-attaches-credential-block-as-null",
@@ -3474,7 +3516,8 @@
     ],
     "why_it_passes": "`no_strong_match` is an honest negative -- 'I looked and there is nothing' -- and a complete answer, not an error. All the variant keys are still present and populated."
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "ENV-024-invalid-foreign-command-status-token",
@@ -3509,7 +3552,8 @@
     },
     "why_it_fails": "`no_changes` is a `digest` token. Status tokens are per-command, not global; a consumer enumerating `why`'s statuses must treat this as a failure."
    },
-   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text."
+   "notes": "Shape derived from an envelope captured by running the reference implementation; prose content replaced with neutral invented text.",
+   "reserved": true
   },
   {
    "id": "PROV-005-valid-unrecognised-tier-ranks-as-reconstructed",
@@ -8808,7 +8852,8 @@
      }
     ]
    },
-   "notes": "One row is returned and `runner_up` sits BELOW the cutoff, so the runner-up cannot have come from the returned rows: the statistics were computed over the whole scored field. That is what makes `a lone hit standing above a flat tail` detectable by the consumer rather than a judgement only the implementation can make."
+   "notes": "One row is returned and `runner_up` sits BELOW the cutoff, so the runner-up cannot have come from the returned rows: the statistics were computed over the whole scored field. That is what makes `a lone hit standing above a flat tail` detectable by the consumer rather than a judgement only the implementation can make.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-014-invalid-score-stats-over-returned-rows-only",
@@ -8841,7 +8886,8 @@
      ]
     }
    },
-   "notes": "`median` is missing entirely and `runner_up` is null, which is what a single returned row yields when the statistics are computed over `results` instead of the scored field. The envelope is otherwise well-formed, so a validator checking only ENV-013's key list accepts it, and the consumer silently loses its only way to see the shape of the field."
+   "notes": "`median` is missing entirely and `runner_up` is null, which is what a single returned row yields when the statistics are computed over `results` instead of the scored field. The envelope is otherwise well-formed, so a validator checking only ENV-013's key list accepts it, and the consumer silently loses its only way to see the shape of the field.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-032-valid-unimplementable-rule-is-skipped",
@@ -8865,7 +8911,8 @@
     ],
     "violation_rule_ids": []
    },
-   "notes": "Three rules are declared and the checker implements two of the three types. `rules` counts rules EVALUATED (ENV-030), so the third appears in neither that count nor `violations`. This specification names no envelope key for reporting the skip; the mechanical requirement is only that the rule appears in neither total."
+   "notes": "Three rules are declared and the checker implements two of the three types. `rules` counts rules EVALUATED (ENV-030), so the third appears in neither that count nor `violations`. This specification names no envelope key for reporting the skip; the mechanical requirement is only that the rule appears in neither total.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-032-invalid-unimplementable-rule-counted-as-a-pass",
@@ -8893,7 +8940,8 @@
      "rule_semantic_equivalence"
     ]
    },
-   "notes": "`rules: 3` with an empty violations list tells a reader three rules were checked and all three held, when one was never evaluated. The fixture also excludes the mirror error of reporting the unimplementable rule as a violation, which additionally fails the run."
+   "notes": "`rules: 3` with an empty violations list tells a reader three rules were checked and all three held, when one was never evaluated. The fixture also excludes the mirror error of reporting the unimplementable rule as a violation, which additionally fails the run.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-033-valid-decision-and-constraint-reported-separately",
@@ -8938,7 +8986,8 @@
      }
     ]
    },
-   "notes": "The two kinds of governance are reported in two separate keys, and the constraint touch is flagged for human review rather than asserted as a violation. Deterministic inspection cannot tell conformance from violation for a constraint."
+   "notes": "The two kinds of governance are reported in two separate keys, and the constraint touch is flagged for human review rather than asserted as a violation. Deterministic inspection cannot tell conformance from violation for a constraint.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-033-invalid-constraint-touch-reported-as-a-proven-violation",
@@ -8972,7 +9021,8 @@
      ]
     }
    },
-   "notes": "The constraint-governed file is folded into `governed` as though a decision governed it, and marked as a proven violation. A reviewer is told a change breaks a decision when all that is known is that the change touched code a constraint applies to."
+   "notes": "The constraint-governed file is folded into `governed` as though a decision governed it, and marked as a proven violation. A reviewer is told a change breaks a decision when all that is known is that the change touched code a constraint applies to.",
+   "reserved": true
   },
   {
    "id": "spec-REC-062-069-valid-empty-question-yields-literal-decision",
@@ -9181,7 +9231,8 @@
      "op": "is_snake_case_token"
     }
    },
-   "notes": "Closes the ENV-003 mutation hole: all three envelope counter-examples violating the universal core did so by ABSENCE (status absent, command absent, top level an array), so the `{path: status, op: is_snake_case_token}` constraint the core declares was never exercised negatively and an implementation accepting any string passed. `core_conformant` is the computable verdict: it states what the IMPLEMENTATION's universal-core check MUST return for this document, so the fixture fails an implementation whose token check is lax rather than becoming undecidable. Document is otherwise a well-formed `why` envelope: `status` is the single variable."
+   "notes": "Closes the ENV-003 mutation hole: all three envelope counter-examples violating the universal core did so by ABSENCE (status absent, command absent, top level an array), so the `{path: status, op: is_snake_case_token}` constraint the core declares was never exercised negatively and an implementation accepting any string passed. `core_conformant` is the computable verdict: it states what the IMPLEMENTATION's universal-core check MUST return for this document, so the fixture fails an implementation whose token check is lax rather than becoming undecidable. Document is otherwise a well-formed `why` envelope: `status` is the single variable.",
+   "reserved": true
   },
   {
    "id": "ENV-001-invalid-command-present-but-not-a-string",
@@ -9207,7 +9258,8 @@
      "op": "is_string"
     }
    },
-   "notes": "The ENV-002 half of the same hole: the corpus's only ENV-002 counter-example omits `command` entirely. Here `command` is present as `[\"why\"]`, so an implementation that checks presence but not type is caught. `status` is a valid snake_case token, isolating `command` as the single variable. No `command` key in `expect` -- the document's command is deliberately not a string, so asserting equality against a string would be incoherent."
+   "notes": "The ENV-002 half of the same hole: the corpus's only ENV-002 counter-example omits `command` entirely. Here `command` is present as `[\"why\"]`, so an implementation that checks presence but not type is caught. `status` is a valid snake_case token, isolating `command` as the single variable. No `command` key in `expect` -- the document's command is deliberately not a string, so asserting equality against a string would be incoherent.",
+   "reserved": true
   },
   {
    "id": "spec-REC-135-valid-every-parsed-field-round-trips",
@@ -10047,7 +10099,8 @@
      "Add a cache tier"
     ]
    },
-   "notes": "The control is `alternative_item_keys`: a parser still yielding REC-018's list of strings cannot carry the disposition or the rationale at all, so it fails on item 1 whatever else it gets right. The second item records no disposition, so its object carries `option` only -- absence means NOT RECORDED, never that no disposition existed. `envelope_projection_alternatives` is what ENV-016 still requires the envelope to carry for this same record: option text, flat strings."
+   "notes": "The control is `alternative_item_keys`: a parser still yielding REC-018's list of strings cannot carry the disposition or the rationale at all, so it fails on item 1 whatever else it gets right. The second item records no disposition, so its object carries `option` only -- absence means NOT RECORDED, never that no disposition existed. `envelope_projection_alternatives` is what ENV-016 still requires the envelope to carry for this same record: option text, flat strings.",
+   "reserved": true
   },
   {
    "id": "spec-REC-140-valid-empty-decision-yields-empty-string",
@@ -10236,7 +10289,8 @@
      }
     ]
    },
-   "notes": "The control is `exact_key_count` together with `required_keys`: a validator written from \u00a76.1's count alone can accept any twelve keys, while ENV-044 names the exact set. `forbidden_keys` are the explain variant's keys -- ENV-006 makes `explain` the discriminator, and the two shapes share nothing beyond command and status. `dark_files` is a LIST of paths here; the count lives inside intent_debt (ENV-045), so the list reading is the one that adds information."
+   "notes": "The control is `exact_key_count` together with `required_keys`: a validator written from \u00a76.1's count alone can accept any twelve keys, while ENV-044 names the exact set. `forbidden_keys` are the explain variant's keys -- ENV-006 makes `explain` the discriminator, and the two shapes share nothing beyond command and status. `dark_files` is a LIST of paths here; the count lives inside intent_debt (ENV-045), so the list reading is the one that adds information.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-044-invalid-coverage-omits-intent-by-kind",
@@ -10261,7 +10315,8 @@
      "op": "absent"
     }
    },
-   "notes": "Eleven of the twelve coverage-specific keys are present, so the envelope looks complete to any validator that checks \u00a76.1's count loosely. ENV-044 names `intent_by_kind` as the missing key, so this MUST be rejected."
+   "notes": "Eleven of the twelve coverage-specific keys are present, so the envelope looks complete to any validator that checks \u00a76.1's count loosely. ENV-044 names `intent_by_kind` as the missing key, so this MUST be rejected.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-045-valid-intent-debt-four-components",
@@ -10328,7 +10383,8 @@
      }
     ]
    },
-   "notes": "The control is the pair `orphaned_intent` == 0 and `stale_decisions` == null in one block. They are the two readings ENV-029 separates: a measured zero and an unmeasured signal. An implementation that reports what it cannot compute as 0 fails `is_null`; one that satisfies ENV-029 by dropping the uncomputable key instead fails `has_keys` and `len_eq` -- which is the omission the last sentence of ENV-045 exists to close."
+   "notes": "The control is the pair `orphaned_intent` == 0 and `stale_decisions` == null in one block. They are the two readings ENV-029 separates: a measured zero and an unmeasured signal. An implementation that reports what it cannot compute as 0 fails `is_null`; one that satisfies ENV-029 by dropping the uncomputable key instead fails `has_keys` and `len_eq` -- which is the omission the last sentence of ENV-045 exists to close.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-045-invalid-intent-debt-omits-stale-decisions",
@@ -10356,7 +10412,8 @@
      "op": "absent"
     }
    },
-   "notes": "`stale_decisions` cannot be computed by this implementation, so it dropped the key. That is precisely the escape ENV-045's last sentence closes: without it, an implementation satisfies ENV-029's never-report-zero rule by reporting nothing, and a consumer cannot tell `not applicable` from `not measured`. MUST be rejected."
+   "notes": "`stale_decisions` cannot be computed by this implementation, so it dropped the key. That is precisely the escape ENV-045's last sentence closes: without it, an implementation satisfies ENV-029's never-report-zero rule by reporting nothing, and a consumer cannot tell `not applicable` from `not measured`. MUST be rejected.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-047-valid-intent-kind-beyond-the-record-pair",
@@ -10422,7 +10479,8 @@
      }
     ]
    },
-   "notes": "The control is the `not_in` constraint: a validator that enforces REC-122's pair on this ENVELOPE field rejects all three results, and an implementation that 'repairs' an unrecognized kind by coercing it to `decision` fails the three `eq` constraints. REC-122 closes the identity COMPONENT, not this field -- ENV-033 presupposes a `constraint` kind at envelope level and \u00a71.4 puts intent derived from non-record sources out of scope, which is where these three kinds come from. `note` is forbidden because \u00a76.1 admits it when and only when status is `topically_weak`."
+   "notes": "The control is the `not_in` constraint: a validator that enforces REC-122's pair on this ENVELOPE field rejects all three results, and an implementation that 'repairs' an unrecognized kind by coercing it to `decision` fails the three `eq` constraints. REC-122 closes the identity COMPONENT, not this field -- ENV-033 presupposes a `constraint` kind at envelope level and \u00a71.4 puts intent derived from non-record sources out of scope, which is where these three kinds come from. `note` is forbidden because \u00a76.1 admits it when and only when status is `topically_weak`.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-047-invalid-unknown-intent-kind-rejected",
@@ -10456,7 +10514,8 @@
      }
     ]
    },
-   "notes": "This is the envelope an implementation emits when it enforces REC-122's pair on the envelope field: the same query that produces the valid fixture beside it returns an error instead. The shape is a well-formed error variant (ENV-011) -- what is non-conformant is refusing on this GROUND, which is why the failing condition is the conjunction of the error status and a message citing intent_kind, not the error status alone. An error envelope is otherwise entirely legitimate."
+   "notes": "This is the envelope an implementation emits when it enforces REC-122's pair on the envelope field: the same query that produces the valid fixture beside it returns an error instead. The shape is a well-formed error variant (ENV-011) -- what is non-conformant is refusing on this GROUND, which is why the failing condition is the conjunction of the error status and a message citing intent_kind, not the error status alone. An error envelope is otherwise entirely legitimate.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-048-valid-violation-entry-four-keys",
@@ -10502,7 +10561,8 @@
      }
     ]
    },
-   "notes": "The control is the `has_keys` constraint applied to EVERY entry: a lint-shaped violation carries rule, file and message, while ENV-048 additionally requires `decision_id`. Both entries here cite a decision."
+   "notes": "The control is the `has_keys` constraint applied to EVERY entry: a lint-shaped violation carries rule, file and message, while ENV-048 additionally requires `decision_id`. Both entries here cite a decision.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-048-invalid-violation-omits-decision-id",
@@ -10527,7 +10587,8 @@
      "op": "absent"
     }
    },
-   "notes": "The FIRST violation cites a decision and the second does not, so an implementation that checks only `violations[0]` accepts the envelope. A rule whose failure cannot name the decision that motivated it is not a conformance check; it is a lint. MUST be rejected."
+   "notes": "The FIRST violation cites a decision and the second does not, so an implementation that checks only `violations[0]` accepts the envelope. A rule whose failure cannot name the decision that motivated it is not a conformance check; it is a lint. MUST be rejected.",
+   "reserved": true
   },
   {
    "id": "spec-REC-134-invalid-envelope-alternatives-carry-objects",
@@ -10556,7 +10617,8 @@
      "value": "object"
     }
    },
-   "notes": "Counter-example for the half of REC-134 that is easiest to get wrong in the right direction: having gained structure in the parse, an implementation carries it straight onto the wire. REC-134 is explicit that the projection stays at the envelope so ENV-016 can stand unchanged -- the parse gains structure, the wire format does not. The other two results in this same envelope carry the CORRECT flat string form, so a validator checking one result at random can miss it."
+   "notes": "Counter-example for the half of REC-134 that is easiest to get wrong in the right direction: having gained structure in the parse, an implementation carries it straight onto the wire. REC-134 is explicit that the projection stays at the envelope so ENV-016 can stand unchanged -- the parse gains structure, the wire format does not. The other two results in this same envelope carry the CORRECT flat string form, so a validator checking one result at random can miss it.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-049-valid-dark-files-array-outer-count-inner",
@@ -10584,7 +10646,8 @@
      }
     ]
    },
-   "notes": "The two are deliberately consistent (3 paths, count 3) so agreement cannot substitute for a type check."
+   "notes": "The two are deliberately consistent (3 paths, count 3) so agreement cannot substitute for a type check.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-049-invalid-dark-files-shapes-swapped",
@@ -10606,7 +10669,8 @@
     ],
     "failing_condition": "dark_files is an integer and intent_debt.dark_files is an array \u2014 the shapes transposed"
    },
-   "notes": "Every ENV-044 key present and every count internally consistent; only the shapes differ."
+   "notes": "Every ENV-044 key present and every count internally consistent; only the shapes differ.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-050-valid-golden-five-components",
@@ -10646,7 +10710,8 @@
      }
     ]
    },
-   "notes": "Numbers are internally consistent so presence-only checking cannot substitute for asserting each component."
+   "notes": "Numbers are internally consistent so presence-only checking cannot substitute for asserting each component.",
+   "reserved": true
   },
   {
    "id": "spec-ENV-050-invalid-percentage-without-breakdown",
@@ -10670,7 +10735,8 @@
     ],
     "failing_condition": "golden.by_provenance absent while golden.golden_fraction_pct present"
    },
-   "notes": "POLARITY: the omission IS the test. Never add by_provenance here."
+   "notes": "POLARITY: the omission IS the test. Never add by_provenance here.",
+   "reserved": true
   },
   {
    "id": "spec-REC-142-valid-numbered-heading-is-an-adr",
@@ -12129,6 +12195,159 @@
    "spec_rule_ids": [
     "PROV-022",
     "PROV-021"
+   ]
+  },
+  {
+   "id": "spec-ENV-051-valid-preamble-then-sections",
+   "family": "ENV",
+   "rule_id": "ENV-051",
+   "rule_statement": "A recall envelope is a preamble followed by one section per record delivered; where no record governs the path it is empty.",
+   "valid": true,
+   "kind": "recall_text",
+   "path": "recall/edit-two-records.json",
+   "notes": "Two records delivered at the edit coupling point: a preamble, then two attributable sections.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "preamble_present": true,
+    "section_count": 2,
+    "sections_attributable": true
+   },
+   "spec_rule_ids": [
+    "ENV-051",
+    "ENV-052",
+    "ENV-053"
+   ]
+  },
+  {
+   "id": "spec-ENV-051-valid-nothing-governs-is-empty",
+   "family": "ENV",
+   "rule_id": "ENV-051",
+   "rule_statement": "A recall envelope is a preamble followed by one section per record delivered; where no record governs the path it is empty.",
+   "valid": true,
+   "kind": "recall_text",
+   "path": "recall/edit-nothing-governs.json",
+   "notes": "No record governs the path. The envelope is empty; the none_governs / resolution_failed distinction lives on the recall line (INT-011), not here.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "empty": true,
+    "preamble_present": false,
+    "section_count": 0
+   },
+   "spec_rule_ids": [
+    "ENV-051"
+   ]
+  },
+  {
+   "id": "spec-ENV-052-invalid-sections-without-preamble",
+   "family": "ENV",
+   "rule_id": "ENV-052",
+   "rule_statement": "The preamble states, in any wording, that recorded decisions govern the path, that their author is not present, that they are to be read before the change, and that a departure must be said and recorded.",
+   "valid": false,
+   "kind": "recall_text",
+   "path": "recall/edit-missing-preamble.json",
+   "notes": "Two sections and no preamble. The obligations to read first and to record a departure are what make a push more than a paste of text; without them the reader is told nothing about what the sections are for.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "preamble_present": false,
+    "preamble_present_must_not_equal": true,
+    "section_count": 2
+   },
+   "spec_rule_ids": [
+    "ENV-052",
+    "ENV-051"
+   ]
+  },
+  {
+   "id": "spec-ENV-053-invalid-heading-without-path",
+   "family": "ENV",
+   "rule_id": "ENV-053",
+   "rule_statement": "Each section begins with a level-2 heading carrying title, status or 'status not stated', date or 'undated', and the record's path, so every section is attributable from its heading alone.",
+   "valid": false,
+   "kind": "recall_text",
+   "path": "recall/edit-heading-without-path.json",
+   "notes": "A section heading carrying title, status and date but no record path. The reader cannot attribute what it was shown to a file, so the section is not attributable.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "sections_attributable": false,
+    "sections_attributable_must_not_equal": true,
+    "section_count": 1
+   },
+   "spec_rule_ids": [
+    "ENV-053"
+   ]
+  },
+  {
+   "id": "spec-ENV-054-valid-truncation-is-visible",
+   "family": "ENV",
+   "rule_id": "ENV-054",
+   "rule_statement": "Decision text may be bounded, but a truncation must be visible: a bounded section is never a silent prefix of the source.",
+   "valid": true,
+   "kind": "recall_text",
+   "path": "recall/edit-visible-truncation.json",
+   "notes": "The decision text is bounded and the cut is marked. The delivered text is not a plain prefix of the source, so a reader can tell it is incomplete.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "truncation_visible": true
+   },
+   "spec_rule_ids": [
+    "ENV-054"
+   ]
+  },
+  {
+   "id": "spec-ENV-054-invalid-silent-prefix",
+   "family": "ENV",
+   "rule_id": "ENV-054",
+   "rule_statement": "Decision text may be bounded, but a truncation must be visible: a bounded section is never a silent prefix of the source.",
+   "valid": false,
+   "kind": "recall_text",
+   "path": "recall/edit-silent-truncation.json",
+   "notes": "The decision text is cut at the same point with no mark. It reads as complete and is not; a reader acts on half a decision as if it were the whole.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "truncation_visible": false,
+    "truncation_visible_must_not_equal": true
+   },
+   "spec_rule_ids": [
+    "ENV-054"
+   ]
+  },
+  {
+   "id": "spec-ENV-055-valid-goal-request-first",
+   "family": "ENV",
+   "rule_id": "ENV-055",
+   "rule_statement": "In the plan-gate form a header naming the record count precedes the sections, and where no goal was recorded a goal request precedes both.",
+   "valid": true,
+   "kind": "recall_text",
+   "path": "recall/intention-goal-request-first.json",
+   "notes": "Plan-gate form with no recorded goal: the goal request comes first, then the header naming two records, then the sections.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "goal_request_first": true,
+    "header_count": 2,
+    "section_count": 2
+   },
+   "spec_rule_ids": [
+    "ENV-055",
+    "ENV-053"
+   ]
+  },
+  {
+   "id": "spec-ENV-055-invalid-goal-request-after-records",
+   "family": "ENV",
+   "rule_id": "ENV-055",
+   "rule_statement": "In the plan-gate form a header naming the record count precedes the sections, and where no goal was recorded a goal request precedes both.",
+   "valid": false,
+   "kind": "recall_text",
+   "path": "recall/intention-goal-request-last.json",
+   "notes": "The same content with the goal request placed after the sections. Agents answer what they see first; a request after the records is skipped.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "goal_request_first": false,
+    "goal_request_first_must_not_equal": true,
+    "header_count": 2
+   },
+   "spec_rule_ids": [
+    "ENV-055"
    ]
   }
  ]

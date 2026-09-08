@@ -1,0 +1,6 @@
+{
+  "coupling": "intention",
+  "goal_recorded": false,
+  "records": 2,
+  "text": "Bindings for your recorded scope (2 records):\n\n## Validate requests at the edge (accepted, 2026-05-02) — docs/decisions/2026-05-02-validate-at-the-edge.md\nRequest validation runs at the edge handler, before any service call.\n\n## Keep cache keys in one module (status not stated, undated) — docs/decisions/cache-keys.md\nEvery cache key is built by one module.\n\nYour scope has been recorded from the files you read (3 files). Before continuing, state the goal in one line.\n\n"
+}

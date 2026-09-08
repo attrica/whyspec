@@ -90,6 +90,22 @@ def build(text: str) -> dict[str, str]:
     return {match.group(1): statement(match.group(2)) for match in matches}
 
 
+def reserved_ids(text: str) -> set[str]:
+    """Rules whose body sits in Appendix A are reserved (§6.3): kept, not required."""
+    marker = "## Appendix A."
+    if marker not in text:
+        return set()
+    return set(ID_RE.findall(text[text.index(marker):]))
+
+
+def mark_for(rid: str, reserved: set[str]) -> str:
+    if rid in OUT_OF_SCOPE:
+        return f" _(out of scope: {OUT_OF_SCOPE[rid]})_"
+    if rid in reserved:
+        return " _(reserved: Appendix A)_"
+    return ""
+
+
 def render(text: str, rules: dict[str, str]) -> str:
     """Rewrite every index row, drop orphans, and insert rules that have no row yet.
 
@@ -97,11 +113,13 @@ def render(text: str, rules: dict[str, str]) -> str:
     staleness in a different shape, and leaving it to be done by hand recreates the
     process that failed.
     """
+    reserved = reserved_ids(text)
+
     def repl(m: re.Match) -> str:
         rid = m.group(1)
         if rid not in rules:
             return ""
-        mark = f" _(out of scope: {OUT_OF_SCOPE[rid]})_" if rid in OUT_OF_SCOPE else ""
+        mark = mark_for(rid, reserved)
         return f"| {rid} | {rules[rid]}.{mark} |"
 
     text = ROW_RE.sub(repl, text)
@@ -114,7 +132,7 @@ def render(text: str, rules: dict[str, str]) -> str:
             continue
         anchor = max((r for r in rows if r < rid), default=rows[0])
         line = next(l for l in text.splitlines() if l.startswith(f"| {anchor} |"))
-        mark = f" _(out of scope: {OUT_OF_SCOPE[rid]})_" if rid in OUT_OF_SCOPE else ""
+        mark = mark_for(rid, reserved)
         text = text.replace(line, f"{line}\n| {rid} | {rules[rid]}.{mark} |", 1)
     return text
 

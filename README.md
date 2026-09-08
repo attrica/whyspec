@@ -42,7 +42,7 @@ user out, and the reconnect storm costs more than the reads it saves.
 This repository specifies three things, and nothing else:
 
 - **the record format** — how a why record is written and parsed
-- **the result envelope** — the shape of an answer to a query
+- **the recall envelope** — the text that puts governing decisions in front of a writer
 - **the provenance vocabulary** — the tiers a claim can come from, and what each is worth
 
 One optional profile sits beside them: the [intent-layer profile](profiles/intent-layer.md), the
