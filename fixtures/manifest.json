@@ -11429,6 +11429,133 @@
     "REC-157",
     "REC-084"
    ]
+  },
+  {
+   "id": "spec-REC-158-valid-fenced-status-is-quoted-text",
+   "family": "REC",
+   "rule_id": "REC-158",
+   "rule_statement": "A fenced code block is quoted text: no heading, status line, identifier or date is read from inside one; a fence closes only with its own marker; fenced lines inside a section remain that section's body.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-158-valid-fenced-status-is-quoted-text.md",
+   "notes": "The only `**Status:**` line in the document sits inside a fence, quoting the predecessor's header. It is not the record's status: status is ABSENT and the record is ingested. The fenced `# Decision:` H1 is not structural either; the real H1 is the first line.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "decision",
+    "title": "Keep the retry budget in one place",
+    "status": null,
+    "alternatives": 0,
+    "assumptions": 0
+   },
+   "spec_rule_ids": [
+    "REC-158",
+    "REC-029"
+   ]
+  },
+  {
+   "id": "spec-REC-158-invalid-fenced-status-must-not-retire-the-record",
+   "family": "REC",
+   "rule_id": "REC-158",
+   "rule_statement": "A fenced code block is quoted text: no heading, status line, identifier or date is read from inside one; a fence closes only with its own marker; fenced lines inside a section remain that section's body.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-158-valid-fenced-status-is-quoted-text.md",
+   "notes": "The non-conformant reading takes the fenced `**Status:** Rejected` as the record's status, and REC-032 then excludes a live record from ingest. Status MUST NOT be `rejected`.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "status": null,
+    "status_must_not_equal": "rejected"
+   },
+   "spec_rule_ids": [
+    "REC-158",
+    "REC-032"
+   ]
+  },
+  {
+   "id": "spec-REC-158-valid-fenced-heading-stays-in-body",
+   "family": "REC",
+   "rule_id": "REC-158",
+   "rule_statement": "A fenced code block is quoted text: no heading, status line, identifier or date is read from inside one; a fence closes only with its own marker; fenced lines inside a section remain that section's body.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-158-valid-fenced-heading-stays-in-body.md",
+   "notes": "A fenced `## Alternatives considered` inside the Decision body. It is not a section: alternatives is 0, and the Decision body runs through the fence to the end of the section, keeping the quoted lines as content.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "decision",
+    "status": "accepted",
+    "alternatives": 0,
+    "rationale": "Request validation runs at the edge handler. The template it replaces:\n\n```markdown\n## Alternatives considered\n1. Validate in every service\n```\n\nThat section is quoted, not ours."
+   },
+   "spec_rule_ids": [
+    "REC-158",
+    "REC-004"
+   ]
+  },
+  {
+   "id": "spec-REC-158-invalid-fenced-heading-must-not-open-a-section",
+   "family": "REC",
+   "rule_id": "REC-158",
+   "rule_statement": "A fenced code block is quoted text: no heading, status line, identifier or date is read from inside one; a fence closes only with its own marker; fenced lines inside a section remain that section's body.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-158-valid-fenced-heading-stays-in-body.md",
+   "notes": "Two wrong readings: the fenced heading opens an Alternatives section yielding one alternative, or it terminates the Decision body early and the rationale loses everything from the fence on. Alternatives MUST NOT be 1 and the rationale MUST NOT stop at the fence.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "alternatives": 0,
+    "alternatives_must_not_equal": 1,
+    "rationale": "Request validation runs at the edge handler. The template it replaces:\n\n```markdown\n## Alternatives considered\n1. Validate in every service\n```\n\nThat section is quoted, not ours.",
+    "rationale_must_not_equal": "Request validation runs at the edge handler. The template it replaces:"
+   },
+   "spec_rule_ids": [
+    "REC-158",
+    "REC-004"
+   ]
+  },
+  {
+   "id": "spec-REC-158-valid-fence-closes-only-with-own-marker",
+   "family": "REC",
+   "rule_id": "REC-158",
+   "rule_statement": "A fenced code block is quoted text: no heading, status line, identifier or date is read from inside one; a fence closes only with its own marker; fenced lines inside a section remain that section's body.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-158-valid-fence-closes-only-with-own-marker.md",
+   "notes": "A tilde fence containing a backtick fence that contains a status line. The backtick lines do not close the tilde fence, so the status line is still quoted and the record's status is ABSENT.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "decision",
+    "status": null,
+    "alternatives": 0
+   },
+   "spec_rule_ids": [
+    "REC-158"
+   ]
+  },
+  {
+   "id": "spec-REC-158-invalid-inner-marker-must-not-close-the-fence",
+   "family": "REC",
+   "rule_id": "REC-158",
+   "rule_statement": "A fenced code block is quoted text: no heading, status line, identifier or date is read from inside one; a fence closes only with its own marker; fenced lines inside a section remain that section's body.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-158-valid-fence-closes-only-with-own-marker.md",
+   "notes": "A reader that closes the tilde fence on the first backtick line reads the status line as structural and retires the record. Status MUST NOT be `rejected`.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "status": null,
+    "status_must_not_equal": "rejected"
+   },
+   "spec_rule_ids": [
+    "REC-158",
+    "REC-032"
+   ]
   }
  ]
 }
