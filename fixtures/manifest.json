@@ -1505,7 +1505,7 @@
    "id": "PROV-001-valid-rank-order",
    "rule_id": "PROV-001",
    "family": "PROV",
-   "rule_statement": "Valid provenance tier values are exactly {authored, captured, attested, reconstructed}. Trust ranking, most to least trusted: authored < captured < attested < reconstructed (lower rank integer = more trusted).",
+   "rule_statement": "Valid provenance tier values are exactly {authored, captured, attested, reconstructed-then-ratified, reconstructed}. Trust ranking, most to least trusted: authored < captured < attested < reconstructed-then-ratified < reconstructed (lower rank integer = more trusted).",
    "valid": true,
    "kind": "vector",
    "path": "provenance/PROV-001-valid-rank-order.json",
@@ -1525,7 +1525,7 @@
    "id": "PROV-001-invalid-rank-order",
    "rule_id": "PROV-001",
    "family": "PROV",
-   "rule_statement": "Valid provenance tier values are exactly {authored, captured, attested, reconstructed}. Trust ranking, most to least trusted: authored < captured < attested < reconstructed (lower rank integer = more trusted).",
+   "rule_statement": "Valid provenance tier values are exactly {authored, captured, attested, reconstructed-then-ratified, reconstructed}. Trust ranking, most to least trusted: authored < captured < attested < reconstructed-then-ratified < reconstructed (lower rank integer = more trusted).",
    "valid": false,
    "kind": "vector",
    "path": "provenance/PROV-001-invalid-rank-order.json",
@@ -1634,7 +1634,7 @@
    "id": "PROV-004-valid-golden-fraction",
    "rule_id": "PROV-004",
    "family": "PROV",
-   "rule_statement": "golden_fraction counts only nodes whose provenance is in {authored, captured, attested}; reconstructed (and absent-provenance) nodes never contribute to the golden numerator under any circumstance. An empty node list yields 0%, not an error.",
+   "rule_statement": "golden_fraction counts only nodes whose provenance is in {authored, captured, attested, reconstructed-then-ratified}; reconstructed (and absent-provenance) nodes never contribute to the golden numerator under any circumstance. An empty node list yields 0%, not an error.",
    "valid": true,
    "kind": "vector",
    "path": "provenance/PROV-004-valid-golden-fraction.json",
@@ -1654,7 +1654,7 @@
    "id": "PROV-004-invalid-golden-fraction-blends-reconstructed",
    "rule_id": "PROV-004",
    "family": "PROV",
-   "rule_statement": "golden_fraction counts only nodes whose provenance is in {authored, captured, attested}; reconstructed (and absent-provenance) nodes never contribute to the golden numerator under any circumstance. An empty node list yields 0%, not an error.",
+   "rule_statement": "golden_fraction counts only nodes whose provenance is in {authored, captured, attested, reconstructed-then-ratified}; reconstructed (and absent-provenance) nodes never contribute to the golden numerator under any circumstance. An empty node list yields 0%, not an error.",
    "valid": false,
    "kind": "vector",
    "path": "provenance/PROV-004-invalid-golden-fraction-blends-reconstructed.json",
@@ -11973,6 +11973,138 @@
    },
    "spec_rule_ids": [
     "INT-012"
+   ]
+  },
+  {
+   "id": "spec-PROV-022-valid-agent-drafted-human-ratified",
+   "family": "PROV",
+   "rule_id": "PROV-022",
+   "rule_statement": "Where every drafted or decided actor is an agent, the drafter's kind is a ceiling: a corroborated human ratification makes the record reconstructed-then-ratified, none makes it reconstructed, and ratification never promotes it to authored or captured.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-PROV-022-valid-agent-drafted-human-ratified.md",
+   "notes": "An agent drafted, a different human ratified, and the ratification is corroborated. Machine-originated, so the tier is reconstructed-then-ratified: the human judgment is kept, and it is the highest a machine draft can reach.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "decision",
+    "attribution_count": 2,
+    "self_ratification": false,
+    "provenance": "reconstructed-then-ratified"
+   },
+   "spec_rule_ids": [
+    "PROV-022",
+    "PROV-001"
+   ]
+  },
+  {
+   "id": "spec-PROV-022-invalid-ratification-must-not-lift-the-ceiling",
+   "family": "PROV",
+   "rule_id": "PROV-022",
+   "rule_statement": "Where every drafted or decided actor is an agent, the drafter's kind is a ceiling: a corroborated human ratification makes the record reconstructed-then-ratified, none makes it reconstructed, and ratification never promotes it to authored or captured.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-PROV-022-valid-agent-drafted-human-ratified.md",
+   "notes": "The tempting reading applies PROV-021 and promotes a corroborated ratification to authored, or leaves the record at captured. Both put a reconstruction above an aside a person wrote at the time. The drafter's kind is the ceiling.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "provenance": "reconstructed-then-ratified",
+    "provenance_must_not_equal": [
+     "authored",
+     "captured"
+    ]
+   },
+   "spec_rule_ids": [
+    "PROV-022",
+    "REC-119"
+   ]
+  },
+  {
+   "id": "spec-PROV-022-valid-agent-drafted-unratified",
+   "family": "PROV",
+   "rule_id": "PROV-022",
+   "rule_statement": "Where every drafted or decided actor is an agent, the drafter's kind is a ceiling: a corroborated human ratification makes the record reconstructed-then-ratified, none makes it reconstructed, and ratification never promotes it to authored or captured.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-PROV-022-valid-agent-drafted-unratified.md",
+   "notes": "An agent drafted and nobody ratified. The record is reconstructed: a machine draft that no person has vouched for.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "decision",
+    "attribution_count": 1,
+    "provenance": "reconstructed"
+   },
+   "spec_rule_ids": [
+    "PROV-022"
+   ]
+  },
+  {
+   "id": "spec-PROV-022-invalid-unratified-draft-must-not-be-captured",
+   "family": "PROV",
+   "rule_id": "PROV-022",
+   "rule_statement": "Where every drafted or decided actor is an agent, the drafter's kind is a ceiling: a corroborated human ratification makes the record reconstructed-then-ratified, none makes it reconstructed, and ratification never promotes it to authored or captured.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-PROV-022-valid-agent-drafted-unratified.md",
+   "notes": "Reading the Decision heading alone (PROV-006) gives captured. Attribution is present and every drafter is an agent, so PROV-022 governs and the tier MUST be reconstructed.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "provenance": "reconstructed",
+    "provenance_must_not_equal": [
+     "captured",
+     "reconstructed-then-ratified"
+    ]
+   },
+   "spec_rule_ids": [
+    "PROV-022",
+    "PROV-006"
+   ]
+  },
+  {
+   "id": "spec-PROV-022-valid-human-decided-stays-captured",
+   "family": "PROV",
+   "rule_id": "PROV-022",
+   "rule_statement": "Where every drafted or decided actor is an agent, the drafter's kind is a ceiling: a corroborated human ratification makes the record reconstructed-then-ratified, none makes it reconstructed, and ratification never promotes it to authored or captured.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-PROV-022-valid-human-decided-stays-captured.md",
+   "notes": "An agent drafted but a human decided. Not machine-originated: PROV-021 applies, no corroborated ratification, so captured. This is the machine-assisted capture \u00a74.14 describes.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "decision",
+    "attribution_count": 2,
+    "provenance": "captured"
+   },
+   "spec_rule_ids": [
+    "PROV-022",
+    "PROV-021"
+   ]
+  },
+  {
+   "id": "spec-PROV-022-invalid-human-decider-must-not-be-machine-originated",
+   "family": "PROV",
+   "rule_id": "PROV-022",
+   "rule_statement": "Where every drafted or decided actor is an agent, the drafter's kind is a ceiling: a corroborated human ratification makes the record reconstructed-then-ratified, none makes it reconstructed, and ratification never promotes it to authored or captured.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-PROV-022-valid-human-decided-stays-captured.md",
+   "notes": "A reader that looks only at the drafter's kind files this record as reconstructed and discards the human decision. Any human drafter or decider takes the record out of PROV-022.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "provenance": "captured",
+    "provenance_must_not_equal": [
+     "reconstructed",
+     "reconstructed-then-ratified"
+    ]
+   },
+   "spec_rule_ids": [
+    "PROV-022",
+    "PROV-021"
    ]
   }
  ]

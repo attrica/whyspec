@@ -1,19 +1,38 @@
 {
   "rule": "PROV-004",
-  "statement": "golden_fraction counts only nodes whose provenance is in {authored, captured, attested} toward the golden numerator; reconstructed (and absent-provenance) nodes never count, and an empty node list yields 0% rather than an error.",
+  "statement": "golden_fraction counts only nodes whose provenance is in {authored, captured, attested, reconstructed-then-ratified} toward the golden numerator; reconstructed (and absent-provenance) nodes never count, and an empty node list yields 0% rather than an error.",
   "input_nodes": [
-    {"provenance": "authored"},
-    {"provenance": "captured"},
-    {"provenance": "attested"},
-    {"provenance": "reconstructed"},
+    {
+      "provenance": "authored"
+    },
+    {
+      "provenance": "captured"
+    },
+    {
+      "provenance": "attested"
+    },
+    {
+      "provenance": "reconstructed-then-ratified"
+    },
+    {
+      "provenance": "reconstructed"
+    },
     {}
   ],
   "expected": {
-    "golden_count": 3,
-    "total_intent": 5,
-    "golden_fraction_pct": 60,
-    "by_provenance": {"authored": 1, "captured": 1, "attested": 1, "reconstructed": 2}
+    "golden_count": 4,
+    "total_intent": 6,
+    "golden_fraction_pct": 67,
+    "by_provenance": {
+      "authored": 1,
+      "captured": 1,
+      "attested": 1,
+      "reconstructed-then-ratified": 1,
+      "reconstructed": 2
+    }
   },
-  "expected_empty_input": {"golden_fraction_pct": 0},
-  "note": "Verified against whyfile.provenance.golden_fraction()."
+  "expected_empty_input": {
+    "golden_fraction_pct": 0
+  },
+  "note": "A ratified reconstruction counts as golden; an unratified one and an absent value do not. 4 of 6 = 66.7%, reported as the integer 67."
 }

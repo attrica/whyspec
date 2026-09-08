@@ -37,18 +37,18 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER|INT)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 234,
-    "fixture_paths": 383,
-    "manifest_entries": 419,
-    "mapped_rule_ids": 211,
+    "rules": 235,
+    "fixture_paths": 386,
+    "manifest_entries": 425,
+    "mapped_rule_ids": 212,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 327,
+    "computed": 333,
     "drift_checked": 92,
 }
 EXPECTED_MUST_NOT_EQUAL = {
-    "fixtures": 90,
-    "assertions": 106,
+    "fixtures": 93,
+    "assertions": 109,
 }
 
 # REC-145. Same obligation, different spelling -- measured against 84 real ADRs from the three

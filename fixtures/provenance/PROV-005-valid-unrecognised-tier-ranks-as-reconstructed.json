@@ -14,12 +14,12 @@
     "reconstructed"
   ],
   "expected_rank": [
-    3,
-    3,
-    3,
-    3,
-    3,
-    3
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
   ],
-  "note": "Verified by execution against provenance_rank(). Every listed value returns the reconstructed rank."
+  "note": "Every listed value returns the reconstructed rank, which is 4 once the fifth tier exists."
 }

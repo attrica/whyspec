@@ -309,6 +309,7 @@
         "authored",
         "captured",
         "attested",
+        "reconstructed-then-ratified",
         "reconstructed"
       ]
     },
@@ -567,6 +568,7 @@
             "authored",
             "captured",
             "attested",
+            "reconstructed-then-ratified",
             "reconstructed"
           ]
         },
@@ -629,6 +631,7 @@
             "authored",
             "captured",
             "attested",
+            "reconstructed-then-ratified",
             "reconstructed"
           ]
         }
