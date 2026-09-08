@@ -1,0 +1,20 @@
+{
+  "record_text": "# Decision: Validate requests at the edge\n\n**Status:** Accepted\n\n## Context\n\nWhere should request validation live?\n\n## Decision\n\nRequest validation runs at the edge handler, before any service call.\n\n## Governs\n\n- /src/edge/handler.py\n- src/edge/handler.py\n",
+  "corpus_files": [
+    "src/edge/handler.py",
+    "src/edge/deep/parse.py",
+    "src/main.py",
+    "src/util/io.py",
+    "config/app.toml",
+    "src/legacy/keys.py"
+  ],
+  "rule": "REC-154",
+  "statement": "A writer MUST NOT begin an item with /; a reader MUST NOT interpret a leading / as the repository root, so such an item resolves to zero artifacts.",
+  "note": "The same file with and without a leading slash. The repository-relative spelling resolves; the rooted spelling matches no repository-relative path and resolves to zero, reported under REC-086, not silently repaired.",
+  "expected": {
+    "governs_matched_counts": [
+      0,
+      1
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "record_text": "# Decision: Validate requests at the edge\n\n**Status:** Accepted\n\n## Context\n\nWhere should request validation live?\n\n## Decision\n\nRequest validation runs at the edge handler, before any service call. The old key builder in `src/legacy/keys.py` is retired by this change.\n\n## Governs\n\n- src/edge/\n",
+  "corpus_files": [
+    "src/edge/handler.py",
+    "src/edge/deep/parse.py",
+    "src/main.py",
+    "src/util/io.py",
+    "config/app.toml",
+    "src/legacy/keys.py"
+  ],
+  "rule": "REC-156",
+  "statement": "REC-152 to REC-155 govern declared scope items; a checker MAY resolve prose referents more tolerantly, but tolerance MUST NOT confer governance.",
+  "note": "The rationale names `src/legacy/keys.py`, which exists in the corpus. Declared scope is the one `## Governs` item, so resolution reports exactly one reference; the prose path is a checker's evidence about currency, never a scope binding.",
+  "expected": {
+    "governs_resolution_count": 1,
+    "governs_matched_counts": [
+      2
+    ]
+  }
+}
