@@ -18,7 +18,7 @@ sign-off cannot be merged.
 
 ## Before opening a PR
 
-CI (`.github/workflows/conformance.yml`) runs six checks; run them locally first so a failure
+CI (`.github/workflows/conformance.yml`) runs the checks below; run them locally first so a failure
 isn't a surprise:
 
 ```bash
@@ -26,6 +26,7 @@ python3 tools/check_schema.py
 python3 tools/check_table_fixtures.py
 python3 tools/build_index.py --check
 python3 tools/build_openapi.py --check
+python3 tools/test_build_openapi.py
 python3 tools/run_corpus.py --check
 python3 tools/test_checker_mutations.py
 ```

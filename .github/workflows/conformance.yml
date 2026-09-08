@@ -45,6 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: python3 tools/build_openapi.py --check
+      - run: python3 tools/test_build_openapi.py
 
   run-corpus:
     name: run_corpus --check
