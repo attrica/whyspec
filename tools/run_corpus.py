@@ -35,18 +35,18 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 219,
-    "fixture_paths": 367,
-    "manifest_entries": 403,
-    "mapped_rule_ids": 200,
+    "rules": 222,
+    "fixture_paths": 371,
+    "manifest_entries": 407,
+    "mapped_rule_ids": 201,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 311,
+    "computed": 315,
     "drift_checked": 92,
 }
 EXPECTED_MUST_NOT_EQUAL = {
-    "fixtures": 88,
-    "assertions": 104,
+    "fixtures": 90,
+    "assertions": 106,
 }
 
 # REC-145. Same obligation, different spelling -- measured against 84 real ADRs from the three
@@ -850,6 +850,14 @@ def parse_record(data: bytes) -> dict[str, Any]:
                 governs = governs_items(alias_body)
                 break
     id_match = re.search(r"^\*\*Id:\*\*\s*(\S+)", structural, re.I | re.M)
+    # VER-011: the first `**Whyspec:**` line, label matched case-insensitively; a value that is
+    # not MAJOR.MINOR is yielded absent, as REC-129 treats a malformed date.
+    version_match = re.search(r"^\*\*Whyspec:\*\*\s*(.*?)\s*$", structural, re.I | re.M)
+    format_version = (
+        version_match.group(1)
+        if version_match and re.fullmatch(r"\d+\.\d+", version_match.group(1))
+        else None
+    )
     question = section("Context")
     rationale = section("Decision")
     recommendation = section("Recommendation")
@@ -884,6 +892,7 @@ def parse_record(data: bytes) -> dict[str, Any]:
         "recommendation": recommendation,
         "supersedes": supersedes,
         "identifier": id_match.group(1) if id_match else None,
+        "format_version": format_version,
         "provenance": "authored" if (adr or num or not dec) else "captured",
     }
 

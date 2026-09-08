@@ -11556,6 +11556,85 @@
     "REC-158",
     "REC-032"
    ]
+  },
+  {
+   "id": "spec-VER-011-valid-format-version-declared",
+   "family": "VER",
+   "rule_id": "VER-011",
+   "rule_statement": "A record MAY declare its format version as `**Whyspec:** MAJOR.MINOR`; a parser yields it as format_version when present and well-formed, leaves it absent otherwise, and never rejects a record for a version it does not know.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-VER-011-valid-format-version-declared.md",
+   "notes": "A record pinned to 0.2, the marker placed with Status and Date as REC-139 places Id. The value is yielded as written.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "decision",
+    "status": "accepted",
+    "format_version": "0.2"
+   },
+   "spec_rule_ids": [
+    "VER-011"
+   ]
+  },
+  {
+   "id": "spec-VER-011-valid-format-version-absent",
+   "family": "VER",
+   "rule_id": "VER-011",
+   "rule_statement": "A record MAY declare its format version as `**Whyspec:** MAJOR.MINOR`; a parser yields it as format_version when present and well-formed, leaves it absent otherwise, and never rejects a record for a version it does not know.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-VER-011-valid-format-version-absent.md",
+   "notes": "No marker. format_version is absent -- the record does not state its version and the current interpretation applies. It MUST NOT be defaulted to the baseline or to anything else.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "decision",
+    "format_version": null,
+    "format_version_must_not_equal": "0.1"
+   },
+   "spec_rule_ids": [
+    "VER-011"
+   ]
+  },
+  {
+   "id": "spec-VER-011-valid-newer-marker-still-parses",
+   "family": "VER",
+   "rule_id": "VER-011",
+   "rule_statement": "A record MAY declare its format version as `**Whyspec:** MAJOR.MINOR`; a parser yields it as format_version when present and well-formed, leaves it absent otherwise, and never rejects a record for a version it does not know.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-VER-011-valid-newer-marker-still-parses.md",
+   "notes": "A marker naming a version no parser implements, with the label in lower case. The record still parses, is read under the newest version the parser knows, and the marker is yielded as written; the label matches case-insensitively.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "decision",
+    "format_version": "9.4"
+   },
+   "spec_rule_ids": [
+    "VER-011"
+   ]
+  },
+  {
+   "id": "spec-VER-011-invalid-malformed-marker-yields-absent",
+   "family": "VER",
+   "rule_id": "VER-011",
+   "rule_statement": "A record MAY declare its format version as `**Whyspec:** MAJOR.MINOR`; a parser yields it as format_version when present and well-formed, leaves it absent otherwise, and never rejects a record for a version it does not know.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-VER-011-invalid-malformed-marker-yields-absent.md",
+   "notes": "A marker whose value is not MAJOR.MINOR. It MUST be yielded absent, as REC-129 treats a malformed attribution date: not repaired, not passed through as text, and the record is not rejected.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "format_version": null,
+    "format_version_must_not_equal": "two"
+   },
+   "spec_rule_ids": [
+    "VER-011",
+    "REC-129"
+   ]
   }
  ]
 }

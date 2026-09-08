@@ -24,6 +24,7 @@ OUT_OF_SCOPE = {
     "VER-001": "governance", "VER-002": "governance", "VER-003": "governance",
     "VER-004": "governance", "VER-005": "governance",
     "VER-007": "governance", "VER-008": "governance",
+    "VER-009": "governance", "VER-010": "governance",
     "ENV-008": "consumer", "ENV-009": "consumer", "ENV-038": "consumer",
     "ENV-039": "consumer",
     "REC-070": "action",

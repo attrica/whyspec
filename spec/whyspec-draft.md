@@ -1,6 +1,7 @@
 # The Whyspec Specification
 
-**Version:** 0.1 — working draft; pre-publication baseline, not a record-format marker
+**Version:** 0.1 — working draft; pre-publication baseline. The record-format version and its
+marker are defined in §7.6.
 **Status:** Draft. Not frozen. Not a standard. Rule ids are stable within this draft and are
 referenced by the conformance corpus; rule *text* may still change.
 
@@ -2028,7 +2029,8 @@ behaviour, or any other non-goal from §1.4.
 no explicit version marker in that baseline. A record is recognized by its H1 shape alone
 ([REC-008]). Draft edits that established this baseline are not changes to an earlier public format
 and therefore do not trigger [VER-001]. After the baseline is published, [VER-001] governs the first
-meaning change; its marker format and migration note **MUST** be defined before that change merges.
+meaning change; its marker format and migration note are defined in §7.6 and **MUST** be applied
+before that change merges.
 
 ---
 
@@ -2041,8 +2043,46 @@ pre-version baseline. No record-format marker or migration note is owed for the 
 it.
 
 [VER-001] remains the forward rule. Once this baseline is published, a proposal that reinterprets
-one of those existing fields, sections, or shapes must define the marker and migration before the
+one of those existing fields, sections, or shapes must apply §7.6's marker and migration before the
 meaning change merges. A vocabulary extension remains governed by [VER-002].
+
+### 7.6 The version marker
+
+**[VER-009]** The specification carries a version of the form `MAJOR.MINOR`, stated in its header.
+A meaning change ([VER-001], [VER-003]) **MUST** increment `MINOR`. A vocabulary extension
+([VER-002], [VER-004]) **MUST NOT** change the version. `MAJOR` is `0` while this document is a
+draft and changes only when the format is declared stable; nothing in this section depends on it.
+
+**[VER-010]** Every meaning change **MUST** add one row to the migration table below before it
+merges: the new version, the rule ids whose meaning changed, and a **migration note** of one
+paragraph stating what a record written under the previous version means under the new one. A
+meaning change without a row is not merged.
+
+| Version | Rules | Migration note |
+|---|---|---|
+| 0.1 | — | Pre-publication baseline ([VER-008]). No record carries a marker; every record reads under this document as it stands. |
+
+**[VER-011]** A record **MAY** declare the format version it was written to, as an inline field
+`**Whyspec:** MAJOR.MINOR` placed as [REC-139] places `**Id:**`. The label is matched
+case-insensitively, and only the first such line outside a fenced block ([REC-158]) counts. A
+parser **MUST** yield the value as `format_version` when present and **MUST** leave it absent when
+not: absence means the record does not state its version ([VER-005]), and the current
+interpretation applies to it, which is what each migration note exists to define. A parser
+**MUST NOT** reject a record whose marker names a version it does not know; it **MUST** read the
+record under the newest version it implements and yield the marker as written. A consumer **MAY**
+treat a marker newer than it knows as a signal about the record; the parser may not. A marker that
+does not match `\d+\.\d+` **MUST** be yielded absent, as [REC-129] treats a malformed date.
+
+> The marker is optional because the population that needs it is small: a record is pinned only
+> when its author wants an older meaning kept after a meaning change, and most records are read
+> under whatever the document currently says. The migration note carries the weight instead — it is
+> the one paragraph an implementer reads to learn what changed for the records already in the
+> world — and [VER-010] makes writing it a condition of merging rather than a courtesy. The label is
+> the specification's own name rather than `Format` or `Spec` because a record's prose uses those
+> words for other things, and an inline field is matched by its label. Forward tolerance follows
+> [ENV-008]'s reasoning in reverse: an unknown status is a failure because it hides a refusal, but an
+> unknown version marker hides nothing — the record is still a record, and refusing it would delete
+> it from a corpus for having been written by a newer tool.
 
 ## 8. Known gaps
 
@@ -2062,7 +2102,7 @@ gap: implementers build on it, and it becomes real without ever having been deci
 | **G8** | **Multiple `## Decision` sections are first-wins with no diagnostic** ([REC-019]). A record with two Decision sections silently loses the second. Whether that should be an error is undecided. |
 | **G9** | **No rule governs a record whose title is duplicated** within the same directory. Identity ([REC-071]) includes the source path, so two records with the same title in different files are distinct nodes; two records with the same title in the *same* file are not addressable separately. |
 | **G10** | **The `attested` tier has no record syntax.** It is normatively ordered ([PROV-002]) but is produced from sources outside this format's scope (§1.4). A conforming implementation that only reads records will never mint it. |
-| ~~G11~~ | **NOT APPLICABLE before publication** ([VER-008]). The baseline owes no record-format marker. The marker syntax and migration form become a publication obligation before the first later meaning change merges. |
+| ~~G11~~ | **RESOLVED by [VER-009]–[VER-011].** The marker syntax (`**Whyspec:** MAJOR.MINOR`), the version discipline and the migration table are defined in §7.6, ahead of the first meaning change. |
 | **G12** | **Empty `## Recommendation`.** [REC-046] says an empty recommendation yields no delta, but an emitter is not forbidden from writing an empty section, and a parser cannot distinguish "recommended nothing" from "recommendation section written and left blank". |
 
 ---
@@ -2340,6 +2380,9 @@ Every normative rule, with its one-line statement.
 | VER-005 | A change MUST NOT re-interpret the absence of a field in existing records as a claim or retroactively infer a value the record does not carry. _(out of scope: governance)_ |
 | VER-007 | The version marker governs the record format and the core envelope only. _(out of scope: governance)_ |
 | VER-008 | This document defines the pre-publication baseline, and the record format carries no explicit version marker in that baseline. _(out of scope: governance)_ |
+| VER-009 | The specification carries a version of the form MAJOR.MINOR, stated in its header. A meaning change (VER-001, VER-003) MUST increment MINOR. _(out of scope: governance)_ |
+| VER-010 | Every meaning change MUST add one row to the migration table below before it merges: the new version, the rule ids whose meaning changed, and a…. _(out of scope: governance)_ |
+| VER-011 | A record MAY declare the format version it was written to, as an inline field Whyspec: MAJOR.MINOR placed as REC-139 places Id: — see the rule body for the enumeration. |
 
 ---
 
