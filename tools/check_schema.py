@@ -367,7 +367,7 @@ def check_status_tokens(spec: str, env: dict, rep: Report) -> None:
 def check_tiers(spec: str, schemas: dict[str, dict], rep: Report) -> None:
     """E — §5.1's tier table against every enum whose x-rule cites PROV-001."""
     tiers = {label for label, _ in table_rows(spec, "| Tier | What it means |")}
-    rep.check(len(tiers) == 4, f"E §5.1 lists {len(tiers)} tiers, expected 4")
+    rep.check(len(tiers) == 5, f"E §5.1 lists {len(tiers)} tiers, expected 5")
     found = 0
     for name, schema in schemas.items():
         for path, node in walk(schema):

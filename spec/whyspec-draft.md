@@ -1,7 +1,7 @@
 # The Whyspec Specification
 
-**Version:** 0.1 — working draft; pre-publication baseline. The record-format version and its
-marker are defined in §7.6.
+**Version:** 0.2 — working draft. The record-format version and its marker are defined in §7.6;
+the migration table there records what changed since 0.1.
 **Status:** Draft. Not frozen. Not a standard. Rule ids are stable within this draft and are
 referenced by the conformance corpus; rule *text* may still change.
 
@@ -1491,22 +1491,25 @@ field a consumer must consult before treating recorded intent as ground truth.
 
 ### 5.1 The tiers
 
-**[PROV-001]** Provenance **MUST** be one of exactly four values. The set is closed; an
-implementation **MUST NOT** mint a fifth without a version marker (§7, [VER-003]).
+**[PROV-001]** Provenance **MUST** be one of exactly five values. The set is closed; an
+implementation **MUST NOT** mint a sixth without a version marker (§7, [VER-003]).
 
 | Tier | What it means | What it is worth |
 |---|---|---|
 | `authored` | Ingested verbatim from a **reviewed, ratified** human decision record — an ADR. | Ground truth. The strongest claim the format can carry: a human wrote it *and* a review process accepted it. |
 | `captured` | Ingested verbatim from a decision record written **at the moment of choosing**. | Ground truth, human-written, but not yet reviewed or ratified. Highest-fidelity provenance available, because it was recorded when the reasoning was still in someone's head — but it carries one person's word, not a process's. |
 | `attested` | Human rationale written as an **aside** — a commit trailer, an inline `# why:` comment, a pull-request body. | Human-written and bound to a specific diff, so it outranks anything inferred. Less formal than a record: it was never structured as a decision, so it rarely names alternatives. This is the zero-workflow tier every repository already has on day one. |
+| `reconstructed-then-ratified` | **Machine-originated** — reconstructed from code, history or documentation, or drafted by an agent for a decision it made — and then **read, edited as needed, and approved by a person**. | The highest tier a machine-originated claim can reach. A human judgment was spent on it and is not discarded; but nobody wrote it at the moment of deciding, so it ranks below every human-written tier. |
 | `reconstructed` | **Inferred** from code or documentation by an automated pass. | The weakest tier. Plausible, useful for navigation, and never evidence. A consumer **MUST NOT** present reconstructed intent as something a human decided. |
+
+> **Why a fifth tier.** A record a machine reconstructed and a person then approved is not `authored` — nobody wrote it when the decision was made — and filing it as `reconstructed` throws away the one scarce thing the system spent on it, a human's reading. Collapsing it either way is the phantom-intent failure from opposite sides: `authored` lets a reconstruction outrank a record, `reconstructed` hides that a person vouched for it. It sits below `attested` because an aside a person wrote at the time is still first-hand; a ratified reconstruction is second-hand, however carefully read.
 
 ### 5.2 Ordering
 
 **[PROV-002]** The tiers **MUST** be totally ordered, highest trust first:
 
 ```
-authored  >  captured  >  attested  >  reconstructed
+authored  >  captured  >  attested  >  reconstructed-then-ratified  >  reconstructed
 ```
 
 **[PROV-003]** Intent with **absent or unrecognized** provenance **MUST** be ranked as
@@ -1529,10 +1532,31 @@ any numeric confidence the secondary key. An implementation **MUST NOT** allow a
 **[PROV-006]** A decision record ([REC-009]) carrying no `## Attribution` section **MUST** yield
 `captured` intent.
 
-**[PROV-021]** Where a record carries an `## Attribution` section, its tier **MUST** be
-determined by ratification ([REC-116], [REC-119]) and **MUST NOT** be determined by record kind.
-A record with attribution but no corroborated ratification **MUST** be `captured`, whatever its
-heading form.
+**[PROV-021]** Where a record carries an `## Attribution` section and at least one `drafted` or
+`decided` actor is `human`, its tier **MUST** be determined by ratification ([REC-116],
+[REC-119]) and **MUST NOT** be determined by record kind. A record with attribution but no
+corroborated ratification **MUST** be `captured`, whatever its heading form.
+
+**[PROV-022]** Where a record carries an `## Attribution` section naming at least one `drafted`
+or `decided` actor and **every** such actor is `agent`, the record is machine-originated and the
+drafter's kind is a **ceiling**: with a corroborated ratification ([REC-119]) by a `human` actor
+the record **MUST** be `reconstructed-then-ratified`; without one it **MUST** be `reconstructed`.
+Ratification **MUST NOT** promote such a record to `authored` or `captured`. A record of this kind
+**SHOULD** carry an `## Evidence` entry citing what it was reconstructed from ([REC-095]).
+Actors are compared as [REC-128] compares them, kind and id together: `drafted agent:x` and
+`ratified human:x` are different actors, so that ratification is corroborated — the person who
+ran the tool and then approved its draft is the ordinary case, not a self-ratification. The tier
+is named for its commonest case; the rule is about who originated the claim, and it applies
+equally to a record an agent decided and wrote at the moment.
+
+> The tier follows from who did what, which attribution already states, so re-parsing the same
+> lines yields the same answer and no new vocabulary is needed. The alternative — a separate marker
+> saying "this was reconstructed" — could disagree with the attribution beside it, and the format
+> would then have to adjudicate between two statements about the same fact. The ceiling is the
+> point: a person approving a machine's draft is a real judgment and is kept, but it cannot turn
+> a reconstruction into something written at the moment of deciding. Where a human `decided`,
+> [PROV-021] applies unchanged; that is the machine-assisted capture §4.14 describes, and it is
+> `captured` because a person chose.
 
 [PROV-005] and [PROV-006] are retained for records that predate attribution, and they are a
 **compatibility affordance rather than an endorsement**. An `# ADR-` heading is a *convention*
@@ -1566,7 +1590,8 @@ provenance says *who said it*, confidence says *how sure the extractor was*. Fil
 ### 5.4 Trusted evidence classes
 
 **[PROV-010]** The **golden tiers** — the evidence classes that count as trusted — **MUST** be
-exactly `{authored, captured, attested}`.
+exactly `{authored, captured, attested, reconstructed-then-ratified}`. A ratified reconstruction
+counts because a person accepted it; an unratified one never does.
 
 **[PROV-012]** A trust metric **MUST NOT** blend tiers into a single scalar without also reporting
 the per-tier breakdown. A blended number is the one output that makes a corpus of inferences look
@@ -2061,6 +2086,7 @@ meaning change without a row is not merged.
 | Version | Rules | Migration note |
 |---|---|---|
 | 0.1 | — | Pre-publication baseline ([VER-008]). No record carries a marker; every record reads under this document as it stands. |
+| 0.2 | [PROV-001], [PROV-002], [PROV-010], [PROV-021] | A fifth tier, `reconstructed-then-ratified`, is added between `attested` and `reconstructed` and counted among the golden tiers; [PROV-022] assigns it from attribution, and [PROV-021] is narrowed to records with a human drafter or decider. An existing record changes tier only if every drafter and decider it names is an agent — such a record was `captured` or `authored` under 0.1 and is `reconstructed` or `reconstructed-then-ratified` under 0.2, which is the correction the tier exists to make. Every other record keeps its tier: a record written under 0.1 carries one of the four earlier values or none, and [PROV-003] still ranks an absent value as `reconstructed`. A consumer that enumerates tiers must admit the fifth; one that does not is reading a 0.2 corpus under 0.1 and will rank the new tier as `reconstructed`, which is the safe direction. |
 
 **[VER-011]** A record **MAY** declare the format version it was written to, as an inline field
 `**Whyspec:** MAJOR.MINOR` placed as [REC-139] places `**Id:**`. The label is matched
@@ -2303,7 +2329,7 @@ Every normative rule, with its one-line statement.
 
 | Id | Statement |
 |---|---|
-| PROV-001 | Provenance MUST be one of exactly four values. The set is closed; an implementation MUST NOT mint a fifth without a version marker (§7, VER-003). |
+| PROV-001 | Provenance MUST be one of exactly five values. The set is closed; an implementation MUST NOT mint a sixth without a version marker (§7, VER-003). |
 | PROV-002 | The tiers MUST be totally ordered, highest trust first: — see the rule body for the enumeration. |
 | PROV-003 | Intent with absent or unrecognized provenance MUST be ranked as reconstructed. |
 | PROV-004 | When results are ordered by trust, provenance MUST be the primary sort key and any numeric confidence the secondary key. |
@@ -2312,7 +2338,7 @@ Every normative rule, with its one-line statement.
 | PROV-007 | An assumption node SHOULD inherit the provenance tier of the record that declared it. |
 | PROV-008 | Intent ingested from a record MUST carry a numeric confidence of 1.0. The record *is* the evidence; there is nothing to be uncertain about at ingest. |
 | PROV-009 | An implementation MUST NOT conflate provenance with a numeric confidence score or with any string confidence label from an extraction pipeline. |
-| PROV-010 | The golden tiers — the evidence classes that count as trusted — MUST be exactly {authored, captured, attested}. |
+| PROV-010 | The golden tiers — the evidence classes that count as trusted — MUST be exactly {authored, captured, attested, reconstructed-then-ratified}. |
 | PROV-012 | A trust metric MUST NOT blend tiers into a single scalar without also reporting the per-tier breakdown. |
 | PROV-013 | An edge — any relationship between two intent nodes, or between an intent node and an artifact, including every declared or inferred scope binding…. |
 | PROV-015 | A binding between intent and an artifact MUST be reconstructed unless it was declared (§4.15). |
@@ -2321,7 +2347,8 @@ Every normative rule, with its one-line statement.
 | PROV-018 | Foreclosure intent MUST NOT be counted toward any trusted-evidence metric (PROV-010), regardless of its provenance tier. |
 | PROV-019 | A result containing intent MUST expose disposition, so a consumer can partition commitments from foreclosures without inspecting record text. |
 | PROV-020 | A consumer MUST NOT present foreclosure intent as an answer to what the authoring team *does*. |
-| PROV-021 | Where a record carries an ## Attribution section, its tier MUST be determined by ratification (REC-116, REC-119) and MUST NOT be determined by record…. |
+| PROV-021 | Where a record carries an ## Attribution section and at least one drafted or decided actor is human, its tier MUST be determined by ratification…. |
+| PROV-022 | Where a record carries an ## Attribution section naming at least one drafted or decided actor and every such actor is agent, the record is…. |
 
 #### Envelope
 

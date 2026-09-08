@@ -57,7 +57,8 @@ requires a conforming parser to accept MADR's section spellings — `Context and
 Statement`, `Decision Outcome`, `Considered Options` — as aliases for its own, alongside MADR's
 own heading and status conventions. What Whyspec adds on top is a provenance tier: not just that
 a decision was recorded, but how it came to be known — `authored` by a person, `captured` from a
-conversation, `attested` by review, or `reconstructed` after the fact.
+conversation, `attested` by review, `reconstructed-then-ratified` when a person approved a
+machine's reconstruction, or `reconstructed` after the fact.
 
 It also carries the **capture-decision skill**
 ([`skills/capture-decision/SKILL.md`](skills/capture-decision/SKILL.md)): the teachable form of
