@@ -12349,6 +12349,200 @@
    "spec_rule_ids": [
     "ENV-055"
    ]
+  },
+  {
+   "id": "spec-REC-159-valid-date-with-annotation",
+   "family": "REC",
+   "rule_id": "REC-159",
+   "rule_statement": "The inline **Date:** field yields date when its value is a full ISO calendar date or begins with one followed by whitespace; otherwise date is absent, never repaired.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-159-valid-date-with-annotation.md",
+   "notes": "A Date line with a trailing annotation. The leading calendar date is yielded; the annotation is dropped.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "date": "2026-09-08"
+   },
+   "spec_rule_ids": [
+    "REC-159"
+   ]
+  },
+  {
+   "id": "spec-REC-159-invalid-malformed-date-yields-absent",
+   "family": "REC",
+   "rule_id": "REC-159",
+   "rule_statement": "The inline **Date:** field yields date when its value is a full ISO calendar date or begins with one followed by whitespace; otherwise date is absent, never repaired.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-159-invalid-malformed-date-yields-absent.md",
+   "notes": "A Date value that is not a calendar date. It MUST be yielded absent, not passed through as text and not guessed at.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "date": null,
+    "date_must_not_equal": "March 2026"
+   },
+   "spec_rule_ids": [
+    "REC-159",
+    "REC-129"
+   ]
+  },
+  {
+   "id": "spec-REC-160-valid-bullet-bold-status",
+   "family": "REC",
+   "rule_id": "REC-160",
+   "rule_statement": "A list item beginning with the inline field, `- **Status:** x`, is read as a list-item status with the list-item form's precedence.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-160-valid-bullet-bold-status.md",
+   "notes": "MADR's bullet-bold status, the only status in the document. It is read: a parser that matches only `- Status:` or only `**Status:**` at line start reports no status.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "status": "accepted"
+   },
+   "spec_rule_ids": [
+    "REC-160",
+    "REC-147"
+   ]
+  },
+  {
+   "id": "spec-REC-160-invalid-bullet-bold-must-not-beat-inline",
+   "family": "REC",
+   "rule_id": "REC-160",
+   "rule_statement": "A list item beginning with the inline field, `- **Status:** x`, is read as a list-item status with the list-item form's precedence.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-160-invalid-bullet-bold-must-not-beat-inline.md",
+   "notes": "A bullet-bold status early in the document and an inline field later. The inline field is the stronger source and wins wherever it sits; the bullet-bold form has list-item precedence.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "status": "accepted",
+    "status_must_not_equal": "proposed"
+   },
+   "spec_rule_ids": [
+    "REC-160",
+    "REC-161",
+    "REC-027"
+   ]
+  },
+  {
+   "id": "spec-REC-161-valid-bare-status-line",
+   "family": "REC",
+   "rule_id": "REC-161",
+   "rule_statement": "A bare `Status:` line is read where neither an inline nor a list-item form exists; sources are consulted inline, then list-item forms, then bare, then the Status section, each only where every earlier one is absent.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-161-valid-bare-status-line.md",
+   "notes": "A bare `Status: proposed` line and no other form. It is read.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "status": "proposed"
+   },
+   "spec_rule_ids": [
+    "REC-161"
+   ]
+  },
+  {
+   "id": "spec-REC-161-invalid-bare-must-not-beat-list-item",
+   "family": "REC",
+   "rule_id": "REC-161",
+   "rule_statement": "A bare `Status:` line is read where neither an inline nor a list-item form exists; sources are consulted inline, then list-item forms, then bare, then the Status section, each only where every earlier one is absent.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-161-invalid-bare-must-not-beat-list-item.md",
+   "notes": "A bare line early and a list-item form later. The list-item form outranks the bare line wherever it sits.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "status": "proposed",
+    "status_must_not_equal": "accepted"
+   },
+   "spec_rule_ids": [
+    "REC-161",
+    "REC-147"
+   ]
+  },
+  {
+   "id": "spec-REC-162-valid-empty-decision-composed-from-subsections",
+   "family": "REC",
+   "rule_id": "REC-162",
+   "rule_statement": "Where the Decision body is empty and level-3+ subsections follow, rationale is composed from those subsections in document order (heading text, then body); a non-empty body leaves REC-004 unchanged.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-162-valid-empty-decision-composed-from-subsections.md",
+   "notes": "A constitutive record whose Decision body is empty and whose content sits under ### A1 and ### A2. The rationale is composed from both, heading then body, in order, and stops at the next level-2 heading.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "adr",
+    "rationale": "A1\n\nIdentity is provider-neutral.\n\nA2\n\nNo provider column."
+   },
+   "spec_rule_ids": [
+    "REC-162",
+    "REC-004"
+   ]
+  },
+  {
+   "id": "spec-REC-162-invalid-nonempty-body-must-not-absorb-subsections",
+   "family": "REC",
+   "rule_id": "REC-162",
+   "rule_statement": "Where the Decision body is empty and level-3+ subsections follow, rationale is composed from those subsections in document order (heading text, then body); a non-empty body leaves REC-004 unchanged.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-162-invalid-nonempty-body-must-not-absorb-subsections.md",
+   "notes": "A Decision with a body of its own followed by a ### Follow-up. REC-004 holds: the rationale is the body alone; composition applies only to an empty body.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "rationale": "Request validation runs at the edge handler.",
+    "rationale_must_not_equal": "Request validation runs at the edge handler.\n\nFollow-up\n\nRevisit if volume exceeds the budget."
+   },
+   "spec_rule_ids": [
+    "REC-162",
+    "REC-004"
+   ]
+  },
+  {
+   "id": "spec-REC-163-valid-why-section-joins-rationale",
+   "family": "REC",
+   "rule_id": "REC-163",
+   "rule_statement": "A level-2 section whose heading's first word is Why joins the rationale after the Decision body; a heading whose first word merely begins with Why does not.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-163-valid-why-section-joins-rationale.md",
+   "notes": "A `## Why` section after the Decision. Its body joins the rationale after the Decision body.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "rationale": "Request validation runs at the edge handler.\n\nA malformed request is cheapest to reject before it costs anything."
+   },
+   "spec_rule_ids": [
+    "REC-163"
+   ]
+  },
+  {
+   "id": "spec-REC-163-invalid-whyspec-heading-is-not-why",
+   "family": "REC",
+   "rule_id": "REC-163",
+   "rule_statement": "A level-2 section whose heading's first word is Why joins the rationale after the Decision body; a heading whose first word merely begins with Why does not.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-163-invalid-whyspec-heading-is-not-why.md",
+   "notes": "A `## Whyspec setup` section. Its first word begins with Why but is not Why, so it is an unrecognised section (REC-007) and MUST NOT join the rationale.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "rationale": "Request validation runs at the edge handler.",
+    "rationale_must_not_equal": "Request validation runs at the edge handler.\n\nInstall the checker."
+   },
+   "spec_rule_ids": [
+    "REC-163",
+    "REC-007"
+   ]
   }
  ]
 }

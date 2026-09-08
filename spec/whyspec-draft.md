@@ -335,6 +335,23 @@ parser **MUST** read it where no inline `**Status:**` field is present. This is 
 a parser reading only the inline field and the `## Status` section reports no status for a record
 that plainly states one.
 
+**[REC-160]** A list item whose text begins with the inline field — `- **Status:** <value>` — is
+the list-item form of [REC-147] wearing both markers, and a parser **MUST** read it as a list-item
+status, with the list-item form's precedence. The list-item forms are recognised only with their
+marker, `-` or `*`, at the start of the line; an indented list item is not a status field.
+
+**[REC-161]** `Status` **MAY** also be written bare — a line that begins `Status:` after any
+leading whitespace, case-insensitively, with no emphasis and no list marker — and a parser **MUST**
+read it where neither an inline field nor a list-item form is present. The sources are consulted in this order
+over the whole document, each only where every earlier one is absent: the inline field
+([REC-027], [REC-029]), the list-item forms ([REC-147], [REC-160]), the bare line, and last the
+`## Status` section ([REC-028]). Within each source the first line outside a fenced block wins.
+
+> Three spellings of one field, because three communities write it three ways and each is
+> unambiguous on its own. The precedence is by strength of signal rather than by position: an
+> inline field anywhere in the document outranks a bullet or a bare line earlier in it, so a record
+> that states its status the canonical way is never overruled by a looser one.
+
 ### 4.1.4 Unfilled templates
 
 **[REC-148]** A record whose title is a **placeholder MUST NOT** be treated as a record. A title is
@@ -415,6 +432,30 @@ case-insensitively against the full trimmed heading text:
 
 **[REC-019]** When more than one section matches the `Decision` heading, the parser **MUST** use the
 **first** and ignore the rest. The same first-wins rule applies to every heading in the table.
+
+**[REC-162]** Where the operative section selected under [REC-018], [REC-019] and [REC-145] —
+`Decision`, or failing that one of its aliases — has an empty body ([REC-004]) and headings of level
+3 or deeper follow it before the next level-2 heading, the parser **MUST** compose `rationale` from
+those subsections in document order: each subsection's heading text, then its body, joined by blank
+lines. Where that body is non-empty, [REC-004] applies unchanged and no subsection is joined.
+
+> A constitutive record puts its whole decision under `### A1`, `### A2` … with nothing between
+> the `## Amendment` heading and the first subsection. Under [REC-004] alone that record has an
+> empty rationale, which [REC-140] must then yield as an empty string — a decision that says
+> nothing, from a record that says everything. Composition is confined to the empty-body case so
+> that [REC-004]'s rule for an ordinary record — the body stops at the next heading of any level —
+> is untouched.
+
+**[REC-163]** Where a record has an operative section, every level-2 section whose heading's first
+word is `Why`, matched case-insensitively — `## Why`, `## Why not a cache`, `## Why the picker is
+excluded` — **MUST** be joined to `rationale` after the operative body (as composed by [REC-162]
+where that applies), in document order, each separated by a blank line. A heading whose first word
+merely begins with `Why` (`## Whyspec setup`) is not such a section. Where two sections share a
+heading, the first is used and the rest ignored, as [REC-019] rules for every heading.
+
+> A record that answers "why" under a heading called *Why* has put its rationale exactly where a
+> reader would look for it, and a parser that kept the Decision and dropped the Why would keep the
+> what and lose the why.
 
 **[REC-020]** Records **SHOULD** write all sections in [REC-018] at heading level 2.
 
@@ -1012,6 +1053,18 @@ every reference to the original silently dangles.
 
 **[REC-075]** A record **MAY** carry an identifier in the inline field form, `**Id:** <value>`,
 placed with `Status` and `Date`.
+
+**[REC-159]** A record **MAY** carry its date in the inline field form, `**Date:** <value>`. The
+label is matched case-insensitively and only the first such line outside a fenced block
+([REC-158]) counts. A parser **MUST** yield `date` when the value is a full ISO-8601 calendar date
+(`YYYY-MM-DD`), or begins with one followed by whitespace — `2026-09-08 (revised)` yields
+`2026-09-08`, while `2026-09-08(revised)` yields nothing — and **MUST** leave `date` absent
+otherwise. A malformed value **MUST NOT** be repaired or widened, as [REC-129] treats an
+attribution date.
+
+> The emitter has rendered this line since [REC-047]; the parser side was never stated, so a reader
+> could not know whether `**Date:** March` yielded a date, a string, or nothing. Absent is the
+> honest answer, and the trailing-annotation tolerance exists because people write one.
 
 **[REC-076]** An identifier, once written, **MUST NOT** be regenerated, and **MUST NOT** be
 derived from any mutable part of the record. In particular it **MUST NOT** be derived from the
@@ -1971,6 +2024,11 @@ Every normative rule, with its one-line statement.
 | REC-156 | REC-152–REC-155 govern declared scope items. |
 | REC-157 | A Governs alias MUST count as the record's declared scope only where its body yields at least one item under REC-082. Where an alias body yields no…. |
 | REC-158 | A fenced code block — the lines from one whose trimmed text begins with three backticks or three tildes, through the next line whose trimmed text…. |
+| REC-159 | A record MAY carry its date in the inline field form, Date: <value>. |
+| REC-160 | A list item whose text begins with the inline field — - Status: <value> — is the list-item form of REC-147 wearing both markers, and a parser MUST…. |
+| REC-161 | Status MAY also be written bare — a line that begins Status: after any leading whitespace, case-insensitively, with no emphasis and no list marker —…. |
+| REC-162 | Where the operative section selected under REC-018, REC-019 and REC-145 — Decision, or failing that one of its aliases — has an empty body (REC-004)…. |
+| REC-163 | Where a record has an operative section, every level-2 section whose heading's first word is Why, matched case-insensitively — ## Why, ## Why not a…. |
 
 #### Provenance
 

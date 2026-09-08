@@ -37,19 +37,19 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER|INT)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 240,
-    "fixture_paths": 394,
-    "manifest_entries": 433,
-    "mapped_rule_ids": 217,
+    "rules": 245,
+    "fixture_paths": 404,
+    "manifest_entries": 443,
+    "mapped_rule_ids": 222,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 277,
+    "computed": 287,
     "drift_checked": 90,
     "reserved": 66,
 }
 EXPECTED_MUST_NOT_EQUAL = {
-    "fixtures": 97,
-    "assertions": 113,
+    "fixtures": 102,
+    "assertions": 118,
 }
 
 # REC-145. Same obligation, different spelling -- measured against 84 real ADRs from the three
@@ -820,11 +820,27 @@ def parse_record(data: bytes) -> dict[str, Any]:
                 return "\n".join(text_lines[index + 1:end]).strip()
         return None
 
-    status_match = re.search(r"^\*\*Status:\*\*\s*(.*)$", structural, re.I | re.M)
-    if not status_match:                       # MADR: "- Status: accepted" as a list item
-        status_match = re.search(r"^[-*]\s*Status:\s*(.*)$", structural, re.I | re.M)
+    # REC-027 / REC-147 / REC-160 / REC-161: four status sources, consulted in order of
+    # strength over the whole (fence-masked) document, each only where every earlier one is
+    # absent -- the inline field, the list-item forms (plain and bullet-bold), the bare line,
+    # then the Status section. Within a source the first line wins (REC-029).
+    inline_status = re.search(r"^\s*\*\*status:?\*\*\s*:?\s*(.+?)\s*$", structural, re.I | re.M)
+    list_status = re.search(
+        r"^[-*]\s*(?:\*\*status:?\*\*\s*:?|status:)\s*(.+?)\s*$", structural, re.I | re.M
+    )
+    bare_status = re.search(r"^\s*status:\s*(.+?)\s*$", structural, re.I | re.M)
+    status_match = inline_status or list_status or bare_status
     status_section = section("Status")
     raw_status = status_match.group(1) if status_match else status_section
+    # REC-159: the inline Date field yields a full calendar date, or one followed by whitespace.
+    date_match = re.search(r"^\s*\*\*date:?\*\*\s*:?\s*(.*?)\s*$", structural, re.I | re.M)
+    date = None
+    if date_match:
+        value = date_match.group(1)
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+            date = value
+        elif re.match(r"\d{4}-\d{2}-\d{2}\s", value):
+            date = value[:10]
     status_token = re.search(r"[A-Za-z]+", raw_status or "")
     alternatives_body = section("Alternatives considered")
     if alternatives_body is None:
@@ -873,6 +889,47 @@ def parse_record(data: bytes) -> dict[str, Any]:
     )
     question = section("Context")
     rationale = section("Decision")
+    text_lines = text.split("\n")
+    structural_lines = structural.split("\n")
+    heading_at = [
+        (i, m.group(1), m.group(2).strip())
+        for i, line in enumerate(structural_lines)
+        if (m := re.match(r"^(#{1,6})\s+(.+?)\s*$", line))
+    ]
+    def body_between(start: int) -> str:
+        end = next((j for j, _, _ in heading_at if j > start), len(text_lines))
+        return "\n".join(text_lines[start + 1:end]).strip()
+    if rationale is not None and rationale.strip() == "":
+        # REC-162: an empty operative body is composed from the level-3+ subsections that
+        # follow it, heading text then body, in document order, until the next level-2 heading.
+        # The operative heading is the one section() selected: Decision, else its aliases in
+        # REC-145 order; within a name the first occurrence (REC-019).
+        def key_of(name: str) -> str:
+            return re.sub(r"\s*<!--.*?-->\s*$", "", name).lower()
+        op_index = None
+        for wanted in ("decision", *(a.lower() for a in SECTION_ALIASES.get("Decision", ()))):
+            op_index = next((i for i, h, name in heading_at if len(h) == 2 and key_of(name) == wanted), None)
+            if op_index is not None:
+                break
+        if op_index is not None:
+            parts = []
+            for i, h, name in heading_at:
+                if i <= op_index:
+                    continue
+                if len(h) == 2:
+                    break
+                parts.append(f"{name}\n\n{body_between(i)}")
+            rationale = "\n\n".join(parts)
+    if rationale is not None:
+        # REC-163: level-2 sections whose first word is `Why` join the rationale in document order.
+        seen_why: set[str] = set()
+        for i, h, name in heading_at:
+            if len(h) == 2 and name.split()[:1] and name.split()[0].lower() == "why":
+                key = name.strip().lower()
+                if key in seen_why:
+                    continue  # REC-019: a repeated heading is first-wins
+                seen_why.add(key)
+                rationale = (rationale + "\n\n" + body_between(i)).strip()
     recommendation = section("Recommendation")
     supersedes = []
     for value in re.findall(r"\bsupersedes\s+ADR-(\d+)\b", text, re.I):
@@ -905,6 +962,7 @@ def parse_record(data: bytes) -> dict[str, Any]:
         "recommendation": recommendation,
         "supersedes": supersedes,
         "identifier": id_match.group(1) if id_match else None,
+        "date": date,
         "format_version": format_version,
         "provenance": "authored" if (adr or num or not dec) else "captured",
     }

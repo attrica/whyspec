@@ -412,6 +412,17 @@
       ],
       "x-layer": "parsed-record",
       "x-name-source": "rule"
+    },
+    "date": {
+      "description": "[REC-159] The record's date from the inline `**Date:** <value>` field: a full ISO-8601 calendar date, or the leading one when an annotation follows; absent when the line is missing or malformed. [REC-047] Emitted adjacent to Status.",
+      "x-rule": [
+        "REC-159",
+        "REC-047"
+      ],
+      "x-layer": "parsed-record",
+      "x-name-source": "rule",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
     }
   },
   "$defs": {
