@@ -11332,6 +11332,103 @@
    "spec_rule_ids": [
     "REC-156"
    ]
+  },
+  {
+   "id": "spec-REC-145-valid-amendment-is-a-decision-alias",
+   "family": "REC",
+   "rule_id": "REC-145",
+   "rule_statement": "Aliases of Context, Decision, Alternatives and Governs carry the same obligation as the canonical heading; the canonical heading is authoritative where both appear.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-145-valid-amendment-is-a-decision-alias.md",
+   "notes": "A constitutive record shaped Context / Amendment / Consequences, with no Decision heading. The Amendment section is the operative decision and MUST satisfy REC-008's Decision requirement; a parser without the alias rejects the record outright.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "adr",
+    "title": "Constitution amendment \u2014 validation at the edge",
+    "status": "accepted",
+    "alternatives": 0,
+    "recommendation": null,
+    "supersedes": [],
+    "assumptions": 0,
+    "rationale": "Request validation runs at the edge handler, before any service call."
+   },
+   "spec_rule_ids": [
+    "REC-145",
+    "REC-008"
+   ]
+  },
+  {
+   "id": "spec-REC-145-invalid-amendment-must-not-shadow-decision",
+   "family": "REC",
+   "rule_id": "REC-145",
+   "rule_statement": "Aliases of Context, Decision, Alternatives and Governs carry the same obligation as the canonical heading; the canonical heading is authoritative where both appear.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-145-invalid-amendment-must-not-shadow-decision.md",
+   "notes": "Both Decision and Amendment present. The canonical heading is authoritative: rationale MUST be the Decision body. A parser that checks the alias first silently prefers the wrong section.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "decision",
+    "rationale": "Request validation runs at the edge handler.",
+    "rationale_must_not_equal": "The edge handler also rate-limits."
+   },
+   "spec_rule_ids": [
+    "REC-145"
+   ]
+  },
+  {
+   "id": "spec-REC-157-valid-governed-paths-alias",
+   "family": "REC",
+   "rule_id": "REC-157",
+   "rule_statement": "A Governs alias counts as declared scope only where its body yields at least one item; a prose body under an alias leaves scope not declared (REC-084), never governs nothing.",
+   "valid": true,
+   "kind": "record",
+   "path": "records/spec-REC-157-valid-governed-paths-alias.md",
+   "notes": "Two real references under `## Governed paths` and no canonical heading. The alias yields items, so scope is declared and the items are taken verbatim (REC-082).",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "decision",
+    "governs_declared": true,
+    "governs": [
+     "src/edge/**",
+     "config/validation.yaml"
+    ],
+    "governs_reference_kinds": [
+     "path_glob",
+     "path_glob"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-157",
+    "REC-145",
+    "REC-082"
+   ]
+  },
+  {
+   "id": "spec-REC-157-invalid-prose-under-scope-alias-is-absent",
+   "family": "REC",
+   "rule_id": "REC-157",
+   "rule_statement": "A Governs alias counts as declared scope only where its body yields at least one item; a prose body under an alias leaves scope not declared (REC-084), never governs nothing.",
+   "valid": false,
+   "kind": "record",
+   "path": "records/spec-REC-157-invalid-prose-under-scope-alias-is-absent.md",
+   "notes": "A paragraph under `## Governed paths` and no list item. The alias yields nothing, so scope is NOT DECLARED (REC-084): `governs_declared` MUST be false and `governs` absent. Reading the prose as an empty declaration strips the repository-wide default from a record that plainly meant to claim scope.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "kind": "decision",
+    "governs_declared": false,
+    "governs_declared_must_not_equal": true,
+    "governs": null
+   },
+   "spec_rule_ids": [
+    "REC-157",
+    "REC-084"
+   ]
   }
  ]
 }

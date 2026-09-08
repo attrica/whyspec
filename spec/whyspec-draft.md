@@ -294,12 +294,29 @@ and **MUST** treat them as carrying the same obligation:
 | Canonical section | Also spelled |
 |---|---|
 | `Context` | `Context and Problem Statement` |
-| `Decision` | `Decision Outcome` |
+| `Decision` | `Decision Outcome`, `Amendment` |
 | `Alternatives` / `Alternatives considered` | `Considered Options` |
+| `Governs` | `Governed paths`, `Governs files` |
 
-These are the MADR spellings. Measured across the ADR directories of the three principal ADR tools,
-46 of 64 real records used the MADR template, and a format recognising only one template's spelling
-of a section recognises neither in practice.
+The first three rows are the MADR spellings. Measured across the ADR directories of the three
+principal ADR tools, 46 of 64 real records used the MADR template, and a format recognising only one
+template's spelling of a section recognises neither in practice. `Amendment` is the operative section
+of a constitutive record — one whose body amends a standing decision — and the first external index
+found such a record, shaped Context / Amendment / Consequences, rejected for that one heading. The
+`Governs` spellings were found the same way: a record listing real globs under `## Governed paths`
+rendered as *scope not declared*.
+
+**[REC-157]** A `Governs` alias **MUST** count as the record's declared scope only where its body
+yields at least one item under [REC-082]. Where an alias body yields no item, the record's scope
+**MUST** be read as *not declared* ([REC-084]), never as *governs nothing*. The canonical `## Governs`
+heading is unaffected: an empty canonical section keeps its meaning under [REC-084]'s distinction.
+
+> The asymmetry is deliberate. A writer who typed `## Governs` and left it empty made a statement
+> about scope; a writer who typed `## Governed paths` and wrote a paragraph — "this decision governs
+> future work in the daemon" — was writing prose under a heading this format did not name. Reading
+> that prose as *governs nothing* would strip a repository-wide default from a record that plainly
+> meant to claim scope, which is strictly worse than the default it gets today. Where the body
+> yields items, the alias is the same obligation under a different heading, exactly as the other rows.
 
 **[REC-146]** A section heading **MAY** carry a trailing HTML comment, and a parser **MUST** ignore
 it when matching the heading. `## Decision Drivers <!-- optional -->` is emitted by the MADR
@@ -2222,6 +2239,7 @@ Every normative rule, with its one-line statement.
 | REC-154 | An artifact reference is repository-relative. A writer MUST NOT begin an item with /. |
 | REC-155 | An implementation that resolves scope at file granularity MAY resolve a symbol reference (REC-151) to the file it names, by the path before its #. |
 | REC-156 | REC-152–REC-155 govern declared scope items. |
+| REC-157 | A Governs alias MUST count as the record's declared scope only where its body yields at least one item under REC-082. Where an alias body yields no…. |
 
 #### Provenance
 
