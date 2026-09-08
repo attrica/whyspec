@@ -38,6 +38,14 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: python3 tools/build_index.py --check
 
+  build-openapi:
+    name: build_openapi --check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: python3 tools/build_openapi.py --check
+
   run-corpus:
     name: run_corpus --check
     runs-on: ubuntu-latest

@@ -77,6 +77,12 @@ report is current:
 python3 tools/run_corpus.py --check
 ```
 
+The shapes the specification defines — the parsed record, the recall envelope, the transport
+envelope and the intent-layer objects — are stated a second time as JSON Schema under
+[`schema/`](schema/), checked against the prose in CI. [`schema/openapi.json`](schema/openapi.json)
+folds those files into one OpenAPI 3.1 document, generated rather than written, so any schema
+viewer can render them as navigable trees; it defines no endpoints.
+
 A green run is the conformance gate — it is what "implements Whyspec" means here, not a claim
 anyone has to take on faith.
 
