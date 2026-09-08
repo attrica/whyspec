@@ -35,18 +35,18 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 218,
-    "fixture_paths": 364,
-    "manifest_entries": 397,
-    "mapped_rule_ids": 199,
+    "rules": 219,
+    "fixture_paths": 367,
+    "manifest_entries": 403,
+    "mapped_rule_ids": 200,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 305,
+    "computed": 311,
     "drift_checked": 92,
 }
 EXPECTED_MUST_NOT_EQUAL = {
-    "fixtures": 85,
-    "assertions": 100,
+    "fixtures": 88,
+    "assertions": 104,
 }
 
 # REC-145. Same obligation, different spelling -- measured against 84 real ADRs from the three
@@ -82,6 +82,30 @@ DRIFT_CHECKED = "drift_checked"
 IDENTITY_SEPARATOR = "::"
 
 MISSING = object()
+
+
+def mask_fences(text: str) -> str:
+    """REC-158: a fenced block is quoted text. Structural recognition -- headings, the status
+    line, the id and date fields -- runs over this masked copy, where every fenced line
+    (markers included) is blank; section BODIES are sliced from the original text, so fenced
+    content stays inside the section it sits in. A fence closes only with its own marker, and
+    one never closed runs to the end of the document."""
+    out: list[str] = []
+    fence: str | None = None
+    for line in text.split("\n"):
+        stripped = line.strip()
+        if fence is not None:
+            if stripped.startswith(fence):
+                fence = None
+            out.append("")
+            continue
+        marker = next((m for m in ("```", "~~~") if stripped.startswith(m)), None)
+        if marker:
+            fence = marker
+            out.append("")
+            continue
+        out.append(line)
+    return "\n".join(out)
 
 # Most forbidden-value assertions sit next to their conformant base value. These
 # six do not, so keep the un-derivable relationship explicit rather than
@@ -676,10 +700,12 @@ def parse_record(data: bytes) -> dict[str, Any]:
     fm = re.search(r"^title:\s*(.+?)\s*$", front, re.M)
     if fm:
         front_title = fm.group(1).strip().strip("'\"")
+    # REC-158: everything structural is recognised over the fence-masked copy.
+    structural = mask_fences(text)
     # REC-145: the Decision gate accepts every spelling of the operative section, `Amendment`
     # included -- a constitutive record shaped Context / Amendment / Consequences is a record.
     decision = re.search(r"^## (?:Decision|Decision Outcome|Amendment)\s*(?:<!--.*?-->)?\s*$",
-                         text, re.I | re.M)
+                         structural, re.I | re.M)
     if not decision:
         return {"parses": False, "is_valid_utf8": True}
     # H1 recognition, relaxed after measuring 84 real ADRs from the three main ADR tools
@@ -700,7 +726,7 @@ def parse_record(data: bytes) -> dict[str, Any]:
     # that happen to contain a Decision heading.
     adr = dec = num = None
     bare = None
-    for candidate in re.findall(r"^# (.+)$", text, re.M):
+    for candidate in re.findall(r"^# (.+)$", structural, re.M):
         adr = re.fullmatch(r"ADR-(\d+)\s*(?:—|–|:|-)\s*(.+)", candidate, re.I)
         dec = re.fullmatch(r"Decision:\s*(.+)", candidate, re.I)
         num = re.fullmatch(r"(\d+)\.\s+(.+)", candidate)
@@ -714,7 +740,7 @@ def parse_record(data: bytes) -> dict[str, Any]:
     if not (adr or dec or num):
         def has(*names):
             return all(
-                re.search(rf"^## {n}\s*(?:<!--.*?-->)?\s*$", text, re.I | re.M) for n in names
+                re.search(rf"^## {n}\s*(?:<!--.*?-->)?\s*$", structural, re.I | re.M) for n in names
             )
         # Nygard signature, or the MADR pair. Both are distinctive enough to separate a record
         # from notes; "Context and Problem Statement" beside "Decision Outcome" is not a shape
@@ -763,20 +789,27 @@ def parse_record(data: bytes) -> dict[str, Any]:
         # MADR spells three canonical sections differently. The alias table is normative
         # (REC-145): the same obligation, a different heading. MADR headings may also carry a
         # trailing HTML comment -- "## Decision Drivers <!-- optional -->" is emitted by the MADR
-        # template itself -- so the heading match tolerates one.
+        # template itself -- so the heading match tolerates one. Headings are found on the
+        # fence-masked copy (REC-158); the body is sliced from the original so a code block
+        # inside a section stays that section's content (REC-004).
+        text_lines = text.split("\n")
+        structural_lines = structural.split("\n")
         for spelling in (name, *SECTION_ALIASES.get(name, ())):
-            match = re.search(
-                rf"^## {re.escape(spelling)}\s*(?:<!--.*?-->)?\s*$\n(.*?)(?=^#{{1,6}} |\Z)",
-                text,
-                re.I | re.M | re.S,
-            )
-            if match:
-                return match.group(1).strip()
+            pattern = re.compile(rf"^## {re.escape(spelling)}\s*(?:<!--.*?-->)?\s*$", re.I)
+            for index, line in enumerate(structural_lines):
+                if not pattern.match(line):
+                    continue
+                end = next(
+                    (j for j in range(index + 1, len(structural_lines))
+                     if re.match(r"^#{1,6} ", structural_lines[j])),
+                    len(structural_lines),
+                )
+                return "\n".join(text_lines[index + 1:end]).strip()
         return None
 
-    status_match = re.search(r"^\*\*Status:\*\*\s*(.*)$", text, re.I | re.M)
+    status_match = re.search(r"^\*\*Status:\*\*\s*(.*)$", structural, re.I | re.M)
     if not status_match:                       # MADR: "- Status: accepted" as a list item
-        status_match = re.search(r"^[-*]\s*Status:\s*(.*)$", text, re.I | re.M)
+        status_match = re.search(r"^[-*]\s*Status:\s*(.*)$", structural, re.I | re.M)
     status_section = section("Status")
     raw_status = status_match.group(1) if status_match else status_section
     status_token = re.search(r"[A-Za-z]+", raw_status or "")
@@ -816,7 +849,7 @@ def parse_record(data: bytes) -> dict[str, Any]:
             if alias_body is not None and governs_items(alias_body):
                 governs = governs_items(alias_body)
                 break
-    id_match = re.search(r"^\*\*Id:\*\*\s*(\S+)", text, re.I | re.M)
+    id_match = re.search(r"^\*\*Id:\*\*\s*(\S+)", structural, re.I | re.M)
     question = section("Context")
     rationale = section("Decision")
     recommendation = section("Recommendation")

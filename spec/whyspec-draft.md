@@ -146,13 +146,9 @@ any level, trimmed.
 **[REC-005]** Heading text **MUST** be matched case-insensitively when a parser is deciding which
 section a heading names.
 
-> **Known gap — fenced code blocks are not excluded.** The reference implementation matches
-> headings and the inline status line (§4.6) over the raw document text, without excluding fenced
-> code blocks. A `## Decision` heading or a `**Status:** Rejected` line inside a fenced block is
-> read as though it were structural. This is a genuine hazard: a record demonstrating record syntax
-> inside a code fence can silently change its own parse, and a status of `rejected` causes the
-> record to be excluded from ingest entirely (§4.6). Implementers should be aware of it; this
-> document does not invent a rule to close it. See §8, gap G1.
+> Headings, the status line and the inline fields are recognised over the document with its fenced
+> code blocks masked — [REC-158] in §3.2. A `## Decision` heading or a `**Status:** Rejected` line
+> inside a fence is quoted text, not structure.
 
 ### 3.2 What is not read
 
@@ -198,6 +194,27 @@ matter and is scanned whole.
 > whole-document search, [REC-040]'s whole-document supersession scan and [REC-010]'s
 > first-matching-H1 rule all stay exactly as written. [REC-003]'s leading-BOM tolerance composes —
 > the BOM is stripped first, so a BOM followed by `---` opens front matter.
+
+**[REC-158]** A **fenced code block** — the lines from one whose trimmed text begins with three
+backticks or three tildes, through the next line whose trimmed text begins with the **same**
+marker, inclusive — is quoted text. No heading ([REC-004]), status line ([REC-027], [REC-147]),
+identifier line ([REC-139]) or date field **MUST** be read from a line inside one. A fence closes
+only with its own marker: a `~~~` line inside a backtick fence is content, not a closer. A fence
+that is never closed runs to the end of the document. Fenced lines inside a section remain part of
+that section's body under [REC-004]; only structural recognition ignores them.
+
+> This closes what §8 recorded as gap G1, on evidence rather than by invention. The hazard was
+> never hypothetical: a record that quoted its predecessor's header inside a fence acquired the
+> quoted identifier line, and the duplicate identifier silently un-retired a record that had
+> genuinely been superseded. A fenced `**Status:** Rejected` does the inverse — it retires a live
+> record — and [REC-029]'s whole-document search makes it certain to be found.
+>
+> Masking rather than parsing is the smaller rule and fails in the safe direction. A reader that
+> tracks one open marker per document is not a Markdown parser, and what it misreads it *skips*:
+> the failure mode is a heading not seen, never a heading fabricated. Closing only on the same
+> marker is what CommonMark specifies and what keeps a tilde fence containing a backtick example
+> from ending early. Bodies keep their fences because a decision that shows the command it
+> decided on has lost nothing by showing it.
 
 **[REC-007]** A parser **MUST NOT** require any section not named in §4. Unrecognized sections
 **MUST** be ignored without error. This is what makes §7's vocabulary-extension rule safe.
@@ -2035,7 +2052,7 @@ gap: implementers build on it, and it becomes real without ever having been deci
 
 | Id | Gap |
 |---|---|
-| **G1** | **Fenced code blocks are not excluded from parsing.** Headings and the inline status line are matched over raw text (§3.1). A record demonstrating record syntax inside a fence can change its own parse — and a `**Status:** Rejected` line in a fence causes the record to be excluded from ingest entirely ([REC-032]). Whether the fix is fence-aware scanning or scoping the status search to the pre-first-H2 region is undecided. |
+| ~~G1~~ | **RESOLVED by [REC-158].** Fenced code blocks are quoted text: no heading, status, identifier or date is read from inside one, and a fence closes only with its own marker. Fence-aware scanning was chosen over scoping the status search, because scoping would still have read a fenced heading as structure. |
 | **G2** | **Section heading level is unconstrained.** `### Decision` and `###### Decision` are both accepted (§4.5). Whether parsers should tighten to level 2 or emitters should merely be constrained is undecided. |
 | ~~G3~~ | **RESOLVED by [REC-107].** The `Context` body is now parsed as `question` and reaches the intent node. The question is what identifies a decision — it is why the filename derives from it and why re-deciding updates rather than forks — so a representation omitting it could not recognise two answers to the same question. |
 | **G4** | **`resolution_delta` is not queryable.** Set on the node and reported at capture, but projected into no query result envelope ([REC-045]). The highest-signal field in the format is write-only from a consumer's point of view. |
@@ -2240,6 +2257,7 @@ Every normative rule, with its one-line statement.
 | REC-155 | An implementation that resolves scope at file granularity MAY resolve a symbol reference (REC-151) to the file it names, by the path before its #. |
 | REC-156 | REC-152–REC-155 govern declared scope items. |
 | REC-157 | A Governs alias MUST count as the record's declared scope only where its body yields at least one item under REC-082. Where an alias body yields no…. |
+| REC-158 | A fenced code block — the lines from one whose trimmed text begins with three backticks or three tildes, through the next line whose trimmed text…. |
 
 #### Provenance
 
@@ -2335,5 +2353,4 @@ document specifies what **should** be; it does not modify any implementation.
 | **[PROV-007]** | Assumption nodes are minted `authored` unconditionally, so a `captured` record's assumptions outrank the decision that stated them and are counted as reviewed ground truth. Trust inversion. |
 | **[ENV-002] / [ENV-011]** | Four failure paths on the tool-call transport emit envelopes with no `command` key, while the same failures on the command-line surface carry it. The one key called universal is not universal on every transport. |
 | **[ENV-006]** | `coverage` overloads a single `command` tag with two disjoint payloads, forcing a secondary structural discriminator. A distinct tag would flatten the union. Changing it is a meaning change under [VER-001]. |
-| **[REC-005] / G1** | Headings and the inline status line are matched over raw text with no fenced-code-block exclusion. A fenced `**Status:** Rejected` silently excludes a record from ingest. |
 | **G7** | Result field sets differ across variants describing the same nodes (`confidence_score` on `list-intent` but not `why`; `resolution_delta` on neither), with no stated projection principle. |
