@@ -2,9 +2,8 @@
 
 The specification text and fixtures in this repository are licensed under the Apache License
 2.0 — you may use, modify, and redistribute them freely under that license. The names
-**"Attrica"** and **"Whyspec"**, the historical names **"WhyDB"** and **"whyfile"**, the phrases
-**"Attrica-compatible"** and **"whyfile-compatible"**, and the project logo (if and when one
-exists) are trademarks of **Four Birds Limited** (New Zealand company number 8153775, NZBN
+**"Attrica"** and **"Whyspec"**, the phrases **"Attrica-compatible"** and **"Whyspec-compatible"**,
+and the project logo (if and when one exists) are trademarks of **Four Birds Limited** (New Zealand company number 8153775, NZBN
 9429048932363), whether or not registered, and are NOT licensed by the Apache License (see
 section 6 of the LICENSE).
 
@@ -24,9 +23,9 @@ conforming file accurately.
 
 ## What needs written permission
 
-- Naming your own product, service, or company "Attrica", "Whyspec", "WhyDB" or "whyfile", or a
-  name confusingly similar to any of them.
-- Using "Attrica-compatible", "Whyspec-compatible" or "whyfile-compatible" as a badge on a product
+- Naming your own product, service, or company "Attrica" or "Whyspec", or a name confusingly
+  similar to either.
+- Using "Attrica-compatible" or "Whyspec-compatible" as a badge on a product
   that has not passed the conformance fixtures in this repository. If it passes, the claim is true
   and you may make it.
 - Using the marks in a way that suggests endorsement, affiliation, or origin that does not exist.

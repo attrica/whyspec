@@ -87,19 +87,6 @@ a format that records *why* decisions were made is worth little if reading it re
 vendor's permission. Publishing the format means the records in your repository stay yours
 and stay readable, by us, by you, or by a tool nobody has written yet.
 
-## Reserved
-
-The bare root filename `Whyfile` is **reserved and explicitly unclaimed**. A future index or
-manifest may want the classic `Makefile` position, and reserving it costs a sentence where
-retrofitting it would cost a migration. Do not assign it meaning.
-
-Historical note: documents predating version 0.8 used "Whyfile" for a configuration artifact,
-since retired and renamed `why.config.toml`. The term was then re-purposed to name a decision
-record itself, capitalized in the style of `Makefile` or `Dockerfile` — and has since been
-retired again: this specification and project are now **Whyspec**, and a record is a **why
-record**, lowercase and generic. "Whyfile" survives only as the literal reserved filename above,
-and in documents written under either earlier sense.
-
 ## Status
 
 Draft. The specification is being extracted from the reference implementation and is not yet
@@ -108,9 +95,9 @@ stable. Nothing here should be treated as frozen until a version is tagged.
 ## License
 
 Specification text and fixtures are licensed under Apache-2.0 — see [LICENSE](LICENSE) and
-[NOTICE](NOTICE). The names "Attrica" and "Whyspec", the historical names "WhyDB" and
-"whyfile", and the compatibility phrases built on them are trademarks of Four Birds Limited and
-are not licensed by Apache-2.0; see [TRADEMARKS.md](TRADEMARKS.md).
+[NOTICE](NOTICE). The names "Attrica" and "Whyspec" and the compatibility phrases built on them
+are trademarks of Four Birds Limited and are not licensed by Apache-2.0; see
+[TRADEMARKS.md](TRADEMARKS.md).
 
 Contributions require a Developer Certificate of Origin sign-off — see
 [CONTRIBUTING.md](CONTRIBUTING.md).

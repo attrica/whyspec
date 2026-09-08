@@ -4,6 +4,13 @@ What changed in the specification, keyed by rule id. The specification text stat
 reasons for them; how a rule came to be revised is recorded here, so a reader of the rule is not
 asked to read its history first. Entries are grouped by the version they belong to ([VER-009]).
 
+## 0.2
+
+- **REC-001** removed. The bare root filename `Whyfile` was reserved for a future index when the
+  project carried that name; the name is retired and the reservation with it. The identifier is not
+  reused. The historical note on the earlier names is removed with it: the project is Whyspec, a
+  record is a why record, and there is no earlier public format to describe.
+
 ## 0.1 — pre-publication baseline
 
 Rules revised while the draft was being extracted and tested against a conformance corpus. None of
