@@ -1,6 +1,6 @@
 {
   "rule": "REC-007",
-  "statement": "A record whose normalised status is 'rejected' MUST be excluded from an authored/captured node set built from a directory of records (e.g. ingest_dir semantics) -- a rejected decision is the option NOT taken, so it (and any assumptions attached to it) must never become ground truth.",
+  "statement": "A record whose normalized status is `rejected` yields foreclosure intent (REC-104): retained and queryable, never counted toward trusted evidence, and never presented as something the team does (REC-032).",
   "valid_case": {
     "description": "Directory of 2 records: one accepted, one rejected. Under REC-104 BOTH are retained — the accepted one as ground-truth intent, the rejected one as foreclosure intent, which must never be counted toward trust nor presented as something the team does.",
     "input_dir": ".",
@@ -20,11 +20,11 @@
     ]
   },
   "invalid_case": {
-    "description": "A non-conformant implementation that DROPS the rejected record entirely. That was the pre-REC-104 behaviour; it destroys the record of a decision explicitly taken against, which is the question 'have we already declined this?' ",
+    "description": "A non-conformant implementation that DROPS the rejected record entirely destroys the record of a decision explicitly taken against, which is the answer to 'have we already declined this?'.",
     "wrong_decision_count_a_non_conformant_implementation_might_return": 2,
     "reason": "0002-rejected.md's status normalises to 'rejected' (see REC-006). Including it promotes an explicitly-not-chosen option to ground truth.",
     "expected_decision_count": 1
   },
-  "note": "Verified against whyfile.passes.ingest.ingest_dir(): ingesting this directory yields exactly 1 node, status='accepted'.",
+  "note": "Ingesting this directory yields two decision nodes: the accepted record as ground-truth intent and the rejected one as foreclosure intent.",
   "superseded_by": "REC-104"
 }

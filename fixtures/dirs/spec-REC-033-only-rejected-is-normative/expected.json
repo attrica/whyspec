@@ -1,6 +1,6 @@
 {
   "rule": "REC-033",
-  "statement": "No status value other than `rejected` is normative; implementations MUST NOT attach behaviour to any other value.",
+  "statement": "The status values carrying normative behaviour are exactly those classified in §4.6.1 (draft, proposed, accepted, rejected) with the unstated case; any other value is conventional and an implementation MUST NOT attach behaviour to it beyond REC-032 and the unrecognized-status row.",
   "files": [
     "0001-status-accepted.md",
     "0002-status-proposed.md",

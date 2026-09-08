@@ -1,0 +1,5 @@
+{
+  "coupling": "edit",
+  "records": 2,
+  "text": "Recorded decisions govern `src/edge/handler.py`. They were written by someone who is not in this session; read them before changing the file, and if this change departs from one, say so and record why.\n\n## Validate requests at the edge (accepted, 2026-05-02) — docs/decisions/2026-05-02-validate-at-the-edge.md\nRequest validation runs at the edge handler, before any service call.\n\n## Keep cache keys in one module (status not stated, undated) — docs/decisions/cache-keys.md\nEvery cache key is built by one module.\n"
+}

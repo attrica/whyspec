@@ -23,7 +23,8 @@ decision layer.
 This document specifies three things and only three:
 
 1. **The record format** — how a why record is written and how a conforming parser reads it.
-2. **The result envelope** — the shape of a JSON answer returned by a query over records.
+2. **The recall envelope** — the shape of the text that delivers governing decisions to a writer
+   at a coupling point.
 3. **The provenance vocabulary** — the trust tiers a piece of recorded intent can carry, and their
    ordering.
 
@@ -38,8 +39,9 @@ Every normative statement carries a stable identifier in one of four families:
 |---|---|
 | `REC-nnn` | Record format — syntax, sections, filenames, identity |
 | `PROV-nnn` | Provenance vocabulary — tiers, ordering, trust semantics |
-| `ENV-nnn` | Result envelope — the JSON shape of a query answer |
+| `ENV-nnn` | Envelope — the recall envelope (§6) and the reserved command variants (Appendix A) |
 | `VER-nnn` | Versioning policy — when a change requires a version marker |
+| `INT-nnn` | Intent-layer profile (`profiles/intent-layer.md`) — intention, attestation, recall line |
 
 A complete index of every rule id appears in §9.
 
@@ -51,7 +53,7 @@ In scope:
 - Which fields a parsed record yields, and which are optional.
 - Filename derivation, and the compatibility rules that keep an existing record's identity stable.
 - The provenance tiers and their total order.
-- The JSON envelope a query returns.
+- The recall envelope a writer receives.
 - The rule that governs when a format change requires a version marker.
 
 ### 1.4 Non-goals
@@ -63,10 +65,10 @@ implementations should be free to differ.
 - **Storage.** Whether records are read from a working tree, a git object database, an index, a
   cache, or a network service. The format says what a record *is*, not where it lives.
 - **Transport.** How a query reaches an implementation or how an answer is returned — process
-  invocation, HTTP, a tool-call protocol, a library call. §6.6 draws the line between the
+  invocation, HTTP, a tool-call protocol, a library call. §6.2 and Appendix A.6 draw the line between the
   spec-governed envelope and whatever a transport wraps around it.
 - **Ranking and retrieval.** How an implementation scores a free-text question against a corpus of
-  records. The envelope reserves fields for scores and match evidence (§6.5.1) and constrains their
+  records. The reserved `why` variant names fields for scores and match evidence (Appendix A.5.1) and constrains their
   *meaning*, not their computation. Two conforming implementations may legitimately return
   different results for the same question.
 - **Product behaviour.** Capture workflows, review surfaces, linting, gating, notification,
@@ -100,7 +102,8 @@ decision layer. The format specifies the parse; the node is what a query answers
 
 **Provenance tier** — the trust class of a piece of intent (§5).
 
-**Envelope** — the top-level JSON object a query returns (§6).
+**Envelope** — the recall envelope (§6), the text that delivers governing decisions to a writer; the
+reserved command envelopes are described in Appendix A.
 
 ### 2.1 The bare root filename `Whyfile` is reserved
 
@@ -157,16 +160,11 @@ section a heading names.
 lower-precedence source that can never override the markdown body, and **only** for the keys named
 in [REC-149]. Every other key **MUST NOT** be interpreted.
 
-> **This rule was reversed on evidence.** It previously forbade interpreting front matter at all, on
-> the reasoning that a record's meaning must be fully determined by its body. That reasoning holds
-> for anything the body can express — and fails for a title the body never states. A project with
-> 2,421 contributors keeps its architecture decision records with no level-1 heading at all, the
-> title living solely in front matter; twelve genuine records were unreadable by construction of
-> this rule. Front matter is not merely external tooling's metadata: it is a semi-structured
-> documentation surface teams actually use.
->
-> The precedence direction is what makes the reversal safe. Front matter never wins, so no record's
-> meaning can be changed by a value a static-site generator wrote.
+> A record's meaning is determined by its body for anything the body can express, and that fails
+> only for a title the body never states: some projects keep records with no level-1 heading at all,
+> the title living solely in front matter. The precedence direction is what makes reading it safe.
+> Front matter never wins, so no record's meaning can be changed by a value a static-site generator
+> wrote.
 
 **[REC-149]** The only front-matter key a parser **MAY** interpret is `title`, and it **MUST** be
 used only where the document has no level-1 heading at all. Where an H1 exists, the H1 title
@@ -249,15 +247,15 @@ template, a README, or an unrelated document to sit in the same directory withou
 | `# Decision: <title>` | `decision` | `captured` (§5) |
 | bare `# <title>` with the ADR section signature | `adr` | `authored` (§5) |
 
-`Decision:` is the form this project's own capture surface emits, which is why it alone implies
+`Decision:` is the form a capture tool emits at the moment of choosing, which is why it alone implies
 `captured`. Every other recognised form is a document a person wrote, and takes `authored`.
 
 **[REC-010]** A parser **MUST** use the **first** level-1 heading that matches any declared form as
 the record's title heading, and **MUST** ignore any later level-1 heading. A level-1 heading that
 matches neither form **MUST NOT** disqualify the document: the parser continues looking.
 
-> This is verified behaviour, not an inference. A document whose first H1 is `# Notes` and whose
-> second is `# Decision: A` parses as a decision record titled `A`.
+> A document whose first H1 is `# Notes` and whose second is `# Decision: A` parses as a decision
+> record titled `A`.
 
 ### 4.1.1 Numbered heading grammar
 
@@ -285,14 +283,6 @@ and no document but an ADR pairs that heading with a decision.
 tightening: a real ADR corpus omits `Status` entirely, keeping it in front matter or nowhere.
 `Context` with `Consequences`, on top of the `Decision` gate, is already a shape notes do not
 have — the meeting-notes counter-example for [REC-001] carries neither.
-
-> This paragraph exists because the rule said *all three* for a day while every implementation
-> required *two*. What let the contradiction sit there is worth recording: **none of [REC-143]'s
-> own fixtures discriminated** — every one of them carried `Status`, so they passed under either
-> reading. The behaviour was in fact pinned, but only incidentally, by fixtures written for
-> [REC-149] and [REC-150] whose bodies happen to omit `Status`. A rule whose own counter-examples
-> cannot tell it apart from a stricter rule is not tested by them, however green the corpus looks.
-> The discriminating case is now a fixture of [REC-143] itself.
 
 **[REC-144]** The signature **MUST NOT** be weakened to a subset. A document carrying only
 `## Decision` alongside an arbitrary heading **MUST NOT** be treated as a record: that shape is
@@ -428,12 +418,9 @@ case-insensitively against the full trimmed heading text:
 
 **[REC-020]** Records **SHOULD** write all sections in [REC-018] at heading level 2.
 
-> **Divergence flagged.** The reference implementation applies no level constraint to section
-> headings: `### Decision` and `###### Decision` are both accepted as the Decision section (verified
-> by execution). Only the *title* heading is level-constrained. [REC-020] is therefore a SHOULD on
-> emitters, deliberately not a MUST on parsers — tightening parsers to level 2 would reject records
-> already in the field. Recommend the engine keep its permissive parse and that the corpus fix the
-> emitted level at 2. See §8, gap G2.
+> Parsers **MAY** accept section headings at any level; only the title heading is level-constrained.
+> [REC-020] is a SHOULD on emitters and deliberately not a MUST on parsers, because tightening
+> parsers to level 2 would reject records already in the field. See §8, Q2.
 
 **[REC-021]** The `Context` section carries the **question** the record answers. Emitters **MUST**
 render it (§4.10).
@@ -442,9 +429,9 @@ render it (§4.10).
 record, and it **MUST** reach the intent node. An empty or absent `Context` yields an absent
 `question`, never an empty string.
 
-> **Resolves gap G3.** The question was previously parsed for filename derivation (§4.11) and for
-> deciding whether an existing record answers *this* decision (§4.11), then discarded — durable in
-> the file and absent from the queryable layer.
+> The question is what identifies a decision: it is why the filename derives from it (§4.11) and
+> why re-deciding updates a record rather than forking one, so a representation that omitted it
+> could not recognise two answers to the same question.
 >
 > The asymmetry was not merely a missing field. **The question is what identifies a decision.**
 > A record is the answer currently occupying a question-shaped slot: that is why the filename is
@@ -480,7 +467,7 @@ space, trimming, and removing every `**` sequence. Empty items **MUST** be dropp
 not an error and not the prose.
 
 **[REC-026]** Records **SHOULD NOT** nest list items under an alternative. Nesting carries no
-meaning in this format: the reference implementation flattens every marker to a top-level item, so
+meaning in this format: a conforming parser flattens every marker to a top-level item, so
 a sub-bullet becomes an alternative in its own right.
 
 #### 4.5.2 Alternative disposition
@@ -517,15 +504,9 @@ strings" is **superseded** by this rule. [ENV-016] continues to govern the **env
 `alternatives`, which projects each alternative's `option` text only; an implementation **MUST NOT**
 emit an object there.
 
-> This is a report of a contradiction, not a design preference. [REC-018] and [ENV-016] both said
-> *list of strings* while [REC-097]–[REC-099] required each alternative to carry three parts, which a
-> string cannot hold — and the conformance corpus instantiated both sides, so no implementation could
-> satisfy every fixture. Keeping the projection at the envelope is what lets the envelope rule stand
-> unchanged: the parse gains structure, the wire format does not.
->
-> In a published format, changing an alternatives item from a string to this object would cross
-> [VER-001] ([VER-003], fourth bullet). Here the object is part of the pre-publication baseline:
-> there is no earlier public contract to migrate and no marker is owed (§7.5).
+> The parsed object carries the three parts [REC-097]–[REC-099] require, which a string cannot
+> hold; keeping the projection at the envelope is what lets the envelope rule stand unchanged. The
+> parse gains structure, the wire format does not.
 
 This is the format's answer to its own central question. A decision that records only what was
 chosen has recorded a commitment; a decision that records why the alternatives *lost* has
@@ -559,15 +540,10 @@ line-anchored match **MUST** win. It is not scoped to any section.
 run of alphabetic characters**. `Rejected in favor of ADR-9`, `: Rejected.`, and `REJECTED` all
 normalize to `rejected`. A value containing no alphabetic characters normalizes to absent.
 
-> **Corrected.** This rule previously said "normalized to its first run of *lowercase* alphabetic
-> characters", which reads as *select* the first lowercase run rather than *lowercase first, then
-> select*. Taken literally it breaks all three of its own examples — `Accepted` yields `ccepted`
-> and `REJECTED` contains no lowercase run at all, so it normalizes to **absent**.
->
-> That last case is not cosmetic. An absent status is *unstated* ([REC-101]), which takes its tier
-> from the record kind and **yields ground-truth intent** — so a record whose author wrote
-> `**Status:** REJECTED` in capitals would be published as a trusted commitment. It is the same
-> inversion [REC-032] and [REC-104] exist to prevent, reached through capitalization.
+> The order matters: lowercase first, then select. Selecting a lowercase run first would make
+> `REJECTED` normalize to **absent**, and an absent status is *unstated* ([REC-101]), which takes its
+> tier from the record kind and yields ground-truth intent — a record declined in capitals would be
+> published as a trusted commitment, the inversion [REC-032] and [REC-104] exist to prevent.
 
 **[REC-031]** When no status can be determined, the parsed record's status **MUST** be absent. An
 implementation **MUST NOT** substitute a default, and **MUST NOT** serialize an explicit null in
@@ -583,21 +559,11 @@ ingesting it would invert its meaning.
 ([REC-101]). Any **other** value is conventional, and an implementation **MUST NOT** attach
 behaviour to it beyond [REC-032] and the unrecognized-status row of [REC-101].
 
-> **Superseded, revised.** An earlier version of this rule declared that *no* status value beyond
-> `rejected` was normative, which §4.6.1 then contradicted by classifying four of them. An
-> independent implementation of the two rules together was unsatisfiable: `superseded` written as
-> a status resolved to *open*, therefore to no disposition, therefore to no currency — while the
-> conformance corpus required it to remain current. A rule that forbids attaching behaviour to a
-> vocabulary the next section attaches behaviour to cannot be implemented by anyone.
->
-> Note this does **not** re-admit `superseded` as a status: [REC-108] still excludes it, and
-> currency is still derived from the relation graph. It is conventional text that parses and
-> normalizes and contributes nothing.
+> This does **not** admit `superseded` as a status: [REC-108] excludes it, and currency is derived
+> from the relation graph. It is conventional text that parses and normalizes and contributes
+> nothing.
 
 #### 4.6.1 Settled and unsettled status
-
-> **Baseline note.** This subsection defines the status semantics of the pre-publication baseline.
-> After publication, reinterpreting any status row would be a meaning change under [VER-001].
 
 Status carries **two independent properties**, and collapsing them onto one axis is what makes
 `rejected` look like an unfinished thought rather than the most settled state a record can reach.
@@ -675,15 +641,10 @@ value of the correspondingly named column. The mark [REC-118] requires **MUST** 
 carried as `corroborated`, a boolean on the attribution. This rule assigns spellings only — the
 values, and the conditions under which each holds, are [REC-101]'s and are not restated here.
 
-> [REC-101] determines the status properties and requires an open record to be "marked open",
-> [REC-118] requires a self-ratification to be "marked" and [REC-119] requires an uncorroborated
-> ratification to be marked — and until this rule, **only `disposition` had a key spelling given by
-> any rule** ([ENV-022]). The rest were obligations with no field, so two conforming implementations
-> could both satisfy them and share nothing.
->
-> This is §8's gap G7 in its smallest concrete form: no stated principle for which fields reach the
-> output, and no spelling for the ones that must. G7 is what produced the [ENV-022] defect; these
-> were the remaining fields it could still produce one from.
+> [REC-101] requires an open record to be marked open, [REC-118] a self-ratification to be marked,
+> and [REC-119] an uncorroborated ratification to be marked. An obligation to mark with no key
+> spelling lets two conforming implementations both satisfy it and share nothing; this rule fixes
+> the spellings.
 
 ### 4.7 Assumptions
 
@@ -770,11 +731,6 @@ the record's trimmed title, the resulting intent node **MUST** carry a `resoluti
 field in the format for anyone studying decision quality, precisely because it is the case where
 the recommended answer and the chosen answer diverged and someone wrote both down.
 
-> **Known gap.** `resolution_delta` is set on the intent node and is reported in the capture
-> envelope (§6.5.9), but is **not** projected into any query result envelope by the reference
-> implementation — not `why`, not `list-intent`, not `explain`. It is durable but not queryable.
-> See §8, gap G4.
-
 ### 4.10 Canonical rendering
 
 An emitter producing a `decision` record **MUST** produce exactly this shape. This is the
@@ -815,24 +771,16 @@ record's own status. Where a record has no status ([REC-101], *unstated*), the l
 omitted entirely. An emitter **MUST NOT** substitute a default, and in particular **MUST NOT**
 emit `accepted` for a record whose status is absent or is anything else.
 
-> **These two rules exist because their absence was measured, not imagined.** An audit built an
-> emitter and a parser from this document and round-tripped the corpus: **not one of 86 decision
-> records survived byte-identically.**
+> [REC-136] guards the most severe round-trip failure a format can have. Every worked example shows
+> `Accepted`, so an emitter told to render a status line and not told *which* will hard-code it — and
+> a `rejected` record then round-trips to `accepted`: one save turns "we decided against this" into
+> "we do this", the inversion [REC-032] and [REC-104] exist to prevent.
 >
-> [REC-136] addresses the most severe result. This section told an emitter to render a status
-> line and never said *which* status — and every worked example shows `Accepted`, so a conformant
-> implementer hard-codes it. Executed against real records, a `rejected` record round-tripped to
-> `accepted`: **one save turns "we decided against this" into "we do this."** That is the exact
-> inversion [REC-032] and [REC-104] exist to prevent, produced by an emitter obeying the
-> specification as written. Forty-four of the eighty-six records in the conformance corpus carry
-> a status other than `accepted`.
->
-> [REC-135] addresses the cause rather than the instance. This rendering section was written
-> against the sections that existed at the time, and four sections added later — attribution,
-> declared scope, relations, and assumptions — have no rendering at all. The format can therefore
-> read records it cannot write, and every future extension inherits the same defect by default
-> unless a rule forbids it. Stating emitter completeness as a requirement makes the omission a
-> conformance failure instead of an oversight nobody is responsible for noticing.
+> [REC-135] addresses the cause rather than the instance. A rendering section written against the
+> sections that existed when it was written lets a format read records it cannot write, and every
+> later extension inherits the defect unless a rule forbids it. Stating emitter completeness as a
+> requirement makes the omission a conformance failure instead of an oversight nobody is
+> responsible for noticing.
 
 **[REC-047]** The `**Status:**` and `**Date:**` lines **MUST** be emitted on adjacent lines
 immediately after a single blank line following the H1, with no blank line between them.
@@ -874,16 +822,6 @@ empty, and **MUST NOT** emit a placeholder for it ([REC-054]).
 `**Date:**`, when the record carries an identifier. Dropping it would defeat [REC-076] and
 [REC-076], whose whole purpose is an identifier that survives revision.
 
-> These renderings were missing. Attribution, declared scope, relations and assumptions were all
-> added as *parseable* sections while this rendering section continued to describe the six that
-> existed before them, so a conforming emitter could read a record it was unable to write — and a
-> round trip through such an emitter silently deleted every one of those fields. The identifier
-> was lost the same way.
->
-> [REC-135] is what makes this class of omission visible in future: the gap existed for as long
-> as it did because nothing said the two halves had to stay in step, so nobody was wrong when
-> they drifted.
-
 #### 4.10.1 The placeholder rule
 
 **[REC-054]** A `(none recorded)` placeholder **MUST** be emitted only for a section where the
@@ -922,8 +860,7 @@ ends in `.md` and does not begin with `.`. Every other entry — including the r
 subdirectories, and where it does it **MUST** apply this same rule at every level. A candidate that
 fails [REC-008] is ignored without error ([REC-007]).
 
-> Nothing previously bounded the candidate set, and the consequence is testable rather than
-> theoretical: an extensionless `Whyfile` whose body is a syntactically valid decision record parses
+> The consequence of an unbounded candidate set is testable rather than theoretical: an extensionless `Whyfile` whose body is a syntactically valid decision record parses
 > as one, so an implementation that feeds every file to the parser produces two nodes where one is
 > correct — and [REC-001] requires that file to mean nothing.
 >
@@ -1038,23 +975,14 @@ inputs.
 > review date would fork the node — the harm [REC-073] and [REC-076] exist to prevent, reached
 > through a field whose whole purpose is to be revised.
 
-[REC-121]–[REC-124] exist because an earlier draft specified an identity that was **derived,
-exact, and load-bearing** — and then left the digest itself undefined. It named the four inputs
-and the joiner in prose, showed the joiner with spaces in an adjacent display block, and said
-nothing whatever about which hash function, which encoding, what length, or what prefix. An
-independent implementation of that text chose SHA-256 at full length with no prefix, which is a
-perfectly reasonable reading and produces a completely different id for every record.
+[REC-121]–[REC-124] pin the digest completely because an identity that is derived, exact and
+load-bearing forks silently the moment two implementations hash differently: [REC-073]'s rationale
+is that hashing the wrong *spelling* of a path forks one node, and hashing with a different
+*algorithm* forks every node in the corpus.
 
-That is the failure §4.13 warns about, arriving through the front door. The argument there is
-that a forked identity dangles every reference silently; [REC-073]'s rationale is that hashing
-the wrong *spelling* of a path forks the node. Hashing with a different *algorithm* forks every
-node in the corpus, and the specification supplied no way to get it right.
-
-[REC-122] resolves the genuine ambiguity in the same rule. The contrast the prose draws is
-between node types — decision versus assumption — while [REC-009]'s table presents `adr` and
-`decision` under a column headed "Kind". An implementer who reads that table first will
-reasonably hash `adr` for an ADR-headed record, and produce a different identity from one who
-reads §4.12 first. Both readings were available; only one can be correct.
+[REC-122] names the **node** kind, not [REC-009]'s record kind: `adr` and `decision` appear under a
+column headed "Kind", and an implementer who hashed that value would produce a different identity
+from one who hashed `decision` or `assumption`. Only one reading can be correct.
 
 > **On SHA-1.** It is specified here because it is what existing corpora already contain, and
 > changing it would fork every identity in every deployed record — precisely the harm these rules
@@ -1210,7 +1138,7 @@ will tend to misreport in whichever direction flatters the writer. Recording bot
 makes an actor-centric history answerable at all, since a scalar buried on each record cannot be
 traversed from a person back to their decisions.
 
-[REC-116] closes a gap the format previously left open. The distinction between `captured` and
+[REC-116] gives the tier an act to follow. The distinction between `captured` and
 `authored` is, by the tier table's own words, whether a review process accepted the record — yet
 nothing recorded a review ever happening, so the strongest tier was earned by how a file was
 named. Ratification is an act with an actor and a date, and the tier now follows the act rather
@@ -1234,10 +1162,9 @@ and whitespace normalization of [REC-023] **MUST NOT** be applied.
 > **Why this section departs from the shared list rules.** [REC-023] removes every `**` sequence,
 > which is correct for prose and destructive for a path glob: `src/edge/**/*.py` normalizes to
 > `src/edge//*.py`, silently converting a recursive-descent glob into a literal empty path
-> segment. A literal implementation of the earlier cross-reference produced broken globs that
-> then mis-resolved every declared scope — a failure that surfaces as a decision quietly
-> governing nothing, which [REC-086] would report as an empty resolution while the actual cause
-> sat in the parser.
+> segment. Applying it produces broken globs that mis-resolve every declared scope — a failure that
+> surfaces as a decision quietly governing nothing, which [REC-086] would report as an empty
+> resolution while the actual cause sat in the parser.
 >
 > The general lesson is worth keeping: a normalization written for human prose cannot be reused
 > unexamined on a machine-readable value that shares the document's markup characters.
@@ -1255,11 +1182,9 @@ mistyped reference reports through [REC-086] rather than silently degrading into
 governs the unresolved case unchanged.
 
 > **Why a second kind, and why this one.** The path glob was the only kind specified because no
-> second one was needed yet. Two things need it now, and they arrived from opposite directions. In
-> the wild, in-code rationale is the only rationale practice observed at scale — 41,758 instances
-> against zero conforming records — and it explains a *symbol*, not a directory. Independently, the
-> capture surface's declared scope already spoke of symbols, so the two layers disagreed about what
-> a scope could be.
+> second one was needed yet. In-code rationale is the rationale practice observed at scale, and it
+> explains a *symbol*, not a directory; a declared scope that could not name one could not describe
+> the commonest thing a decision governs.
 >
 > The disambiguation rule reads a malformed reference as a malformed *symbol* reference rather than
 > as a glob. That looks like the unhelpful reading and is the safe one: a symbol reference is a
@@ -1389,7 +1314,7 @@ same reasoning as [REC-044] — a corpus may be partial.
 record — **MUST** be dropped, and **MUST NOT** be resolved to any one of them. An implementation
 **MUST NOT** select by ingest order, recency, or any other tiebreak.
 
-[REC-091] is the single most important rule added in this revision, because it is the only one
+[REC-091] is the single most important rule in this section, because it is the only one
 that stops the format from asserting something false. An unresolvable reference produces no edge,
 which is a safe failure — a reader sees nothing and knows nothing. An *ambiguous* reference
 resolved by tiebreak produces a **wrong** edge that is indistinguishable from a correct one, and
@@ -1573,11 +1498,9 @@ record's own attribution shows did not independently occur.
 **[PROV-007]** An assumption node **SHOULD** inherit the provenance tier of the record that
 declared it.
 
-> **Divergence flagged — engine inconsistency.** The reference implementation mints **every**
-> assumption node as `authored`, regardless of its record's kind (verified by execution: a
-> `captured` record's assumption is created with provenance `authored`). The consequence is a trust
-> inversion — an assumption outranks the decision that stated it, and unreviewed assumptions are
-> counted as reviewed ground truth. [PROV-007] specifies what should be. See §8, gap G5, and §10.
+> An implementation that minted every assumption as `authored` would invert trust: an assumption
+> would outrank the decision that stated it, and unreviewed assumptions would count as reviewed
+> ground truth.
 
 **[PROV-008]** Intent ingested from a record **MUST** carry a numeric confidence of `1.0`. The
 record *is* the evidence; there is nothing to be uncertain about at ingest.
@@ -1659,343 +1582,68 @@ binding to legitimately earn a stronger one.
 
 ---
 
-## 6. Result envelope
+## 6. The recall envelope
+
+The one envelope this specification defines is the text that puts the decisions governing a path in
+front of the writer about to change it. It is produced at two coupling points: when a path is
+first about to be edited, and at the recorded intention before building begins (the **plan-gate**
+form). How the text reaches the writer — the JSON a hook returns, a message in a transport, a file
+— is the harness's format and is not specified here.
 
 ### 6.1 Shape
 
-**[ENV-001]** A query result **MUST** be a single JSON object. Not an array, not a stream of
-objects, not a bare value.
-
-**[ENV-002]** Every envelope **MUST** carry a `command` key: a stable lowercase string naming the
-operation that produced it.
-
-**[ENV-003]** Every envelope **MUST** carry a `status` key: a lowercase `snake_case` token
-classifying the outcome.
-
-**[ENV-004]** `command` and `status` are the **only** universal keys. A consumer **MUST NOT** assume
-any other key is present without first dispatching on `command`.
-
-This is the single most important rule in §6, and it is easy to get wrong by inspection of one
-command. Field-verified top-level key sets.
-
-A variant's key set is **not** unconditional: a status value may add a key. `why` is the
-worked case — it carries an eighth key, `note`, exactly when `status` is `topically_weak`.
-A conforming consumer must therefore treat a variant's key set as *keyed on the status it
-carries*, and an implementation must not assert an exact key count for a variant without
-naming the status it holds for.
-
-| `command` | Top-level keys |
-|---|---|
-| `why` | `command`, `status`, `query`, `count`, `cutoff`, `score_stats`, `results`, and `note` **when and only when** `status` is `topically_weak` |
-| `list-intent` | `command`, `status`, `count`, `filter`, `intent` |
-| `explain` (ok) | `command`, `status`, `query`, `resolved`, `intent`, `explains`, `relations` |
-| `explain` (ambiguous) | `command`, `status`, `query`, `candidates`, `message` |
-| `explain` (not_found) | `command`, `status`, `query`, `message` |
-| `changed` | `command`, `status`, `base`, `changed_files`, `files_with_intent`, `results` |
-| `digest` | `command`, `status`, `since`, `added`, `removed`, `superseded` |
-| `coverage` | `command`, `status` + 12 coverage-specific keys |
-| `coverage` (explain form) | `command`, `status`, `explain`, `trace_present`, `referencing_intent`, `counts` |
-| `check` | `command`, `status`, `rules`, `files_checked`, `violations` |
-| `intent-diff` | `command`, `status`, `base`, `summary`, `introduces`, `supersedes`, `governed`, `constraint_review` |
-| `review-context` | `command`, `status`, `base`, `changed_files`, `governing`, `unresolved_constraints`, `guidance` |
-| `capture` | `command`, `status`, `record`, `record_abs`, `node_id`, `title`, `provenance`, `resolution_delta`, `merged` |
-
-Not even `count` is universal — it appears on `why` and `list-intent` and nowhere else.
-
-### 6.2 The envelope is a tagged union
-
-**[ENV-005]** The envelope **MUST** be modelled as a **tagged union discriminated by `command`**,
-over a small universal core of `{command, status}`. An implementation **MUST NOT** model it as one
-struct with many optional fields.
-
-The distinction has teeth. A one-struct model makes every command's fields optional on every other
-command, which means a consumer cannot tell "this command does not have that field" from "this
-command has it and it was null this time" — and a type system cannot help. A tagged union makes the
-first case a compile error and the second a real value.
-
-**[ENV-006]** Where a single `command` value carries more than one disjoint shape, the spec **MUST**
-name the secondary discriminator explicitly, and a consumer **MUST** apply it before reading any
-variant-specific key. Two such cases exist:
-
-- **`coverage`** — two disjoint shapes share the tag. The discriminator is the presence of the
-  `explain` key: present means the per-file explanation variant, absent means the corpus-wide
-  summary variant. They share no keys beyond `command` and `status`.
-- **`explain`** — three disjoint shapes keyed by `status` (`ok` / `ambiguous` / `not_found`).
-
-> **Flagged for the engine.** `coverage` overloading one `command` tag with two unrelated payloads
-> is the weakest point in the union. A `command` value of `coverage-explain` would make the
-> discriminator primary and the union flat. This is a spec-level recommendation, not a rule, because
-> changing it is a meaning change under §7 ([VER-001]) and needs its own decision. See §10.
-
-### 6.3 Status
-
-**[ENV-007]** Status tokens are **per-command**, not global. The following are the tokens the
-reference implementation emits.
-
-| `command` | Status tokens |
-|---|---|
-| `why` | `ok`, `weak_match`, `topically_weak`, `no_strong_match` |
-| `explain` | `ok`, `ambiguous`, `not_found` |
-| `list-intent` | `ok` |
-| `changed` | `ok`, `no_intent_governing_changes` |
-| `coverage` | `ok` (summary form); `ok`, `no_references` (explain form) |
-| `digest` | `ok`, `no_changes` |
-| `check` | `ok`, `conformance_failed` |
-| `intent-diff` | `ok`, `conformance_required` |
-| `review-context` | `ok`, `no_intent_governing_changes` |
-| `capture` | `ok`, `dry_run`, `error` |
-| any (input failure) | `no_intent_layer`, `error` |
-
-**[ENV-008]** A consumer encountering an **unrecognized** status token **MUST** treat it as a
-failure. Failing open on an unknown status is the silent-success defect: a refusal an agent reads as
-an answer. Enumerate the statuses that mean success; treat everything else, including anything added
-later, as an error.
-
-**[ENV-009]** A status **MUST NOT** be overloaded to carry data. `ok` means the command completed
-and its variant fields are populated; a distinct outcome gets a distinct token.
-
-**[ENV-010]** A status that reports an honest negative — `no_changes`, `no_strong_match`,
-`no_intent_governing_changes`, `no_references` — is a **complete answer**, not an error. An
-implementation **MUST** distinguish "I looked and there is nothing" from "I could not look".
-
-### 6.4 The error variant
-
-**[ENV-011]** An envelope reporting a failure **MUST** carry `command`, `status`, and a human-
-readable `message`. It **MUST NOT** be required to carry any variant-specific key.
-A consumer **MUST NOT** assume a variant-specific key is present merely because `command` names a
-variant that normally has it; the error variant is a legitimate shape with none of those keys.
-
-> **Flagged — engine inconsistency.** In the reference implementation, four failure paths on the
-> tool-call transport emit an envelope with **no `command` key at all**: the wrong-repository
-> refusal, the missing-graph refusal, the input-validation failure, and the internal-error catch.
-> The same failures over the command-line surface *do* carry `command`. This breaks [ENV-002] — the
-> one key the spec calls universal — on exactly the paths where a consumer most needs to know what
-> it asked. The spec keeps [ENV-002] as a MUST and flags the engine. See §8, gap G6, and §10.
-
-### 6.5 Command variants
-
-Field lists below are normative for the variant they name. All are field-verified against the
-reference implementation.
-
-#### 6.5.1 `why`
-
-Free-text retrieval over recorded intent.
-
-**[ENV-013]** The `why` envelope **MUST** carry: `query` (the question as asked), `count` (number of
-results returned), `cutoff` (the strong-match score threshold in effect), `score_stats`, and
-`results`.
-
-**[ENV-014]** `score_stats` **MUST** be an object with `top`, `runner_up`, and `median` — computed
-over the **whole scored field**, not only the returned rows. This is what makes "a lone hit standing
-above a flat tail" machine-detectable by the consumer rather than a judgement only the implementation
-can make.
-
-**[ENV-015]** Each entry in `results` **MUST** carry: `disposition`, `score`, `id`, `label`, `intent_kind`,
-`claim`, `rationale`, `alternatives`, `source_file`, `source_location`, `provenance`,
-`matched_terms`, `distinctive_matches`, `matched_coverage`.
-
-**[ENV-016]** `alternatives` **MUST** be a list of strings. An implementation reading a legacy scalar
-**MUST** coerce it to a single-element list, and **MUST NOT** iterate a bare string character by
-character.
-
-**[ENV-047]** The envelope field `intent_kind` names the kind of the node and is **not** constrained
-to [REC-122]'s pair. [REC-122] governs the third component of node identity ([REC-071]) for a node
-derived from a record, where the only kinds are `decision` and `assumption`. An implementation
-**MUST NOT** hash any other value as that component, and **MUST NOT** reject an envelope carrying
-another value in this field. This rule governs the field wherever it appears, not only on a `why`
-result.
-
-> The two readings were reconcilable but never reconciled, and the field carries the same name in
-> both places. [ENV-033] requires `intent-diff` and `review-context` to distinguish *governed by a
-> decision* from *governed by a **constraint***, and the conformance corpus carries `intent_kind`
-> values of `constraint`, `mechanism` and `tradeoff` — so a schema enforcing [REC-122] on the
-> envelope field rejects fixtures labelled valid. §1.4 puts intent derived from non-record sources
-> out of scope, which is exactly where those kinds come from.
-
-**[ENV-017]** The three evidence fields have fixed meanings, and an implementation **MUST NOT**
-redefine them:
-
-- `matched_terms` — which of the question's terms matched this result at all.
-- `distinctive_matches` — the subset of `matched_terms` whose matched corpus token is
-  **corpus-distinctive** rather than shared by nearly every record. A term every record contains
-  carries no topical evidence.
-- `matched_coverage` — a number in `[0, 1]`: the fraction of the question's **content** terms that
-  matched.
-
-**[ENV-018]** `matched_coverage` **MUST** be in `[0, 1]` inclusive.
-
-**[ENV-019]** The `topically_weak` status **MUST** mean: the top result cleared the score cutoff,
-but its match evidence does not support treating it as an answer. It is an **abstention above the
-cutoff**, and it exists because a score-shaped answer and a real answer are otherwise
-indistinguishable to a consumer that injects retrieved text into a working context without
-skimming it. A consumer **MUST NOT** treat `topically_weak` as equivalent to `ok`.
-
-**[ENV-020]** The `weak_match` status **MUST** mean: the top result scored *under* the cutoff but
-stands clearly apart from the runner-up — a probable answer at moderate confidence, not noise.
-
-> The exact thresholds and the scoring function are **out of scope** (§1.4). What is normative is
-> that the four statuses are distinguishable and mean what [ENV-019]/[ENV-020] say.
-
-#### 6.5.2 `list-intent`
-
-**[ENV-021]** The `list-intent` envelope **MUST** carry `count`, `filter`, and `intent`. `filter`
-**MUST** echo the filter that was applied, with an explicit `null` for each unset criterion — a
-consumer must be able to see what was *not* filtered.
-
-**[ENV-022]** Each entry in `intent` **MUST** carry: `id`, `label`, `intent_kind`, `claim`,
-`rationale`, `source_file`, `source_location`, `confidence_score`, `provenance`, `disposition`.
-
-> **`disposition` added.** [PROV-019] requires a result carrying intent to expose disposition so
-> a consumer can partition commitments from foreclosures. This list previously named nine keys
-> and omitted it, which made the two rules **jointly unsatisfiable** — and the conformance corpus
-> instantiated both sides, so no implementation could pass every fixture. The list is where the
-> requirement has to live, because [ENV-004] tells consumers not to assume any key the list does
-> not name.
->
-> This is the concrete cost of the missing projection principle recorded as gap G7: with no
-> stated rule for which node fields a variant projects, a field added in one section does not
-> reach the section that enumerates the output. G7 is not merely untidiness — it produced an
-> unsatisfiable pair.
-
-#### 6.5.3 `explain`
-
-**[ENV-023]** The `ok` variant **MUST** carry `query`, `resolved`, `intent`, `explains`, and
-`relations`. `resolved` **MUST** report how the argument was matched (`matched_by`) and, for a
-non-exact match, a `score`.
-
-**[ENV-024]** The `ambiguous` variant **MUST** carry `candidates` and `message` and **MUST NOT**
-carry `resolved`. Ambiguity is not a partial answer; an implementation **MUST NOT** silently pick a
-candidate.
-
-#### 6.5.4 `changed`
-
-**[ENV-025]** The `changed` envelope **MUST** carry `base` (the reference diffed against, or null
-when files were supplied explicitly), `changed_files`, `files_with_intent`, and `results`. Each
-result **MUST** carry `file`, `matched_by`, `ambiguous`, and `governed_by`.
-
-**[ENV-026]** `ambiguous` on a result **MUST** be true when the file was matched by basename and
-that basename resolves to more than one path. A basename match that could mean several files
-**MUST** be reported as such rather than silently resolved.
-
-#### 6.5.5 `digest`
-
-**[ENV-027]** The `digest` envelope **MUST** carry `since`, `added`, `removed`, and `superseded`.
-
-#### 6.5.6 `coverage`
-
-**[ENV-044]** The summary `coverage` variant **MUST** carry exactly these twelve coverage-specific
-keys alongside `command` and `status`: `code_files`, `code_symbols`, `files_with_intent`,
-`symbols_with_intent`, `authored_anchored_files`, `authored_anchored_symbols`, `file_coverage_pct`,
-`symbol_coverage_pct`, `dark_files`, `intent_by_kind`, `golden`, `intent_debt`.
-
-**[ENV-050]** The `golden` block **MUST** carry exactly these five components:
-`golden_tiers` (the array of tier names counted as trusted, per [PROV-010]), `by_provenance` (an
-object mapping every tier to its integer count), `golden_count` (the integer total across the
-golden tiers), `total_intent` (the integer total across all tiers), and `golden_fraction_pct`
-(the integer percentage). A trust metric **MUST NOT** report `golden_fraction_pct` without the
-`by_provenance` breakdown, per [PROV-012].
-
-> This rule exists because its absence caused the exact failure it prevents, in this document's
-> own corpus, hours before it was written. The schema carried an honest marker recording that no
-> rule enumerated these components; fixtures were then authored against `golden` anyway, and —
-> having no rule to consult — **invented a second, incompatible shape**. Two files claimed a
-> `{fraction, by_tier}` block while eight carried the five components above, each set
-> individually labelled valid.
->
-> Naming the components is what stops the next author guessing. The marker was correct that the
-> gap was real; what it could not do was prevent anyone walking into it.
-
-**[ENV-049]** The summary `coverage` variant's top-level `dark_files` **MUST** be an **array of
-repository-relative paths**, and **MUST NOT** be a count. The `dark_files` inside `intent_debt`
-([ENV-045]) remains an **integer** count. An implementation **MUST NOT** use the same shape for
-both.
-
-> The two keys share a name and answer different questions — *which files* against *how many* —
-> and leaving the outer one untyped let a corpus carry both readings under one name, in fixtures
-> that were each individually labelled valid. That is the confusion [ENV-009] warns about, one
-> level down: a consumer reading `dark_files` had no way to know whether it would receive a length
-> or a list.
->
-> The array is the right shape for the outer key precisely *because* the count already exists
-> inside `intent_debt`. Typing it as a count would make the envelope carry the same number twice
-> and lose the paths entirely; typing it as an array makes the pair complementary, and a consumer
-> wanting the number can take the length.
-
-> §6.1 has always stated the count and never the names. A
-> required count that no rule lets a validator satisfy is not a requirement; it is a number. The
-> names are those the conformance corpus instantiates.
->
-> **Open: the type of `dark_files` at this level.** Two corpus fixtures both labelled valid once
-> disagreed — one carrying a list of paths, the other an integer count — which is the [ENV-009]
-> defect one level down, the same name meaning *how many* in one file and *which ones* in the other.
-> This rule names the key and does not settle the type. [ENV-045] already puts a `dark_files`
-> **count** inside `intent_debt`, so the list reading is the one that adds information here rather
-> than duplicating it, and it is the reading every valid fixture now takes.
-
-**[ENV-029]** A component of `intent_debt` that the implementation cannot compute **MUST** be
-reported as explicit `null`, never as `0`. A zero claims "we measured and found none"; a null
-honestly says "not measured". Reporting an unmeasured signal as zero is the same class of lie as
-[REC-054]'s placeholder.
-
-**[ENV-045]** `intent_debt` **MUST** carry exactly these four components: `dark_files`,
-`orphaned_intent`, `stale_decisions`, `unresolved_disputes`. Each **MUST** be a non-negative
-integer, or an explicit `null` where the implementation cannot compute it ([ENV-029]). A component
-**MUST NOT** be omitted.
-
-> The last sentence is what makes [ENV-029] enforceable. Without it, an implementation that cannot
-> compute `stale_decisions` satisfies the rule by dropping the key — which re-introduces the very
-> ambiguity between *not applicable* and *not measured* that [ENV-038] draws, and leaves [ENV-029]
-> naming no field a validator can check in either direction.
-
-#### 6.5.7 `check`
-
-**[ENV-030]** The `check` envelope **MUST** carry `rules` (count of rules evaluated),
-`files_checked`, and `violations`.
-
-**[ENV-048]** Each entry in a `check` envelope's `violations` **MUST** carry `rule`, `file`,
-`message`, and `decision_id`. A rule whose failure cannot name the decision that motivated it is
-not a conformance check; it is a lint.
-
-**[ENV-032]** A rule of a type the checker does not implement **MUST** be skipped — never counted as
-a pass and never counted as a failure. Silence about an unimplementable rule is honest; a pass is
-not.
-
-#### 6.5.8 `intent-diff` and `review-context`
-
-**[ENV-033]** Both **MUST** distinguish *governed by a decision* from *governed by a constraint*.
-Deterministic inspection cannot tell conformance from violation, so an implementation **MUST NOT**
-report a constraint touch as a proven violation.
-
-#### 6.5.9 `capture`
-
-**[ENV-034]** The `capture` envelope **MUST** carry `record` (the path as given, from which node
-identity derives), `record_abs` (the resolved absolute destination), `node_id`, `title`,
-`provenance`, `resolution_delta`, and `merged`. `record` and `record_abs` **MUST** both be reported:
-the former preserves the spelling from which identity derives, while the latter makes the actual
-write destination visible.
-
-**[ENV-036]** `merged` **MUST** report whether the derived view was updated, independently of
-`status`. Writing the record and failing to update a derived index is an **honest partial success**:
-the durable artifact exists, the derived view is stale. It **MUST NOT** be reported as a failure,
-and **MUST NOT** be reported as an unqualified success.
-
-**[ENV-037]** `resolution_delta` **MUST** be present with an explicit `null` when there was no
-delta. This is a deliberate exception to [ENV-038] and exists because the consumer of this field is
-asking a yes/no question that a missing key cannot answer.
-
-### 6.6 Absent versus null
-
-**[ENV-038]** A key **omitted** from an envelope or node **MUST** mean *not applicable to this
+**[ENV-051]** A recall envelope **MUST** consist of a **preamble** followed by **one section per
+record delivered**, in that order. Where no record governs the path, the envelope **MUST** be
+empty: no preamble and no sections. Whether nothing governed the path or the implementation could
+not resolve it is recorded on the recall line ([INT-011]), not in the envelope.
+
+**[ENV-052]** The preamble **MUST** state four things, in any wording: that recorded decisions
+govern the named path; that their author is not present in the session; that they are to be read
+before the change is made; and that a departure from one must be said and recorded.
+
+> Structure is normative and wording is not. A harness may localise or rephrase the preamble
+> without breaking conformance; what it may not do is drop an obligation. The reference wording is
+> one sentence: *Recorded decisions govern `<path>`. They were written by someone who is not in this
+> session; read them before changing the file, and if this change departs from one, say so and
+> record why.*
+
+**[ENV-053]** Each record section **MUST** begin with a level-2 heading carrying, in order, the
+record's title; its status, or the words `status not stated`; its date, or `undated`; and the
+record's repository-relative path — `## <title> (<status>, <date>) — <path>` — followed by the
+record's decision text. A reader **MUST** be able to attribute every section to a record from its
+heading alone.
+
+**[ENV-054]** The decision text in a section **MAY** be bounded, and the bound is
+implementation-defined. A truncation **MUST** be visible in the delivered text: a bounded section
+**MUST NOT** be a silent prefix of the record's decision text.
+
+> The bound exists because a push that costs more than the edit it accompanies is a cost paid on
+> every edit; the visibility rule exists because a reader who cannot tell that text was cut will act
+> on half a decision as if it were the whole. A suffix such as `… (see the record)` satisfies it;
+> the form of the mark is the implementation's.
+
+**[ENV-055]** In the plan-gate form, the sections **MUST** be preceded by a header naming the count
+of records delivered. Where the intention carries no recorded goal, a request for the goal
+**MUST** precede that header and every section. The order is normative: the goal request comes
+first.
+
+> Agents answer what they see first. A goal request placed after the records is skipped; placed
+> before them it is answered.
+
+### 6.2 Absent versus null
+
+**[ENV-038]** A key **omitted** from a JSON object this specification defines — a node, a reserved envelope (Appendix A), or an intent-layer object **MUST** mean *not applicable to this
 variant*. An explicit `null` **MUST** mean *applicable, and the value is known to be unavailable*.
 
 **[ENV-039]** An implementation **MUST NOT** use the two interchangeably. Where the spec names a
 present-with-null field ([ENV-029], [ENV-037], [ENV-041]), the key **MUST** be present.
 
-### 6.7 Transport profiles
+### 6.3 Reserved command variants
 
-Transport metadata is not part of the core result envelope. The optional transport profile and
-its schema are maintained separately in `profiles/transport.md` and
-`schema/transport-envelope.schema.json`.
+Appendix A carries the command-shaped result envelopes specified for an earlier implementation.
+They are **reserved**: their rules keep their identifiers and text so that an implementation may
+adopt one without inventing a shape, and their fixtures are retained but do not count toward
+conformance (§9). None is required of a conforming implementation.
 
 ---
 
@@ -2034,7 +1682,7 @@ marker:
 - Adding a new optional field to an existing section, stripped from surrounding text so older
   records read identically.
 - Adding a new key to a command variant that older consumers can ignore.
-- Adding a new **command** to the union (§6.2) — an unknown tag is already required to be handled
+- Adding a new **command** to the reserved union (Appendix A.2) — an unknown tag is already required to be handled
   ([ENV-008]).
 
 ### 7.3 Absence stays honest
@@ -2110,26 +1758,22 @@ does not match `\d+\.\d+` **MUST** be yielded absent, as [REC-129] treats a malf
 > unknown version marker hides nothing — the record is still a record, and refusing it would delete
 > it from a corpus for having been written by a newer tool.
 
-## 8. Known gaps
+## 8. Open questions
 
-Places where the reference implementation is genuinely silent or ambiguous. These are recorded as
-gaps rather than filled with invented rules, because an invented rule is worse than an acknowledged
-gap: implementers build on it, and it becomes real without ever having been decided.
+Places where this document deliberately does not yet state a rule. Each is recorded rather than
+filled, because an invented rule is worse than an acknowledged question: implementers build on it,
+and it becomes real without ever having been decided.
 
-| Id | Gap |
+| Id | Question |
 |---|---|
-| ~~G1~~ | **RESOLVED by [REC-158].** Fenced code blocks are quoted text: no heading, status, identifier or date is read from inside one, and a fence closes only with its own marker. Fence-aware scanning was chosen over scoping the status search, because scoping would still have read a fenced heading as structure. |
-| **G2** | **Section heading level is unconstrained.** `### Decision` and `###### Decision` are both accepted (§4.5). Whether parsers should tighten to level 2 or emitters should merely be constrained is undecided. |
-| ~~G3~~ | **RESOLVED by [REC-107].** The `Context` body is now parsed as `question` and reaches the intent node. The question is what identifies a decision — it is why the filename derives from it and why re-deciding updates rather than forks — so a representation omitting it could not recognise two answers to the same question. |
-| **G4** | **`resolution_delta` is not queryable.** Set on the node and reported at capture, but projected into no query result envelope ([REC-045]). The highest-signal field in the format is write-only from a consumer's point of view. |
-| **G5** | **Assumption provenance does not inherit.** Every assumption is minted `authored` regardless of its record's kind ([PROV-007]). |
-| **G6** | **`command` is not universal on every transport.** Four failure paths on the tool-call transport omit it, breaking [ENV-002]; [ENV-011] defines the complete error form. |
-| **G7** | **Result field sets are not uniform across variants.** `list-intent` entries carry `confidence_score`; `why` result entries do not, though both describe the same nodes. Neither carries `resolution_delta`. There is no stated principle governing which node fields a given variant projects. |
-| **G8** | **Multiple `## Decision` sections are first-wins with no diagnostic** ([REC-019]). A record with two Decision sections silently loses the second. Whether that should be an error is undecided. |
-| **G9** | **No rule governs a record whose title is duplicated** within the same directory. Identity ([REC-071]) includes the source path, so two records with the same title in different files are distinct nodes; two records with the same title in the *same* file are not addressable separately. |
-| **G10** | **The `attested` tier has no record syntax.** It is normatively ordered ([PROV-002]) but is produced from sources outside this format's scope (§1.4). A conforming implementation that only reads records will never mint it. |
-| ~~G11~~ | **RESOLVED by [VER-009]–[VER-011].** The marker syntax (`**Whyspec:** MAJOR.MINOR`), the version discipline and the migration table are defined in §7.6, ahead of the first meaning change. |
-| **G12** | **Empty `## Recommendation`.** [REC-046] says an empty recommendation yields no delta, but an emitter is not forbidden from writing an empty section, and a parser cannot distinguish "recommended nothing" from "recommendation section written and left blank". |
+| **Q2** | **Section heading level.** `### Decision` and `###### Decision` are both accepted (§4.5). Whether parsers should tighten to level 2, or only emitters be constrained ([REC-020]), is undecided. |
+| **Q7** | **Which node fields each envelope variant projects.** No stated principle governs it; a field added to the node in one section does not automatically reach the variant that enumerates the output. |
+| **Q8** | **Multiple `## Decision` sections are first-wins with no diagnostic** ([REC-019]). Whether a second Decision section should be an error is undecided. |
+| **Q9** | **A record whose title is duplicated within one directory.** Identity ([REC-071]) includes the source path, so two records with the same title in different files are distinct nodes; two in the *same* file are not addressable separately. |
+| **Q10** | **The `attested` tier has no record syntax.** It is normatively ordered ([PROV-002]) but is produced from sources outside this format's scope (§1.4). An implementation that only reads records will never mint it. |
+| **Q12** | **Empty `## Recommendation`.** [REC-046] says an empty recommendation yields no delta, but an emitter is not forbidden from writing an empty section, and a parser cannot distinguish "recommended nothing" from "written and left blank". |
+
+Questions resolved by a rule are recorded in [CHANGELOG.md](../CHANGELOG.md), not here.
 
 ---
 
@@ -2138,6 +1782,9 @@ gap: implementers build on it, and it becomes real without ever having been deci
 A conforming implementation satisfies every **MUST** and **MUST NOT** in §§3–7 **that constrains an
 implementation**, for the surfaces it implements. An implementation that only reads records need not
 implement §6; an implementation that only answers queries need not implement §4.10 or §4.11.
+
+Rules in **Appendix A** are **reserved**: retained with their fixtures for an implementation that
+adopts a variant, and outside the conformance obligation until one does.
 
 Three classes of rule are **normative but outside conformance scope**, because no implementation can
 be measured against them. They are marked in the rule index and are excluded from the corpus's
@@ -2354,47 +2001,52 @@ Every normative rule, with its one-line statement.
 
 | Id | Statement |
 |---|---|
-| ENV-001 | A query result MUST be a single JSON object. Not an array, not a stream of objects, not a bare value. |
-| ENV-002 | Every envelope MUST carry a command key: a stable lowercase string naming the operation that produced it. |
-| ENV-003 | Every envelope MUST carry a status key: a lowercase snake_case token classifying the outcome. |
-| ENV-004 | command and status are the only universal keys. A consumer MUST NOT assume any other key is present without first dispatching on command. |
-| ENV-005 | The envelope MUST be modelled as a tagged union discriminated by command, over a small universal core of {command, status}. |
-| ENV-006 | Where a single command value carries more than one disjoint shape, the spec MUST name the secondary discriminator explicitly, and a consumer MUST…. |
-| ENV-007 | Status tokens are per-command, not global. The following are the tokens the reference implementation emits. |
+| ENV-001 | A query result MUST be a single JSON object. Not an array, not a stream of objects, not a bare value. _(reserved: Appendix A)_ |
+| ENV-002 | Every envelope MUST carry a command key: a stable lowercase string naming the operation that produced it. _(reserved: Appendix A)_ |
+| ENV-003 | Every envelope MUST carry a status key: a lowercase snake_case token classifying the outcome. _(reserved: Appendix A)_ |
+| ENV-004 | command and status are the only universal keys. A consumer MUST NOT assume any other key is present without first dispatching on command. _(reserved: Appendix A)_ |
+| ENV-005 | The envelope MUST be modelled as a tagged union discriminated by command, over a small universal core of {command, status}. _(reserved: Appendix A)_ |
+| ENV-006 | Where a single command value carries more than one disjoint shape, the spec MUST name the secondary discriminator explicitly, and a consumer MUST…. _(reserved: Appendix A)_ |
+| ENV-007 | Status tokens are per-command, not global. The following are the defined tokens. _(reserved: Appendix A)_ |
 | ENV-008 | A consumer encountering an unrecognized status token MUST treat it as a failure. _(out of scope: consumer)_ |
 | ENV-009 | A status MUST NOT be overloaded to carry data. _(out of scope: consumer)_ |
-| ENV-010 | A status that reports an honest negative — no_changes, no_strong_match, no_intent_governing_changes, no_references — is a complete answer, not an…. |
-| ENV-011 | An envelope reporting a failure MUST carry command, status, and a human- readable message. It MUST NOT be required to carry any variant-specific key. |
-| ENV-013 | The why envelope MUST carry: query (the question as asked), count (number of results returned), cutoff (the strong-match score threshold in effect)…. |
-| ENV-014 | score_stats MUST be an object with top, runner_up, and median — computed over the whole scored field, not only the returned rows. |
-| ENV-015 | Each entry in results MUST carry: disposition, score, id, label, intent_kind, claim, rationale, alternatives, source_file, source_location…. |
-| ENV-016 | alternatives MUST be a list of strings. |
-| ENV-017 | The three evidence fields have fixed meanings, and an implementation MUST NOT redefine them: — see the rule body for the enumeration. |
-| ENV-018 | matched_coverage MUST be in 0, 1 inclusive. |
-| ENV-019 | The topically_weak status MUST mean: the top result cleared the score cutoff, but its match evidence does not support treating it as an answer. |
-| ENV-020 | The weak_match status MUST mean: the top result scored *under* the cutoff but stands clearly apart from the runner-up — a probable answer at moderate…. |
-| ENV-021 | The list-intent envelope MUST carry count, filter, and intent. |
-| ENV-022 | Each entry in intent MUST carry: id, label, intent_kind, claim, rationale, source_file, source_location, confidence_score, provenance, disposition. |
-| ENV-023 | The ok variant MUST carry query, resolved, intent, explains, and relations. |
-| ENV-024 | The ambiguous variant MUST carry candidates and message and MUST NOT carry resolved. |
-| ENV-025 | The changed envelope MUST carry base (the reference diffed against, or null when files were supplied explicitly), changed_files, files_with_intent…. |
-| ENV-026 | ambiguous on a result MUST be true when the file was matched by basename and that basename resolves to more than one path. |
-| ENV-027 | The digest envelope MUST carry since, added, removed, and superseded. |
-| ENV-029 | A component of intent_debt that the implementation cannot compute MUST be reported as explicit null, never as 0. A zero claims "we measured and found…. |
-| ENV-030 | The check envelope MUST carry rules (count of rules evaluated), files_checked, and violations. |
-| ENV-032 | A rule of a type the checker does not implement MUST be skipped — never counted as a pass and never counted as a failure. |
-| ENV-033 | Both MUST distinguish *governed by a decision* from *governed by a constraint*. |
-| ENV-034 | The capture envelope MUST carry record (the path as given, from which node identity derives), record_abs (the resolved absolute destination)…. |
-| ENV-036 | merged MUST report whether the derived view was updated, independently of status. |
-| ENV-037 | resolution_delta MUST be present with an explicit null when there was no delta. |
-| ENV-038 | A key omitted from an envelope or node MUST mean *not applicable to this variant*. _(out of scope: consumer)_ |
+| ENV-010 | A status that reports an honest negative — no_changes, no_strong_match, no_intent_governing_changes, no_references — is a complete answer, not an…. _(reserved: Appendix A)_ |
+| ENV-011 | An envelope reporting a failure MUST carry command, status, and a human- readable message. It MUST NOT be required to carry any variant-specific key. _(reserved: Appendix A)_ |
+| ENV-013 | The why envelope MUST carry: query (the question as asked), count (number of results returned), cutoff (the strong-match score threshold in effect)…. _(reserved: Appendix A)_ |
+| ENV-014 | score_stats MUST be an object with top, runner_up, and median — computed over the whole scored field, not only the returned rows. _(reserved: Appendix A)_ |
+| ENV-015 | Each entry in results MUST carry: disposition, score, id, label, intent_kind, claim, rationale, alternatives, source_file, source_location…. _(reserved: Appendix A)_ |
+| ENV-016 | alternatives MUST be a list of strings. _(reserved: Appendix A)_ |
+| ENV-017 | The three evidence fields have fixed meanings, and an implementation MUST NOT redefine them: — see the rule body for the enumeration. _(reserved: Appendix A)_ |
+| ENV-018 | matched_coverage MUST be in 0, 1 inclusive. _(reserved: Appendix A)_ |
+| ENV-019 | The topically_weak status MUST mean: the top result cleared the score cutoff, but its match evidence does not support treating it as an answer. _(reserved: Appendix A)_ |
+| ENV-020 | The weak_match status MUST mean: the top result scored *under* the cutoff but stands clearly apart from the runner-up — a probable answer at moderate…. _(reserved: Appendix A)_ |
+| ENV-021 | The list-intent envelope MUST carry count, filter, and intent. _(reserved: Appendix A)_ |
+| ENV-022 | Each entry in intent MUST carry: id, label, intent_kind, claim, rationale, source_file, source_location, confidence_score, provenance, disposition. _(reserved: Appendix A)_ |
+| ENV-023 | The ok variant MUST carry query, resolved, intent, explains, and relations. _(reserved: Appendix A)_ |
+| ENV-024 | The ambiguous variant MUST carry candidates and message and MUST NOT carry resolved. _(reserved: Appendix A)_ |
+| ENV-025 | The changed envelope MUST carry base (the reference diffed against, or null when files were supplied explicitly), changed_files, files_with_intent…. _(reserved: Appendix A)_ |
+| ENV-026 | ambiguous on a result MUST be true when the file was matched by basename and that basename resolves to more than one path. _(reserved: Appendix A)_ |
+| ENV-027 | The digest envelope MUST carry since, added, removed, and superseded. _(reserved: Appendix A)_ |
+| ENV-029 | A component of intent_debt that the implementation cannot compute MUST be reported as explicit null, never as 0. A zero claims "we measured and found…. _(reserved: Appendix A)_ |
+| ENV-030 | The check envelope MUST carry rules (count of rules evaluated), files_checked, and violations. _(reserved: Appendix A)_ |
+| ENV-032 | A rule of a type the checker does not implement MUST be skipped — never counted as a pass and never counted as a failure. _(reserved: Appendix A)_ |
+| ENV-033 | Both MUST distinguish *governed by a decision* from *governed by a constraint*. _(reserved: Appendix A)_ |
+| ENV-034 | The capture envelope MUST carry record (the path as given, from which node identity derives), record_abs (the resolved absolute destination)…. _(reserved: Appendix A)_ |
+| ENV-036 | merged MUST report whether any secondary view the implementation maintains was updated, independently of status. _(reserved: Appendix A)_ |
+| ENV-037 | resolution_delta MUST be present with an explicit null when there was no delta. _(reserved: Appendix A)_ |
+| ENV-038 | A key omitted from a JSON object this specification defines — a node, a reserved envelope (Appendix A), or an intent-layer object MUST mean *not…. _(out of scope: consumer)_ |
 | ENV-039 | An implementation MUST NOT use the two interchangeably. _(out of scope: consumer)_ |
-| ENV-044 | The summary coverage variant MUST carry exactly these twelve coverage-specific keys alongside command and status: code_files, code_symbols…. |
-| ENV-045 | intent_debt MUST carry exactly these four components: dark_files, orphaned_intent, stale_decisions, unresolved_disputes. |
-| ENV-047 | The envelope field intent_kind names the kind of the node and is not constrained to REC-122's pair. |
-| ENV-048 | Each entry in a check envelope's violations MUST carry rule, file, message, and decision_id. |
-| ENV-049 | The summary coverage variant's top-level dark_files MUST be an array of repository-relative paths, and MUST NOT be a count. |
-| ENV-050 | The golden block MUST carry exactly these five components: golden_tiers (the array of tier names counted as trusted, per PROV-010), by_provenance (an…. |
+| ENV-044 | The summary coverage variant MUST carry exactly these twelve coverage-specific keys alongside command and status: code_files, code_symbols…. _(reserved: Appendix A)_ |
+| ENV-045 | intent_debt MUST carry exactly these four components: dark_files, orphaned_intent, stale_decisions, unresolved_disputes. _(reserved: Appendix A)_ |
+| ENV-047 | The envelope field intent_kind names the kind of the node and is not constrained to REC-122's pair. _(reserved: Appendix A)_ |
+| ENV-048 | Each entry in a check envelope's violations MUST carry rule, file, message, and decision_id. _(reserved: Appendix A)_ |
+| ENV-049 | The summary coverage variant's top-level dark_files MUST be an array of repository-relative paths, and MUST NOT be a count. _(reserved: Appendix A)_ |
+| ENV-050 | The golden block MUST carry exactly these five components: golden_tiers (the array of tier names counted as trusted, per PROV-010), by_provenance (an…. _(reserved: Appendix A)_ |
+| ENV-051 | A recall envelope MUST consist of a preamble followed by one section per record delivered, in that order. |
+| ENV-052 | The preamble MUST state four things, in any wording: that recorded decisions govern the named path; that their author is not present in the session…. |
+| ENV-053 | Each record section MUST begin with a level-2 heading carrying, in order, the record's title; its status, or the words status not stated; its date…. |
+| ENV-054 | The decision text in a section MAY be bounded, and the bound is implementation-defined. |
+| ENV-055 | In the plan-gate form, the sections MUST be preceded by a header naming the count of records delivered. |
 
 #### Versioning
 
@@ -2413,14 +2065,331 @@ Every normative rule, with its one-line statement.
 
 ---
 
-## 10. Divergences flagged for the reference implementation
+---
 
-Recorded here so they are visible to a reader of the spec, and routable by its maintainers. This
-document specifies what **should** be; it does not modify any implementation.
+## Appendix A. Reserved command variants
 
-| Rule | Divergence |
+The envelopes in this appendix were specified for an earlier implementation and are not emitted by
+the maintainer's. Each is **reserved**: its rules keep their identifiers and text, its fixtures are
+retained, and neither counts toward conformance (§9). A reserved variant anticipates a capability
+named beside it; an implementation that builds that capability may adopt the variant as specified
+or propose a change to it under §7.
+
+| Variant | Anticipates |
 |---|---|
-| **[PROV-007]** | Assumption nodes are minted `authored` unconditionally, so a `captured` record's assumptions outrank the decision that stated them and are counted as reviewed ground truth. Trust inversion. |
-| **[ENV-002] / [ENV-011]** | Four failure paths on the tool-call transport emit envelopes with no `command` key, while the same failures on the command-line surface carry it. The one key called universal is not universal on every transport. |
-| **[ENV-006]** | `coverage` overloads a single `command` tag with two disjoint payloads, forcing a secondary structural discriminator. A distinct tag would flatten the union. Changing it is a meaning change under [VER-001]. |
-| **G7** | Result field sets differ across variants describing the same nodes (`confidence_score` on `list-intent` but not `why`; `resolution_delta` on neither), with no stated projection principle. |
+| `why` | free-text retrieval over recorded intent; the recall envelope (§6) is its successor for delivery at a coupling point |
+| `list-intent` | the plan-gate recall at the intention coupling point |
+| `explain` | in-flight recall of one decision by identifier |
+| `changed` | the mechanical validity check of a change against the records that govern it |
+| `digest` | onboarding and seeding of a ledger from history |
+| `coverage` | governance coverage measurement as a product metric |
+| `check` | the mechanical validity check; the maintainer's checker has a different shape, and if it is ever published it enters the intent-layer profile as an optional object |
+| `intent-diff` | the supersession entries of the attestation record ([INT-007]) |
+| `review-context` | the land coupling point: a pull-request gate |
+| `capture` | writing a record at the moment of choosing; the capture skill writes a file and emits no envelope |
+
+
+### A.1 Shape
+
+**[ENV-001]** A query result **MUST** be a single JSON object. Not an array, not a stream of
+objects, not a bare value.
+
+**[ENV-002]** Every envelope **MUST** carry a `command` key: a stable lowercase string naming the
+operation that produced it.
+
+**[ENV-003]** Every envelope **MUST** carry a `status` key: a lowercase `snake_case` token
+classifying the outcome.
+
+**[ENV-004]** `command` and `status` are the **only** universal keys. A consumer **MUST NOT** assume
+any other key is present without first dispatching on `command`.
+
+This is the single most important rule in this appendix, and it is easy to get wrong by inspection of one
+command.
+
+A variant's key set is **not** unconditional: a status value may add a key. `why` is the
+worked case — it carries an eighth key, `note`, exactly when `status` is `topically_weak`.
+A conforming consumer must therefore treat a variant's key set as *keyed on the status it
+carries*, and an implementation must not assert an exact key count for a variant without
+naming the status it holds for.
+
+| `command` | Top-level keys |
+|---|---|
+| `why` | `command`, `status`, `query`, `count`, `cutoff`, `score_stats`, `results`, and `note` **when and only when** `status` is `topically_weak` |
+| `list-intent` | `command`, `status`, `count`, `filter`, `intent` |
+| `explain` (ok) | `command`, `status`, `query`, `resolved`, `intent`, `explains`, `relations` |
+| `explain` (ambiguous) | `command`, `status`, `query`, `candidates`, `message` |
+| `explain` (not_found) | `command`, `status`, `query`, `message` |
+| `changed` | `command`, `status`, `base`, `changed_files`, `files_with_intent`, `results` |
+| `digest` | `command`, `status`, `since`, `added`, `removed`, `superseded` |
+| `coverage` | `command`, `status` + 12 coverage-specific keys |
+| `coverage` (explain form) | `command`, `status`, `explain`, `trace_present`, `referencing_intent`, `counts` |
+| `check` | `command`, `status`, `rules`, `files_checked`, `violations` |
+| `intent-diff` | `command`, `status`, `base`, `summary`, `introduces`, `supersedes`, `governed`, `constraint_review` |
+| `review-context` | `command`, `status`, `base`, `changed_files`, `governing`, `unresolved_constraints`, `guidance` |
+| `capture` | `command`, `status`, `record`, `record_abs`, `node_id`, `title`, `provenance`, `resolution_delta`, `merged` |
+
+Not even `count` is universal — it appears on `why` and `list-intent` and nowhere else.
+
+### A.2 The envelope is a tagged union
+
+**[ENV-005]** The envelope **MUST** be modelled as a **tagged union discriminated by `command`**,
+over a small universal core of `{command, status}`. An implementation **MUST NOT** model it as one
+struct with many optional fields.
+
+The distinction has teeth. A one-struct model makes every command's fields optional on every other
+command, which means a consumer cannot tell "this command does not have that field" from "this
+command has it and it was null this time" — and a type system cannot help. A tagged union makes the
+first case a compile error and the second a real value.
+
+**[ENV-006]** Where a single `command` value carries more than one disjoint shape, the spec **MUST**
+name the secondary discriminator explicitly, and a consumer **MUST** apply it before reading any
+variant-specific key. Two such cases exist:
+
+- **`coverage`** — two disjoint shapes share the tag. The discriminator is the presence of the
+  `explain` key: present means the per-file explanation variant, absent means the corpus-wide
+  summary variant. They share no keys beyond `command` and `status`.
+- **`explain`** — three disjoint shapes keyed by `status` (`ok` / `ambiguous` / `not_found`).
+
+> `coverage` overloading one `command` tag with two payloads is the weakest point in the union. A
+> future revision may give the explanation form its own tag; that is a meaning change under
+> [VER-001] and needs its own migration row.
+
+### A.3 Status
+
+**[ENV-007]** Status tokens are **per-command**, not global. The following are the defined tokens.
+
+| `command` | Status tokens |
+|---|---|
+| `why` | `ok`, `weak_match`, `topically_weak`, `no_strong_match` |
+| `explain` | `ok`, `ambiguous`, `not_found` |
+| `list-intent` | `ok` |
+| `changed` | `ok`, `no_intent_governing_changes` |
+| `coverage` | `ok` (summary form); `ok`, `no_references` (explain form) |
+| `digest` | `ok`, `no_changes` |
+| `check` | `ok`, `conformance_failed` |
+| `intent-diff` | `ok`, `conformance_required` |
+| `review-context` | `ok`, `no_intent_governing_changes` |
+| `capture` | `ok`, `dry_run`, `error` |
+| any (input failure) | `no_intent_layer`, `error` |
+
+**[ENV-008]** A consumer encountering an **unrecognized** status token **MUST** treat it as a
+failure. Failing open on an unknown status is the silent-success defect: a refusal an agent reads as
+an answer. Enumerate the statuses that mean success; treat everything else, including anything added
+later, as an error.
+
+**[ENV-009]** A status **MUST NOT** be overloaded to carry data. `ok` means the command completed
+and its variant fields are populated; a distinct outcome gets a distinct token.
+
+**[ENV-010]** A status that reports an honest negative — `no_changes`, `no_strong_match`,
+`no_intent_governing_changes`, `no_references` — is a **complete answer**, not an error. An
+implementation **MUST** distinguish "I looked and there is nothing" from "I could not look".
+
+### A.4 The error variant
+
+**[ENV-011]** An envelope reporting a failure **MUST** carry `command`, `status`, and a human-
+readable `message`. It **MUST NOT** be required to carry any variant-specific key.
+A consumer **MUST NOT** assume a variant-specific key is present merely because `command` names a
+variant that normally has it; the error variant is a legitimate shape with none of those keys.
+
+### A.5 Command variants
+
+Field lists below are normative for the variant they name.
+
+#### A.5.1 `why`
+
+Free-text retrieval over recorded intent.
+
+**[ENV-013]** The `why` envelope **MUST** carry: `query` (the question as asked), `count` (number of
+results returned), `cutoff` (the strong-match score threshold in effect), `score_stats`, and
+`results`.
+
+**[ENV-014]** `score_stats` **MUST** be an object with `top`, `runner_up`, and `median` — computed
+over the **whole scored field**, not only the returned rows. This is what makes "a lone hit standing
+above a flat tail" machine-detectable by the consumer rather than a judgement only the implementation
+can make.
+
+**[ENV-015]** Each entry in `results` **MUST** carry: `disposition`, `score`, `id`, `label`, `intent_kind`,
+`claim`, `rationale`, `alternatives`, `source_file`, `source_location`, `provenance`,
+`matched_terms`, `distinctive_matches`, `matched_coverage`.
+
+**[ENV-016]** `alternatives` **MUST** be a list of strings. An implementation reading a legacy scalar
+**MUST** coerce it to a single-element list, and **MUST NOT** iterate a bare string character by
+character.
+
+**[ENV-047]** The envelope field `intent_kind` names the kind of the node and is **not** constrained
+to [REC-122]'s pair. [REC-122] governs the third component of node identity ([REC-071]) for a node
+derived from a record, where the only kinds are `decision` and `assumption`. An implementation
+**MUST NOT** hash any other value as that component, and **MUST NOT** reject an envelope carrying
+another value in this field. This rule governs the field wherever it appears, not only on a `why`
+result.
+
+> The field carries the same name in both places and means two things. [ENV-033] requires
+> `intent-diff` and `review-context` to distinguish *governed by a decision* from *governed by a
+> **constraint***, so the envelope field must admit kinds such as `constraint`, `mechanism` and
+> `tradeoff`; §1.4 puts intent derived from non-record sources out of scope, which is exactly where
+> those kinds come from.
+
+**[ENV-017]** The three evidence fields have fixed meanings, and an implementation **MUST NOT**
+redefine them:
+
+- `matched_terms` — which of the question's terms matched this result at all.
+- `distinctive_matches` — the subset of `matched_terms` whose matched corpus token is
+  **corpus-distinctive** rather than shared by nearly every record. A term every record contains
+  carries no topical evidence.
+- `matched_coverage` — a number in `[0, 1]`: the fraction of the question's **content** terms that
+  matched.
+
+**[ENV-018]** `matched_coverage` **MUST** be in `[0, 1]` inclusive.
+
+**[ENV-019]** The `topically_weak` status **MUST** mean: the top result cleared the score cutoff,
+but its match evidence does not support treating it as an answer. It is an **abstention above the
+cutoff**, and it exists because a score-shaped answer and a real answer are otherwise
+indistinguishable to a consumer that injects retrieved text into a working context without
+skimming it. A consumer **MUST NOT** treat `topically_weak` as equivalent to `ok`.
+
+**[ENV-020]** The `weak_match` status **MUST** mean: the top result scored *under* the cutoff but
+stands clearly apart from the runner-up — a probable answer at moderate confidence, not noise.
+
+> The exact thresholds and the scoring function are **out of scope** (§1.4). What is normative is
+> that the four statuses are distinguishable and mean what [ENV-019]/[ENV-020] say.
+
+#### A.5.2 `list-intent`
+
+**[ENV-021]** The `list-intent` envelope **MUST** carry `count`, `filter`, and `intent`. `filter`
+**MUST** echo the filter that was applied, with an explicit `null` for each unset criterion — a
+consumer must be able to see what was *not* filtered.
+
+**[ENV-022]** Each entry in `intent` **MUST** carry: `id`, `label`, `intent_kind`, `claim`,
+`rationale`, `source_file`, `source_location`, `confidence_score`, `provenance`, `disposition`.
+
+> `disposition` is in this list because [PROV-019] requires a result carrying intent to expose it,
+> and [ENV-004] tells consumers not to assume any key the list does not name; a requirement stated
+> elsewhere has to reach the list that enumerates the output.
+
+#### A.5.3 `explain`
+
+**[ENV-023]** The `ok` variant **MUST** carry `query`, `resolved`, `intent`, `explains`, and
+`relations`. `resolved` **MUST** report how the argument was matched (`matched_by`) and, for a
+non-exact match, a `score`.
+
+**[ENV-024]** The `ambiguous` variant **MUST** carry `candidates` and `message` and **MUST NOT**
+carry `resolved`. Ambiguity is not a partial answer; an implementation **MUST NOT** silently pick a
+candidate.
+
+#### A.5.4 `changed`
+
+**[ENV-025]** The `changed` envelope **MUST** carry `base` (the reference diffed against, or null
+when files were supplied explicitly), `changed_files`, `files_with_intent`, and `results`. Each
+result **MUST** carry `file`, `matched_by`, `ambiguous`, and `governed_by`.
+
+**[ENV-026]** `ambiguous` on a result **MUST** be true when the file was matched by basename and
+that basename resolves to more than one path. A basename match that could mean several files
+**MUST** be reported as such rather than silently resolved.
+
+#### A.5.5 `digest`
+
+**[ENV-027]** The `digest` envelope **MUST** carry `since`, `added`, `removed`, and `superseded`.
+
+#### A.5.6 `coverage`
+
+**[ENV-044]** The summary `coverage` variant **MUST** carry exactly these twelve coverage-specific
+keys alongside `command` and `status`: `code_files`, `code_symbols`, `files_with_intent`,
+`symbols_with_intent`, `authored_anchored_files`, `authored_anchored_symbols`, `file_coverage_pct`,
+`symbol_coverage_pct`, `dark_files`, `intent_by_kind`, `golden`, `intent_debt`.
+
+**[ENV-050]** The `golden` block **MUST** carry exactly these five components:
+`golden_tiers` (the array of tier names counted as trusted, per [PROV-010]), `by_provenance` (an
+object mapping every tier to its integer count), `golden_count` (the integer total across the
+golden tiers), `total_intent` (the integer total across all tiers), and `golden_fraction_pct`
+(the integer percentage). A trust metric **MUST NOT** report `golden_fraction_pct` without the
+`by_provenance` breakdown, per [PROV-012].
+
+> Naming the components is what stops the next author guessing: a block with a required count and
+> no named parts invites two incompatible shapes, each individually plausible. The marker was correct that the
+> gap was real; what it could not do was prevent anyone walking into it.
+
+**[ENV-049]** The summary `coverage` variant's top-level `dark_files` **MUST** be an **array of
+repository-relative paths**, and **MUST NOT** be a count. The `dark_files` inside `intent_debt`
+([ENV-045]) remains an **integer** count. An implementation **MUST NOT** use the same shape for
+both.
+
+> The two keys share a name and answer different questions — *which files* against *how many* —
+> and leaving the outer one untyped let a corpus carry both readings under one name, in fixtures
+> that were each individually labelled valid. That is the confusion [ENV-009] warns about, one
+> level down: a consumer reading `dark_files` had no way to know whether it would receive a length
+> or a list.
+>
+> The array is the right shape for the outer key precisely *because* the count already exists
+> inside `intent_debt`. Typing it as a count would make the envelope carry the same number twice
+> and lose the paths entirely; typing it as an array makes the pair complementary, and a consumer
+> wanting the number can take the length.
+
+> §6.1 has always stated the count and never the names. A
+> required count that no rule lets a validator satisfy is not a requirement; it is a number. The
+> names are those the conformance corpus instantiates.
+>
+> **Open: the type of `dark_files` at this level.** Two corpus fixtures both labelled valid once
+> disagreed — one carrying a list of paths, the other an integer count — which is the [ENV-009]
+> defect one level down, the same name meaning *how many* in one file and *which ones* in the other.
+> This rule names the key and does not settle the type. [ENV-045] already puts a `dark_files`
+> **count** inside `intent_debt`, so the list reading is the one that adds information here rather
+> than duplicating it, and it is the reading every valid fixture now takes.
+
+**[ENV-029]** A component of `intent_debt` that the implementation cannot compute **MUST** be
+reported as explicit `null`, never as `0`. A zero claims "we measured and found none"; a null
+honestly says "not measured". Reporting an unmeasured signal as zero is the same class of lie as
+[REC-054]'s placeholder.
+
+**[ENV-045]** `intent_debt` **MUST** carry exactly these four components: `dark_files`,
+`orphaned_intent`, `stale_decisions`, `unresolved_disputes`. Each **MUST** be a non-negative
+integer, or an explicit `null` where the implementation cannot compute it ([ENV-029]). A component
+**MUST NOT** be omitted.
+
+> The last sentence is what makes [ENV-029] enforceable. Without it, an implementation that cannot
+> compute `stale_decisions` satisfies the rule by dropping the key — which re-introduces the very
+> ambiguity between *not applicable* and *not measured* that [ENV-038] draws, and leaves [ENV-029]
+> naming no field a validator can check in either direction.
+
+#### A.5.7 `check`
+
+**[ENV-030]** The `check` envelope **MUST** carry `rules` (count of rules evaluated),
+`files_checked`, and `violations`.
+
+**[ENV-048]** Each entry in a `check` envelope's `violations` **MUST** carry `rule`, `file`,
+`message`, and `decision_id`. A rule whose failure cannot name the decision that motivated it is
+not a conformance check; it is a lint.
+
+**[ENV-032]** A rule of a type the checker does not implement **MUST** be skipped — never counted as
+a pass and never counted as a failure. Silence about an unimplementable rule is honest; a pass is
+not.
+
+#### A.5.8 `intent-diff` and `review-context`
+
+**[ENV-033]** Both **MUST** distinguish *governed by a decision* from *governed by a constraint*.
+Deterministic inspection cannot tell conformance from violation, so an implementation **MUST NOT**
+report a constraint touch as a proven violation.
+
+#### A.5.9 `capture`
+
+**[ENV-034]** The `capture` envelope **MUST** carry `record` (the path as given, from which node
+identity derives), `record_abs` (the resolved absolute destination), `node_id`, `title`,
+`provenance`, `resolution_delta`, and `merged`. `record` and `record_abs` **MUST** both be reported:
+the former preserves the spelling from which identity derives, while the latter makes the actual
+write destination visible.
+
+**[ENV-036]** `merged` **MUST** report whether any secondary view the implementation maintains
+was updated, independently of `status`. Writing the record and failing to update such a view is an
+**honest partial success**: the durable artifact exists, the view is stale. It **MUST NOT** be
+reported as a failure, and **MUST NOT** be reported as an unqualified success.
+
+**[ENV-037]** `resolution_delta` **MUST** be present with an explicit `null` when there was no
+delta. This is a deliberate exception to [ENV-038] and exists because the consumer of this field is
+asking a yes/no question that a missing key cannot answer.
+
+### A.6 Transport profiles
+
+Transport metadata is not part of a command envelope. The optional transport profile and
+its schema are maintained separately in `profiles/transport.md` and
+`schema/transport-envelope.schema.json`.
+
+---

@@ -37,18 +37,19 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER|INT)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 235,
-    "fixture_paths": 386,
-    "manifest_entries": 425,
-    "mapped_rule_ids": 212,
+    "rules": 240,
+    "fixture_paths": 394,
+    "manifest_entries": 433,
+    "mapped_rule_ids": 217,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 333,
-    "drift_checked": 92,
+    "computed": 277,
+    "drift_checked": 90,
+    "reserved": 66,
 }
 EXPECTED_MUST_NOT_EQUAL = {
-    "fixtures": 93,
-    "assertions": 109,
+    "fixtures": 97,
+    "assertions": 113,
 }
 
 # REC-145. Same obligation, different spelling -- measured against 84 real ADRs from the three
@@ -81,6 +82,7 @@ SHAPE_PLACEHOLDERS = {"NNN", "NNNN", "NN", "XXX", "XXXX", "YYYY", "MM", "DD", "Y
 
 COMPUTED = "computed"
 DRIFT_CHECKED = "drift_checked"
+RESERVED = "reserved"
 IDENTITY_SEPARATOR = "::"
 
 MISSING = object()
@@ -1026,6 +1028,51 @@ def resolve_scope(items: list[str], corpus_files: list[str]) -> dict[str, Any]:
     }
 
 
+# ---------------------------------------------------------------------------
+# §6 -- the recall envelope (ENV-051 to ENV-055), computed from the delivered text.
+
+SECTION_HEADING = re.compile(r"^## (.+) \((.+), (.+)\) — (\S.*)$")
+
+
+def recall_shape(document: dict[str, Any]) -> dict[str, Any]:
+    text = document.get("text", "")
+    lines = text.split("\n")
+    heading_indexes = [i for i, line in enumerate(lines) if line.startswith("## ")]
+    headings = [lines[i] for i in heading_indexes]
+    header_index = next(
+        (i for i, line in enumerate(lines) if re.search(r"\((\d+) records?\):\s*$", line)), None
+    )
+    header_count = (
+        int(re.search(r"\((\d+) records?\)", lines[header_index]).group(1))
+        if header_index is not None else None
+    )
+    first_structural = min(
+        [i for i in heading_indexes] + ([header_index] if header_index is not None else []),
+        default=len(lines),
+    )
+    lead = "\n".join(lines[:first_structural]).strip()
+    preamble_present = bool(lead) if document.get("coupling") != "intention" else bool(
+        header_index is not None and "\n".join(lines[:header_index]).strip()
+    ) if not document.get("goal_recorded", True) else bool(lead)
+    goal_request_first = (
+        header_index is not None
+        and bool("\n".join(lines[:header_index]).strip())
+        and all(h > header_index for h in heading_indexes)
+    )
+    src, got = document.get("source_decision"), document.get("delivered_decision")
+    truncation_visible = None
+    if src is not None and got is not None:
+        truncation_visible = not (len(got) < len(src) and src.startswith(got))
+    return {
+        "empty": text.strip() == "",
+        "preamble_present": preamble_present,
+        "section_count": len(headings),
+        "sections_attributable": bool(headings) and all(SECTION_HEADING.match(h) for h in headings),
+        "header_count": header_count,
+        "goal_request_first": goal_request_first,
+        "truncation_visible": truncation_visible,
+    }
+
 def compare_known_expectations(actual: dict[str, Any], expect: dict[str, Any]) -> None:
     aliases = {
         "alternatives_count": "alternatives",
@@ -1349,6 +1396,13 @@ def fixture_verdict(
                 compare_known_expectations(actual, expect)
                 json_scenario_verdict(entry, document)
                 return COMPUTED
+    if kind == "recall_text":
+        document = load_json(path)
+        actual = recall_shape(document)
+        if "records" in document and actual["section_count"] != document["records"] and entry["valid"]:
+            fail(f"delivered {actual['section_count']} sections for {document['records']} records")
+        compare_known_expectations(actual, expect)
+        return COMPUTED
     if kind == "intent_object":
         # Intent-layer profile: validate the document against the $def named by
         # expect.object, then the manifest's own key and constraint assertions.
@@ -1456,6 +1510,7 @@ def render_coverage(
         f"- Manifest entries: **{len(entries)}**",
         f"- Computed verdicts: **{evidence[COMPUTED]}**",
         f"- Drift-checked verdicts: **{evidence[DRIFT_CHECKED]}**",
+        f"- Reserved (Appendix A) verdicts, verified but not conformance evidence: **{evidence.get(RESERVED, 0)}**",
         f"- Distinct mapped rule ids: **{len(by_rule)}**",
         f"- Unmapped normative rule ids: **{len(set(rules) - set(by_rule))}**",
         "",
@@ -1508,6 +1563,9 @@ def main() -> int:
             evidence = fixture_verdict(entry, core_schema, transport_schema)
             if evidence not in {COMPUTED, DRIFT_CHECKED}:
                 fail(f"runner returned unknown evidence class {evidence!r}")
+            if entry.get("reserved"):
+                # Appendix A: verified so the shape stays adoptable, but not conformance evidence.
+                evidence = RESERVED
             passed += 1
             by_kind[entry["kind"]] += 1
             by_evidence[evidence] += 1
@@ -1521,6 +1579,7 @@ def main() -> int:
     actual_evidence = {
         COMPUTED: by_evidence[COMPUTED],
         DRIFT_CHECKED: by_evidence[DRIFT_CHECKED],
+        RESERVED: by_evidence[RESERVED],
     }
     if actual_evidence != EXPECTED_EVIDENCE:
         failures.append(
@@ -1539,7 +1598,8 @@ def main() -> int:
     summary = ", ".join(f"{kind}={count}" for kind, count in sorted(by_kind.items()))
     print(
         f"{by_evidence[COMPUTED]} computed verdicts passed; "
-        f"{by_evidence[DRIFT_CHECKED]} drift checks passed "
+        f"{by_evidence[DRIFT_CHECKED]} drift checks passed; "
+        f"{by_evidence[RESERVED]} reserved verified "
         f"({passed}/{len(manifest['fixtures'])} manifest entries; {summary})"
     )
     actual = counts(manifest, rules)

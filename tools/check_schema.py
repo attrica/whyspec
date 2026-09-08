@@ -30,7 +30,7 @@ implementation could pass every fixture. Check C is the same pair from the other
 
 A finding whose schema location carries `x-incomplete` is reported as GAP rather than
 FAIL and does not fail the run: those are places where the prose is admittedly silent
-and the schema declines to invent a shape. They are tracked in schema/PROPOSED-RULES.md.
+and the schema declines to invent a shape.
 """
 from __future__ import annotations
 
@@ -539,7 +539,7 @@ def main() -> int:
     print(f"\n{rep.ok} check(s) passed, {len(rep.fail)} failed, "
           f"{len(rep.gap)} known gap(s), over {len(rules)} rule bodies")
     if rep.gap:
-        print("known gaps are places the prose is silent — see schema/PROPOSED-RULES.md")
+        print("known gaps are places the prose is silent")
     return 1 if rep.fail else 0
 
 
