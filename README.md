@@ -63,7 +63,7 @@ machine's reconstruction, or `reconstructed` after the fact.
 It also carries the **capture-decision skill**
 ([`skills/capture-decision/SKILL.md`](skills/capture-decision/SKILL.md)): the teachable form of
 the convention — where a record goes, the shape it takes, and the traps that silently un-record
-it. Every parser-behaviour claim in it is validated against the reference implementation.
+it. Every parser-behaviour claim in it is validated against the conformance corpus.
 
 ## Implementing this specification
 

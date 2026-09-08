@@ -91,10 +91,11 @@ That is a complete record. Rules that make it one:
 
 ## Two traps
 
-- **Never demonstrate record syntax inside a record.** A fenced code block
-  containing `**Status:** Rejected` or a `## Decision` heading can be read
-  as the host record's own structure and flip or erase it. Show syntax in
-  ordinary documentation files, never in a record.
+- **Avoid demonstrating record syntax inside a record.** A conforming parser
+  treats a fenced code block as quoted text, but an older or partial parser
+  may read a fenced `**Status:** Rejected` or `## Decision` heading as the
+  host record's own structure and flip or erase it. Show syntax in ordinary
+  documentation files where you can.
 - **Do not write `(none recorded)` placeholders** into optional sections —
   omit empty sections entirely. Only `## Context` and
   `## Alternatives considered` may carry `(none recorded)`, and only when

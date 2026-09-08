@@ -1,8 +1,8 @@
 {
- "$schema_note": "Machine-readable fixture manifest for the Whyspec conformance corpus. Each entry: id, rule_id (the CORPUS rule number), spec_rule_ids (the rule ids in the normative spec that this fixture exercises -- corpus numbering is independent of the spec's, so reconcile through this field, never by matching numbers), family, rule_statement, valid, kind (record | record_dir | filename_scenario | vector | envelope), path (relative to this manifest's directory), verdict_kind, expect, notes. THE VERDICT LIVES IN `verdict_kind` + `expect` AND NOWHERE ELSE: a harness must be able to decide every fixture without reading `notes` or any other prose. `valid` alone is not a verdict -- it does not distinguish 'must not parse at all' from 'is the counter-example for this rule'. verdict_kind values: `parse_rejects` (the input must not parse as a record at all); `field_expectation` (it parses, and `expect` names the required field values); `envelope_shape` (`expect` names `conformant`, the `command` tag, `required_keys`, `forbidden_keys`, and `constraints`, or for a counter-example the `violates` rule ids and the `failing_condition`); `vector` (`expect.compare_fields` names the fields in the fixture file that carry the expected output); `filename_scenario` (`expect.filename` is the destination the scenario must resolve to; on a counter-example `expect.conformant_filename` is what a conformant implementation produces instead). REC-family entries additionally carry `spec_rules`: the rule id(s) in the normative spec text that the fixture exercises -- the corpus's own `rule_id` numbering is INDEPENDENT of the spec's and collides with it in the REC-001..REC-011 range, so `spec_rules` is the only safe key to compute spec coverage from. `verdict_kind` is `parse_rejects` (the input must not parse as a record at all) or `field_expectation` (it parses; the fields in `expect` must hold), and `expect` states the required outcome field by field so a harness can decide every fixture without reading prose. `reference_conforms: false` plus `divergence` and `reference_actual` marks a fixture whose `expect` states the SPEC-required outcome that the the reference implementation reference implementation does NOT currently produce. Additional `kind` values used by the REC family: render_scenario, slug_scenario, identity_scenario.",
+ "$schema_note": "Machine-readable fixture manifest for the Whyspec conformance corpus. Each entry: id, rule_id (the CORPUS rule number), spec_rule_ids (the rule ids in the normative spec that this fixture exercises; corpus numbering is independent of the spec's, so reconcile through this field, never by matching numbers), family, rule_statement, valid, kind, path (relative to this manifest's directory), verdict_kind, expect, notes. THE VERDICT LIVES IN `verdict_kind` + `expect` AND NOWHERE ELSE: a harness must be able to decide every fixture without reading `notes` or any other prose. `valid` alone is not a verdict; it does not distinguish 'must not parse at all' from 'is the counter-example for this rule'. verdict_kind values: `parse_rejects` (the input must not parse as a record at all); `field_expectation` (it parses, and `expect` names the required field values); `envelope_shape` (`expect` names `conformant`, the `command` tag, `required_keys`, `forbidden_keys`, and `constraints`, or for a counter-example the `violates` rule ids and the `failing_condition`); `vector` (`expect.compare_fields` names the fields in the fixture file that carry the expected output); `filename_scenario` (`expect.filename` is the destination the scenario must resolve to; on a counter-example `expect.conformant_filename` is what a conformant implementation produces instead). kind values: record, record_bytes, record_dir, record_scenario, ingest_scenario, identity_scenario, render_scenario, slug_scenario, filename_scenario, vector, envelope, intent_object.",
  "rule_families": {
   "REC": "Record format -- what makes a markdown file a decision record, and how its fields parse.",
-  "FIL": "Record filename scheme -- how a captured record's filename is chosen and matched over time. Renamed from VER after the two families collided; VER now means SPECIFICATION versioning and nothing else. In the normative spec these rules live under REC-056..REC-070.",
+  "FIL": "Record filename scheme -- how a captured record's filename is chosen and matched over time. In the normative spec these rules live under REC-056..REC-070.",
   "PROV": "Provenance -- the trust-tier vocabulary and how it ranks/aggregates.",
   "ENV": "Result envelope -- the per-command JSON shape returned by the CLI.",
   "VER": "Specification versioning -- when a change to the format requires a version marker and a migration note, and what absence is allowed to mean afterwards.",
@@ -246,7 +246,7 @@
   {
    "rule_id": "ENV-006",
    "family": "ENV",
-   "statement": "`graph_identity` is NEVER part of the CLI's JSON envelope for any command. It is attached only by the MCP transport layer (mcp_server.py), and its presence or absence must never be used to satisfy or substitute for a command's real required-key set.",
+   "statement": "`graph_identity` is NEVER part of the core JSON envelope for any command. It is attached only by a transport layer, and its presence or absence must never be used to satisfy or substitute for a command's real required-key set.",
    "spec_rule_ids": [
     "ENV-040"
    ]
@@ -1201,7 +1201,8 @@
      "expected_output"
     ],
     "filename": "2026-07-25-how-do-we-parse-dates.md"
-   }
+   },
+   "notes": ""
   },
   {
    "id": "FIL-001-invalid-slug-from-chosen-not-question",
@@ -1226,7 +1227,8 @@
      "REC-056"
     ],
     "conformant_filename": "2026-07-25-how-do-we-parse-dates.md"
-   }
+   },
+   "notes": ""
   },
   {
    "id": "FIL-002-valid-idempotent-reuse-across-dates",
@@ -1247,7 +1249,8 @@
      "expected_output"
     ],
     "filename": "2020-01-01-how-do-we-parse-dates.md"
-   }
+   },
+   "notes": ""
   },
   {
    "id": "FIL-002-invalid-malformed-date-prefix-not-reused",
@@ -1273,7 +1276,8 @@
      "REC-068"
     ],
     "conformant_filename": "2026-07-25-how-do-we-parse-dates.md"
-   }
+   },
+   "notes": ""
   },
   {
    "id": "FIL-003-valid-legacy-reused-when-context-matches",
@@ -1294,7 +1298,8 @@
      "expected_output"
     ],
     "filename": "adopt-library-x.md"
-   }
+   },
+   "notes": ""
   },
   {
    "id": "FIL-003-invalid-legacy-not-stolen-when-context-differs",
@@ -1320,7 +1325,8 @@
      "REC-065"
     ],
     "conformant_filename": "2026-07-25-how-do-we-parse-dates.md"
-   }
+   },
+   "notes": ""
   },
   {
    "id": "FIL-004-valid-legacy-resolution-shares-FIL-003",
@@ -1367,7 +1373,8 @@
      "REC-065"
     ],
     "conformant_filename": "2026-07-25-how-do-we-parse-dates.md"
-   }
+   },
+   "notes": ""
   },
   {
    "id": "FIL-005-valid-anchored-glob-matches-own-file",
@@ -1387,7 +1394,8 @@
      "expected_output"
     ],
     "filename": "2026-01-10-queue.md"
-   }
+   },
+   "notes": ""
   },
   {
    "id": "FIL-005-invalid-unanchored-star-glob-suffix-collision",
@@ -1411,7 +1419,8 @@
      "REC-068"
     ],
     "conformant_filename": "2026-07-25-queue.md"
-   }
+   },
+   "notes": ""
   },
   {
    "id": "FIL-006-valid-anchored-glob-real-dated-prefix",
@@ -1431,7 +1440,8 @@
      "expected_output"
     ],
     "filename": "2026-01-10-run-canary-rollout.md"
-   }
+   },
+   "notes": ""
   },
   {
    "id": "FIL-006-invalid-question-glob-digit-costume-collision",
@@ -1455,7 +1465,8 @@
      "REC-068"
     ],
     "conformant_filename": "2026-07-25-run-canary-rollout.md"
-   }
+   },
+   "notes": ""
   },
   {
    "id": "FIL-007-valid-word-boundary-truncation",
@@ -1475,7 +1486,8 @@
      "expected_output"
     ],
     "filename": null
-   }
+   },
+   "notes": ""
   },
   {
    "id": "FIL-007-invalid-mid-word-truncation",
@@ -1499,7 +1511,8 @@
     ],
     "slug": "one-reviewed-taxonomy-document-mapping-existing-error",
     "slug_must_not_equal": "one-reviewed-taxonomy-document-mapping-existing-error-classe"
-   }
+   },
+   "notes": ""
   },
   {
    "id": "PROV-001-valid-rank-order",
@@ -1519,7 +1532,8 @@
     "compare_fields": [
      "expected_rank"
     ]
-   }
+   },
+   "notes": ""
   },
   {
    "id": "PROV-001-invalid-rank-order",
@@ -1542,7 +1556,8 @@
     "violates": [
      "PROV-002"
     ]
-   }
+   },
+   "notes": ""
   },
   {
    "id": "PROV-002-valid-h1-kind-to-tier-mapping",
@@ -1587,7 +1602,8 @@
      "PROV-005",
      "PROV-006"
     ]
-   }
+   },
+   "notes": ""
   },
   {
    "id": "PROV-003-valid-absent-defaults-to-reconstructed",
@@ -1606,7 +1622,8 @@
     "compare_fields": [
      "expected"
     ]
-   }
+   },
+   "notes": ""
   },
   {
    "id": "PROV-003-invalid-absent-treated-as-authored",
@@ -1628,7 +1645,8 @@
     "violates": [
      "PROV-003"
     ]
-   }
+   },
+   "notes": ""
   },
   {
    "id": "PROV-004-valid-golden-fraction",
@@ -1648,7 +1666,8 @@
      "expected",
      "expected_empty_input"
     ]
-   }
+   },
+   "notes": ""
   },
   {
    "id": "PROV-004-invalid-golden-fraction-blends-reconstructed",
@@ -1670,7 +1689,8 @@
     "violates": [
      "PROV-010"
     ]
-   }
+   },
+   "notes": ""
   },
   {
    "id": "ENV-001-valid-universal-keys-present",
@@ -1828,7 +1848,8 @@
       ]
      }
     ]
-   }
+   },
+   "notes": ""
   },
   {
    "id": "ENV-002-invalid-why-missing-score-stats",
@@ -1909,7 +1930,8 @@
       ]
      }
     ]
-   }
+   },
+   "notes": ""
   },
   {
    "id": "ENV-003-invalid-list-intent-missing-filter",
@@ -2043,7 +2065,8 @@
       }
      ]
     }
-   }
+   },
+   "notes": ""
   },
   {
    "id": "ENV-004-invalid-coverage-missing-golden",
@@ -2097,7 +2120,8 @@
      "results",
      "count"
     ]
-   }
+   },
+   "notes": ""
   },
   {
    "id": "ENV-005-invalid-check-missing-violations",
@@ -3506,7 +3530,7 @@
      "expected_rank"
     ]
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "PROV-005-invalid-unrecognised-tier-promoted",
@@ -3531,7 +3555,7 @@
      "PROV-001"
     ]
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "PROV-006-valid-provenance-primary-confidence-secondary",
@@ -3552,7 +3576,7 @@
      "expected_order"
     ]
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "PROV-006-invalid-confidence-outranks-provenance",
@@ -3576,7 +3600,7 @@
      "PROV-004"
     ]
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "PROV-007-valid-record-intent-confidence-is-one",
@@ -3598,7 +3622,7 @@
      "expected_decision_record_fields"
     ]
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "PROV-007-invalid-record-intent-scored-below-one",
@@ -3622,7 +3646,7 @@
      "PROV-008"
     ]
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "PROV-008-valid-blended-metric-reports-per-tier-breakdown",
@@ -3643,7 +3667,7 @@
      "expected_output"
     ]
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "PROV-008-invalid-bare-scalar-without-breakdown",
@@ -3667,7 +3691,7 @@
      "PROV-012"
     ]
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "FIL-008-valid-empty-slug-becomes-literal-decision",
@@ -3689,7 +3713,7 @@
     ],
     "filename": "2026-07-25-decision.md"
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "FIL-008-invalid-whitespace-empty-question-falls-back-to-chosen",
@@ -3716,7 +3740,7 @@
     ],
     "conformant_filename": "2026-07-25-decision.md"
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "FIL-009-valid-slug-bound-and-first-word-hard-cut",
@@ -3738,7 +3762,7 @@
      "cases"
     ]
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "FIL-009-invalid-slug-exceeds-bound",
@@ -3764,7 +3788,7 @@
      "REC-061"
     ]
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "FIL-010-valid-empty-question-matches-none-recorded",
@@ -3787,7 +3811,7 @@
     ],
     "filename": "adopt-library-x.md"
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "FIL-010-invalid-empty-question-claims-a-real-context",
@@ -3829,7 +3853,7 @@
      "source_of_truth": "filenames/FIL-010-invalid-empty-question-claims-a-real-context.json"
     }
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "FIL-011-valid-legacy-context-heading-matched-case-insensitively",
@@ -3855,7 +3879,7 @@
     "engine_filename": "2026-07-25-how-do-we-parse-dates.md",
     "divergence": "The reference implementation matches the legacy `## Context` heading with a case-sensitive, level-2-only pattern, so it does not claim the legacy file and mints a fresh dated name instead. `expect.filename` is the specification's requirement; `expect.engine_filename` is the observed behaviour. A harness run against the reference implementation MUST expect engine_filename and record the divergence -- it MUST NOT rewrite the conformance target to match."
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "FIL-011-invalid-legacy-claimed-without-reading-context",
@@ -3895,7 +3919,7 @@
      "source_of_truth": "filenames/FIL-011-invalid-legacy-claimed-without-reading-context.json"
     }
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "VER-001-valid-absence-stays-absent",
@@ -3915,7 +3939,7 @@
      "expect"
     ]
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "VER-001-invalid-absence-inferred-into-a-claim",
@@ -3938,7 +3962,7 @@
      "VER-005"
     ]
    },
-   "notes": "Verified by execution against the reference implementation; see the fixture's own `note` field for the exact call."
+   "notes": "Verified by execution; see the fixture's own `note` field."
   },
   {
    "id": "spec-REC-002-valid-utf8-non-ascii-body",
@@ -4342,7 +4366,7 @@
    "valid": false,
    "kind": "record",
    "path": "records/spec-REC-019-invalid-duplicate-alternatives-first-wins.md",
-   "notes": "Two `## Alternatives considered` sections. Per REC-019 the FIRST wins, so alternatives MUST be the 3-item list. DIVERGENCE: the the reference implementation reference implementation applies first-wins ONLY to `Decision` (guarded by `rationale is None`); for `Alternatives`, `Recommendation`, `Assumptions` and `Status` the loop overwrites, so the LAST occurrence wins and the reference yields 1 alternative here. The `expect` below states the SPEC-required outcome.",
+   "notes": "Two `## Alternatives considered` sections. Per REC-019 the FIRST wins, so alternatives MUST be the 3-item list.",
    "verdict_kind": "field_expectation",
    "expect": {
     "parses": true,
@@ -5203,7 +5227,7 @@
    "valid": false,
    "kind": "filename_scenario",
    "path": "filenames/spec-REC-066-invalid-empty-question-must-not-match-an-empty-context.json",
-   "notes": "An EMPTY question against a legacy record whose `## Context` section exists but is EMPTY. REC-066 says an empty question matches a recorded context of `(none recorded)` AND ONLY THAT, so this MUST NOT match and a fresh dated record MUST be minted. DIVERGENCE: the reference implementation compares whitespace-normalized strings first, so empty == empty matches and the legacy file IS claimed. The `expect` below states the SPEC-required outcome.",
+   "notes": "An EMPTY question against a legacy record whose `## Context` section exists but is EMPTY. REC-066 says an empty question matches a recorded context of `(none recorded)` AND ONLY THAT, so this MUST NOT match and a fresh dated record MUST be minted.",
    "verdict_kind": "field_expectation",
    "expect": {
     "filename": "2026-07-25-decision.md",
@@ -5586,7 +5610,7 @@
    "valid": false,
    "kind": "identity_scenario",
    "path": "identity/spec-REC-074-invalid-canonicalization-must-not-raise.json",
-   "notes": "A path containing a NUL byte. REC-074 states canonicalization MUST NOT raise, so a conformant implementation returns SOME string (or declines the path through its normal absent-value channel) rather than propagating an exception. DIVERGENCE: the reference implementation propagates ValueError('embedded null byte') from the underlying path resolution. Path spellings arrive from tool-call arguments and configuration, so this is a reachable trust boundary, not a theoretical one. The `expect` below states the SPEC-required outcome.",
+   "notes": "A path containing a NUL byte. REC-074 states canonicalization MUST NOT raise, so a conformant implementation returns SOME string (or declines the path through its normal absent-value channel) rather than propagating an exception.",
    "verdict_kind": "field_expectation",
    "expect": {
     "raised": false,
@@ -5608,7 +5632,7 @@
    "valid": false,
    "kind": "record_bytes",
    "path": "records/spec-REC-002-invalid-not-utf8.md",
-   "notes": "The file contains the bytes 0xFF 0xFE, which begin no valid UTF-8 sequence, so it is not a UTF-8 document and therefore not a conformant record. Read this fixture as RAW BYTES, not as text. DIVERGENCE: the the reference implementation reference reads record files with `encoding='utf-8-sig', errors='replace'`, so the undecodable bytes become U+FFFD and the file is ingested as a record whose rationale silently differs from the bytes on disk. The `expect` below states the SPEC-required outcome.",
+   "notes": "The file contains the bytes 0xFF 0xFE, which begin no valid UTF-8 sequence, so it is not a UTF-8 document and therefore not a conformant record. Read this fixture as RAW BYTES, not as text.",
    "verdict_kind": "parse_rejects",
    "expect": {
     "is_valid_utf8": false,
@@ -5817,7 +5841,7 @@
    "valid": false,
    "kind": "filename_scenario",
    "path": "filenames/spec-REC-069-invalid-empty-question-must-not-fall-back-to-the-chosen-slug.json",
-   "notes": "An empty records directory and an EMPTY question. The question slug of an empty string is the literal `decision` (REC-062), so REC-069 requires `2026-07-25-decision.md`. DIVERGENCE: the reference implementation substitutes the CHOSEN option for an empty question before slugging (`slugify(question.strip() or chosen)`) and emits `2026-07-25-keep-the-window.md` -- a chosen-derived filename, which is precisely the collision class REC-056 exists to kill. Two captures with no question that happen to choose the same words would land on the same file. The spec does not describe this fallback at all: either REC-069 must state it, or the implementation must drop it.",
+   "notes": "An empty records directory and an EMPTY question. The question slug of an empty string is the literal `decision` (REC-062), so REC-069 requires `2026-07-25-decision.md`.",
    "verdict_kind": "field_expectation",
    "expect": {
     "filename": "2026-07-25-decision.md",

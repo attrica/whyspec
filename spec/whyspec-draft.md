@@ -464,7 +464,7 @@ space, trimming, and removing every `**` sequence. Empty items **MUST** be dropp
 not an error and not the prose.
 
 **[REC-026]** Records **SHOULD NOT** nest list items under an alternative. Nesting carries no
-meaning in this format: the reference implementation flattens every marker to a top-level item, so
+meaning in this format: a conforming parser flattens every marker to a top-level item, so
 a sub-bullet becomes an alternative in its own right.
 
 #### 4.5.2 Alternative disposition
@@ -1869,10 +1869,10 @@ identity derives), `record_abs` (the resolved absolute destination), `node_id`, 
 the former preserves the spelling from which identity derives, while the latter makes the actual
 write destination visible.
 
-**[ENV-036]** `merged` **MUST** report whether the derived view was updated, independently of
-`status`. Writing the record and failing to update a derived index is an **honest partial success**:
-the durable artifact exists, the derived view is stale. It **MUST NOT** be reported as a failure,
-and **MUST NOT** be reported as an unqualified success.
+**[ENV-036]** `merged` **MUST** report whether any secondary view the implementation maintains
+was updated, independently of `status`. Writing the record and failing to update such a view is an
+**honest partial success**: the durable artifact exists, the view is stale. It **MUST NOT** be
+reported as a failure, and **MUST NOT** be reported as an unqualified success.
 
 **[ENV-037]** `resolution_delta` **MUST** be present with an explicit `null` when there was no
 delta. This is a deliberate exception to [ENV-038] and exists because the consumer of this field is
@@ -2276,7 +2276,7 @@ Every normative rule, with its one-line statement.
 | ENV-032 | A rule of a type the checker does not implement MUST be skipped — never counted as a pass and never counted as a failure. |
 | ENV-033 | Both MUST distinguish *governed by a decision* from *governed by a constraint*. |
 | ENV-034 | The capture envelope MUST carry record (the path as given, from which node identity derives), record_abs (the resolved absolute destination)…. |
-| ENV-036 | merged MUST report whether the derived view was updated, independently of status. |
+| ENV-036 | merged MUST report whether any secondary view the implementation maintains was updated, independently of status. |
 | ENV-037 | resolution_delta MUST be present with an explicit null when there was no delta. |
 | ENV-038 | A key omitted from an envelope or node MUST mean *not applicable to this variant*. _(out of scope: consumer)_ |
 | ENV-039 | An implementation MUST NOT use the two interchangeably. _(out of scope: consumer)_ |

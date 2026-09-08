@@ -1,11 +1,9 @@
-# Whyspec conformance fixture corpus (B2)
+# Whyspec conformance fixture corpus
 
-This corpus exists so that an agent given **only** the Whyspec specification -- with no
-access to the reference implementation -- can build a record parser and envelope validator
-and mechanically check it against the mapped normative rules. Every fixture was verified
-against the reference implementation (whyfile the reference implementation) before being written here; none of
-this is copied from the project's own real decision records, which are excluded from a
-public spec repo on principle (invented, neutral example content only).
+This corpus exists so that an implementer given **only** the Whyspec specification can build a
+record parser and envelope validator and mechanically check it against the mapped normative
+rules. Every fixture's expectation is executable from the manifest alone. All example content is
+invented and neutral.
 
 ## Layout
 
@@ -18,16 +16,14 @@ coverage.md           Human-readable rule -> valid fixture(s) -> invalid fixture
 records/              REC-* fixtures: standalone markdown decision records. Feed the raw
                       file text to your record parser; check the result against the
                       manifest entry ("parses" / "does not parse", extracted fields).
-dirs/                 REC-007 (ingest-time rejected-status filtering) and several VER-*
-                      fixtures that need a whole DIRECTORY of pre-existing files (the
-                      filename-matching rules are directory-scoped, not single-file).
-envelopes/            ENV-* fixtures: real (why/list-intent shape sanitised of internal
-                      content, coverage/check as captured) and hand-authored invalid JSON
-                      result envelopes.
+dirs/                 Directory-level fixtures: rejected-record handling and the FIL-*
+                      filename rules, which need a whole DIRECTORY of pre-existing files
+                      (the filename-matching rules are directory-scoped, not single-file).
+envelopes/            ENV-* fixtures: example JSON result envelopes, valid and invalid.
 provenance/           PROV-* fixtures: small input/output vectors for the provenance
                       trust-tier vocabulary and golden-fraction aggregation (pure
                       functions, not file parsing).
-filenames/            VER-* fixtures: JSON scenario descriptors describing a directory
+filenames/            FIL-* fixtures: JSON scenario descriptors describing a directory
                       state (see dirs/) plus a capture input (chosen, question, today)
                       and the exactly-one-correct expected output filename.
 ```
@@ -42,10 +38,9 @@ filenames/            VER-* fixtures: JSON scenario descriptors describing a dir
   `attested` / `reconstructed`) and how it ranks and aggregates (golden fraction).
 - **ENV-nnn** -- result envelope: the per-command JSON shape the CLI emits.
 
-These ids are **independent of the normative spec text's own numbering** (written in
-parallel by a sibling work package from the same implementation, with no visibility into
-this corpus while doing so). Reconcile by the one-line `rule_statement` carried alongside
-every id in `manifest.json`, not by the numbers.
+These ids are **independent of the normative spec text's own numbering**. Reconcile through
+`spec_rule_ids` and the one-line `rule_statement` carried alongside every id in
+`manifest.json`, never by matching numbers.
 
 ## Run the retained corpus
 
@@ -107,7 +102,7 @@ rule or an orphaned fixture at a glance.
 
 ## A note on the two rules with no invalid fixture
 
-**REC-004** (Alternatives section is optional) and **REC-009** (ADR title-prefix
+corpus **REC-004** (Alternatives section is optional) and corpus **REC-009** (ADR title-prefix
 stripping) each have a valid fixture only. Both are documented, deterministic behaviours
 with no reject branch: every input is either handled (REC-004: absent section -> `[]`) or
 transformed exactly one correct way (REC-009: strip the prefix). There is nothing for a
