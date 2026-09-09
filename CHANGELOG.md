@@ -6,7 +6,7 @@ asked to read its history first. Entries are grouped by the version they belong 
 
 ## 0.2
 
-- **REC-164**–**REC-171** added: a `## Validity` section carrying the one condition under which
+- **REC-164**–**REC-173** added: a `## Validity` section carrying the one condition under which
   a decision stops applying, with its referents written in the declared scope grammar already
   defined by [REC-151]–[REC-153]. A vocabulary extension under [VER-002] and [VER-004]: the
   section is optional, records written before it parse identically after it, and the version is
@@ -15,6 +15,9 @@ asked to read its history first. Entries are grouped by the version they belong 
   needs to know the other exists. The section reuses the scope grammar rather than defining a
   second reference syntax: a bare symbol name resolved across the tree would have needed a new
   resolution rule and an ambiguity case for every symbol appearing in more than one file.
+  [REC-173] withholds one thing the scope grammar does allow: [REC-155]'s file-granularity
+  coarsening does not apply to a condition's referent, because a decision that stops applying when
+  a function is removed must not resolve on the file that no longer contains it.
 
 - **REC-135** revised. Emitter completeness was stated over the numbered range §4.5–§4.17, which
   named the sections that existed the day it was written — so §4.19 fell outside it by default,

@@ -12737,13 +12737,19 @@
      "unresolved",
      "unresolved"
     ],
-    "validity_testable": true
+    "validity_testable": true,
+    "validity_reference_kinds": [
+     "file",
+     "file",
+     "unclassified"
+    ]
    },
    "spec_rule_ids": [
-    "REC-169",
     "REC-086",
     "REC-152",
-    "REC-167"
+    "REC-167",
+    "REC-169",
+    "REC-172"
    ]
   },
   {
@@ -12857,6 +12863,176 @@
     "REC-171",
     "REC-054",
     "REC-138"
+   ]
+  },
+  {
+   "id": "spec-REC-167-valid-scheme-and-repeat-discarded",
+   "family": "REC",
+   "rule_id": "REC-167",
+   "rule_statement": "Each code span in a declared condition is a candidate validity referent; a parser MUST derive them in document order, discarding an empty or URI-scheme token and collapsing a repeat to its first occurrence, and MUST yield the derived references as `validity_referents`.",
+   "valid": true,
+   "kind": "record",
+   "path": "models/spec-REC-167-derivation.md",
+   "notes": "Five code spans, two referents. The URL names something outside the repository. `./tools/build_openapi.py` is the same artifact as `tools/build_openapi.py` once REC-153 removes the leading `./`, so it collapses to the first mention. Two mentions of one artifact are one dependency.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "validity_condition_declared": true,
+    "validity_referents": [
+     "tools/build_openapi.py",
+     "schema/openapi.json"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-167",
+    "REC-153"
+   ]
+  },
+  {
+   "id": "spec-REC-167-invalid-url-and-repeat-kept",
+   "family": "REC",
+   "rule_id": "REC-167",
+   "rule_statement": "Each code span in a declared condition is a candidate validity referent; a parser MUST derive them in document order, discarding an empty or URI-scheme token and collapsing a repeat to its first occurrence, and MUST yield the derived references as `validity_referents`.",
+   "valid": false,
+   "kind": "record",
+   "path": "models/spec-REC-167-derivation.md",
+   "notes": "The non-conformant reading publishes a four-item list: a URL that can never resolve, and one artifact counted twice. The referent list is public, so an implementation that kept either would report a different set of dependencies from one that did not, and a consumer could not tell which reading it held.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "validity_referents": [
+     "tools/build_openapi.py",
+     "schema/openapi.json"
+    ],
+    "validity_referents_must_not_contain": [
+     "https://spec.openapis.org/oas/v3.1.0",
+     "./tools/build_openapi.py"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-167",
+    "REC-153"
+   ]
+  },
+  {
+   "id": "spec-REC-172-valid-five-kinds-and-unclassified",
+   "family": "REC",
+   "rule_id": "REC-172",
+   "rule_statement": "Each validity referent MUST be classified by REC-151 where its text carries a `#` and otherwise by REC-152's three path forms; a referent that resolves to no artifact and whose text carries no `/`, no `#` and no glob metacharacter MUST additionally be reported as unclassified.",
+   "valid": true,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-172-kinds.json",
+   "notes": "`README.md` carries no `/` and resolves, so it is a file: the unclassified test is applied after resolution precisely so a root-level file is not mistaken for a bare symbol. The two unresolved referents keep different kinds \u2014 a path that has gone, and a token that names no path at all.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "validity_referent_count": 6,
+    "validity_reference_kinds": [
+     "directory",
+     "glob",
+     "symbol",
+     "file",
+     "file",
+     "unclassified"
+    ],
+    "validity_matched_counts": [
+     1,
+     1,
+     1,
+     1,
+     0,
+     0
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-172",
+    "REC-151",
+    "REC-152",
+    "REC-169"
+   ]
+  },
+  {
+   "id": "spec-REC-172-invalid-bare-token-reported-as-decay",
+   "family": "REC",
+   "rule_id": "REC-172",
+   "rule_statement": "Each validity referent MUST be classified by REC-151 where its text carries a `#` and otherwise by REC-152's three path forms; a referent that resolves to no artifact and whose text carries no `/`, no `#` and no glob metacharacter MUST additionally be reported as unclassified.",
+   "valid": false,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-172-kinds.json",
+   "notes": "The forbidden reading calls the bare token a file, so a writer's slip is reported in the same words as a path that has gone. REC-151 makes the same argument for a malformed symbol reference: keeping the kind intact is what makes the empty resolution actionable.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "validity_referent_count": 6,
+    "validity_reference_kinds": [
+     "directory",
+     "glob",
+     "symbol",
+     "file",
+     "file",
+     "unclassified"
+    ],
+    "validity_reference_kinds_must_not_equal": [
+     "directory",
+     "glob",
+     "symbol",
+     "file",
+     "file",
+     "file"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-172",
+    "REC-151",
+    "REC-086"
+   ]
+  },
+  {
+   "id": "spec-REC-173-valid-symbol-must-occur",
+   "family": "REC",
+   "rule_id": "REC-173",
+   "rule_statement": "The file-granularity coarsening of REC-155 MUST NOT be applied to a validity referent: a `<path>#<symbol>` validity referent resolves only where the path resolves AND the symbol occurs in that file as a whole word.",
+   "valid": true,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-173-symbol-occurrence.json",
+   "notes": "The file is still there and the function is not, so the referent resolves to zero and the condition is reported unresolved rather than satisfied. This is the whole difference between asking which files a decision governs and asking whether what its condition names is still there.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "validity_referent_count": 1,
+    "validity_matched_counts": [
+     0
+    ],
+    "validity_resolution_states": [
+     "unresolved"
+    ],
+    "validity_testable": false
+   },
+   "spec_rule_ids": [
+    "REC-173",
+    "REC-155",
+    "REC-169"
+   ]
+  },
+  {
+   "id": "spec-REC-173-invalid-coarsened-to-the-file",
+   "family": "REC",
+   "rule_id": "REC-173",
+   "rule_statement": "The file-granularity coarsening of REC-155 MUST NOT be applied to a validity referent: a `<path>#<symbol>` validity referent resolves only where the path resolves AND the symbol occurs in that file as a whole word.",
+   "valid": false,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-173-symbol-occurrence.json",
+   "notes": "The non-conformant reading applies REC-155's coarsening, resolves the referent to the file, and reports the decision live on the strength of a symbol that had already gone. REC-155 permits that coarsening for declared scope, where it is the honest coarse answer; here it reintroduces the failure the section exists to catch.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "validity_referent_count": 1,
+    "validity_matched_counts": [
+     0
+    ],
+    "validity_matched_counts_must_not_equal": [
+     1
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-173",
+    "REC-155"
    ]
   }
  ]

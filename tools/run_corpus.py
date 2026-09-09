@@ -37,19 +37,19 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER|INT)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 252,
-    "fixture_paths": 410,
-    "manifest_entries": 457,
-    "mapped_rule_ids": 229,
+    "rules": 254,
+    "fixture_paths": 413,
+    "manifest_entries": 463,
+    "mapped_rule_ids": 231,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 301,
+    "computed": 307,
     "drift_checked": 90,
     "reserved": 66,
 }
 EXPECTED_MUST_NOT_EQUAL = {
-    "fixtures": 109,
-    "assertions": 125,
+    "fixtures": 111,
+    "assertions": 127,
 }
 
 # REC-145. Same obligation, different spelling -- measured against 84 real ADRs from the three
@@ -690,6 +690,39 @@ def render_record(inputs: dict[str, Any]) -> str:
     return "\n".join(out)
 
 
+URI_SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.\-]*:")
+
+
+def validity_reference(span: str) -> str:
+    """REC-153 as REC-167 applies it: the span has already done step 1, and the symbol
+    suffix STAYS -- REC-173 forbids REC-155's file-granularity coarsening for a condition,
+    because a condition asks whether the thing it names is still there."""
+    text = span.strip()
+    if text.endswith(")") and "(" in text:
+        text = text[: text.rfind("(")].strip()
+    if text.startswith("./"):
+        text = text[2:]
+    return text
+
+
+def derive_validity_referents(body: str) -> list[str]:
+    """REC-167 steps 1-4. Empty and scheme tokens go, duplicates collapse to the first."""
+    out: list[str] = []
+    seen: set[str] = set()
+    for match in re.finditer(r"`([^`]*)`", body):
+        reference = validity_reference(match.group(1))
+        if not reference:
+            continue
+        head = reference.split("/", 1)[0]
+        if URI_SCHEME.match(head):
+            continue
+        if reference in seen:
+            continue
+        seen.add(reference)
+        out.append(reference)
+    return out
+
+
 def parse_record(data: bytes) -> dict[str, Any]:
     try:
         text = data.decode("utf-8")
@@ -890,9 +923,11 @@ def parse_record(data: bytes) -> dict[str, Any]:
         validity is not None
         and re.match(r"^\s*this stops applying when", validity, re.I)
     )
-    # REC-167: every code span, verbatim and in document order. Text outside a span is prose.
+    # REC-167: every code span, wherever it stands, derived by REC-153 with the symbol suffix
+    # KEPT (REC-173 forbids REC-155's coarsening here), then emptied of scheme tokens and
+    # duplicates. Text outside a span is prose and declares nothing.
     validity_referents = (
-        [m.group(1) for m in re.finditer(r"`([^`]*)`", validity)]
+        derive_validity_referents(validity)
         if declared_condition and validity is not None
         else None
     )
@@ -1111,7 +1146,45 @@ def resolve_scope(items: list[str], corpus_files: list[str]) -> dict[str, Any]:
     }
 
 
-def resolve_validity(referents: list[str], corpus_files: list[str]) -> dict[str, Any]:
+def validity_item_matches(reference: str, path: str, symbols: dict[str, list[str]]) -> bool:
+    """REC-173: one tree state, and no REC-155 coarsening.
+
+    A `<path>#<symbol>` referent resolves only where the path resolves AND the symbol is in
+    that file. Coarsening to the file would report a condition live on the strength of a
+    symbol that had already gone, which is the failure the section exists to catch.
+    """
+    if not reference or any(c.isspace() for c in reference):
+        return False  # REC-153 step 4
+    if "#" in reference:
+        prefix, _, symbol = reference.partition("#")
+        return bool(symbol) and prefix == path and symbol in symbols.get(path, [])
+    if reference.endswith("/"):
+        return path.startswith(reference)
+    if GLOB_METACHARACTERS & set(reference):
+        compiled = glob_regex(reference)
+        return bool(compiled and compiled.match(path))
+    return reference == path
+
+
+def validity_kind(reference: str, resolved: bool) -> str:
+    """REC-172. `unclassified` is tested AFTER resolution, so a root-level file that exists is
+    a `file`; a bare token is called unclassified only where the tree does not have it."""
+    if "#" in reference:
+        return "symbol"
+    if reference.endswith("/"):
+        return "directory"
+    if GLOB_METACHARACTERS & set(reference):
+        return "glob"
+    if not resolved and "/" not in reference:
+        return "unclassified"
+    return "file"
+
+
+def resolve_validity(
+    referents: list[str],
+    corpus_files: list[str],
+    symbols: dict[str, list[str]] | None = None,
+) -> dict[str, Any]:
     """REC-167 and REC-169: validity referents resolve by the declared scope rule, nothing more.
 
     Reusing `scope_item_matches` is the point of REC-167 -- there is no second reference syntax
@@ -1119,13 +1192,18 @@ def resolve_validity(referents: list[str], corpus_files: list[str]) -> dict[str,
     resolves to zero, and reports under REC-169 rather than being dropped. REC-168: a condition
     naming no referent is testable=False and is neither satisfied nor unsatisfied.
     """
-    matched = [[f for f in corpus_files if scope_item_matches(r, f)] for r in referents]
+    matched = [
+        [f for f in corpus_files if validity_item_matches(r, f, symbols or {})]
+        for r in referents
+    ]
     counts = [len(m) for m in matched]
     states = ["resolved" if c else "unresolved" for c in counts]
+    kinds = [validity_kind(r, bool(c)) for r, c in zip(referents, counts)]
     return {
         "validity_referent_count": len(referents),
         "validity_matched_counts": counts,
         "validity_resolution_states": states,
+        "validity_reference_kinds": kinds,
         "validity_testable": any(counts),
     }
 
@@ -1500,7 +1578,11 @@ def fixture_verdict(
             # resolution is computed independently of `governs`.
             if parsed.get("validity_referents") is not None:
                 actual.update(
-                    resolve_validity(parsed["validity_referents"], document["corpus_files"])
+                    resolve_validity(
+                        parsed["validity_referents"],
+                        document["corpus_files"],
+                        document.get("corpus_symbols"),
+                    )
                 )
             if actual:
                 compare_known_expectations(actual, expect)

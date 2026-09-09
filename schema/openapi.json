@@ -289,11 +289,13 @@
             "type": "string"
           },
           "validity_referents": {
-            "description": "[REC-167] The validity referents of a declared condition, in document order: the contents of each code span in the body, yielded VERBATIM as REC-082 yields a declared scope item. Text outside a code span declares no referent. A referent is resolved as declared scope is -- REC-153's normalization, REC-152's three path forms, REC-151's `<path>#<symbol>` reference -- and a reader MUST NOT search the tree for a bare symbol name. The key is OMITTED where the section is absent or its body is not a declared condition (REC-166); an empty array is a declared condition naming none, which REC-168 records and does not test. [REC-169] A referent resolving to zero artifacts is reported as a named state, as REC-086 requires of declared scope.",
+            "description": "[REC-167] The validity referents of a declared condition, in document order: each code span in the body, wherever it stands, derived by REC-153 with the symbol suffix KEPT, then emptied of empty and URI-scheme tokens and of repeats (the first of each is kept). Text outside a code span declares no referent, and a reader MUST NOT search the tree for a bare symbol name. [REC-172] Each referent is classified by REC-151 or REC-152's three path forms, and an unresolved referent carrying no `/`, `#` or glob metacharacter is additionally reported `unclassified`, so a writer's slip is not reported as decay. [REC-173] Resolution is against one tree state, and REC-155's file-granularity coarsening does NOT apply: a `<path>#<symbol>` referent resolves only where the path resolves and the symbol occurs in that file. The key is OMITTED where the section is absent or its body is not a declared condition (REC-166); an empty array is a declared condition naming none, which REC-168 records and does not test. [REC-169] A referent resolving to zero artifacts is reported as a named state.",
             "x-rule": [
               "REC-167",
               "REC-168",
-              "REC-169"
+              "REC-169",
+              "REC-172",
+              "REC-173"
             ],
             "x-layer": "parsed-record",
             "x-name-source": "corpus",

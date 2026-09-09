@@ -1472,13 +1472,22 @@ referent is derived from it ([REC-167]) and no checker reports on it.
 > to a body rather than to an item: prose that mentions a path declares no scope, and prose about
 > decay declares no condition.
 
-**[REC-167]** In a declared condition, each **code span** in the body is a **validity referent**,
-in document order. A parser **MUST** yield the span contents **verbatim** as `validity_referents`,
-as [REC-082] yields a declared scope item. Text outside a code span is prose and declares no
-referent. A referent is resolved exactly as a declared scope item is — the normalization of
-[REC-153], the three path forms of [REC-152], and the symbol reference of [REC-151] — and no second
-reference syntax is defined here: a reader **MUST NOT** search the tree for a bare symbol name, and
-a referent naming no artifact under those forms resolves to zero and is reported under [REC-169].
+**[REC-167]** In a declared condition, each **code span** in the body is a candidate **validity
+referent**, wherever it stands: the opener carries no privilege, and a span inside it counts like
+any other. A parser **MUST** derive the referents in document order, in these steps:
+
+1. derive the reference from the span contents by [REC-153], whose first step the span has already
+   performed; a symbol suffix is **kept**, because [REC-155]'s coarsening does not apply here
+   ([REC-173]);
+2. discard a token that is empty, or that names a **URI scheme** — text whose first `:` precedes
+   any `/` and whose leading run matches `[A-Za-z][A-Za-z0-9+.-]*` — since neither names anything
+   the repository holds;
+3. discard a token whose text repeats one already taken, keeping the first: two mentions of one
+   artifact are one dependency, not two;
+4. yield the derived references, in order, as `validity_referents`.
+
+Text outside a code span is prose and declares no referent. No second reference syntax is defined
+here, and a reader **MUST NOT** search the tree for a bare symbol name.
 
 > One grammar, two sections. The alternative was a bare symbol name resolved across the tree — the
 > form a writer reaches for unprompted, and the form most of the unresolved referents took when the
@@ -1486,9 +1495,9 @@ a referent naming no artifact under those forms resolves to zero and is reported
 > that appears in more than one file. Reusing the declared scope grammar costs the writer a path
 > prefix and costs the format nothing.
 >
-> It also needs no state of its own for the unclassifiable case. A bare symbol is a **file** form
-> under [REC-152] that names no artifact, so it resolves to zero and reports under [REC-169]
-> already — seen, classified, and unresolved, rather than silently dropped.
+> Steps 2 and 3 are normative because the referent list is public. An implementation that kept a
+> URL, or counted one artifact twice because the writer named it twice, would publish a different
+> list from one that did not, and a consumer could not tell which reading it held.
 
 **[REC-168]** A declared condition **SHOULD** name at least one validity referent. A condition
 naming none is **recorded and not testable**: an implementation **MUST** yield it, **MUST NOT**
@@ -1503,6 +1512,34 @@ discard it, and **MUST NOT** report it as either satisfied or unsatisfied.
 distinct, named state, exactly as [REC-086] requires of a declared scope item, and for the reason
 [REC-086] gives: an empty resolution announces itself, while a condition that has quietly stopped
 naming anything does not.
+
+**[REC-172]** Each validity referent **MUST** be classified: by [REC-151] where its text carries a
+`#`, and otherwise by [REC-152]'s three path forms. A referent that resolves to no artifact and
+whose text carries no `/`, no `#` and no glob metacharacter **MUST** additionally be reported as
+**unclassified**: it names no path the repository has, and a bare symbol name is the commonest
+thing it is. The kind **MUST** be carried in the report [REC-169] requires.
+
+> [REC-151]'s argument, one section along. An unresolved referent has two quite different causes —
+> a path that has gone, which is the decay [REC-086] exists to surface, and a bare symbol, which is
+> a writer's slip that one path prefix would fix. Reporting both as an empty resolution with no
+> kind lets the slip wear the costume of decay, and the writer who could fix it in a second never
+> learns that it is theirs to fix.
+>
+> The test is applied **after** resolution, so a file at the repository root — `README.md`, which
+> carries no `/` — is a **file** that resolved, and is called unclassified only where the tree does
+> not have it.
+
+**[REC-173]** A validity referent resolves against the tree **as it stands when the condition is
+read**: one tree state, never a comparison of two. The file-granularity coarsening of [REC-155]
+**MUST NOT** be applied to it — a `<path>#<symbol>` validity referent resolves only where the path
+resolves **and** the symbol occurs in that file as a whole word.
+
+> Coarsening is right where [REC-155] allows it, because a declared scope asks which files a
+> decision governs, and a symbol's file is the honest coarse answer. It is wrong here, because a
+> condition asks whether the thing it names is still there. A decision that stops applying when a
+> function is removed would otherwise resolve on the file that no longer contains it, and report
+> itself live on the strength of a symbol that had already gone — the failure this section exists
+> to catch, reintroduced by the resolver.
 
 **[REC-170]** [REC-037]'s `expiry` and this section answer different questions, and neither
 supersedes the other. `expiry` bounds an **assumption**'s life and is free text; a `## Validity`
@@ -2081,11 +2118,13 @@ Every normative rule, with its one-line statement.
 | REC-164 | A record MAY carry a ## Validity section stating the condition under which the decision stops applying. |
 | REC-165 | An absent ## Validity section MUST be read as *no condition declared*. It MUST NOT be read as *the decision never stops applying*. |
 | REC-166 | The body of a declared condition MUST begin with This stops applying when, matched case-insensitively after leading whitespace. |
-| REC-167 | In a declared condition, each code span in the body is a validity referent, in document order. |
+| REC-167 | In a declared condition, each code span in the body is a candidate validity referent, wherever it stands: the opener carries no privilege, and a span…. |
 | REC-168 | A declared condition SHOULD name at least one validity referent. |
 | REC-169 | A validity referent that resolves to zero artifacts MUST be reported as a distinct, named state, exactly as REC-086 requires of a declared scope…. |
 | REC-170 | REC-037's expiry and this section answer different questions, and neither supersedes the other. |
 | REC-171 | An emitter MUST render ## Validity where the record carries a non-empty validity, after the sections REC-137 orders and before ## Alternatives…. |
+| REC-172 | Each validity referent MUST be classified: by REC-151 where its text carries a #, and otherwise by REC-152's three path forms. |
+| REC-173 | A validity referent resolves against the tree as it stands when the condition is read: one tree state, never a comparison of two. |
 
 #### Provenance
 
