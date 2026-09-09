@@ -777,9 +777,10 @@ construction.
 ```
 
 **[REC-135]** **Emitter completeness.** An emitter **MUST** be able to render every field a
-parser yields (§4.5–§4.17). A field that can be parsed and cannot be rendered is a defect in this
-section, not an accepted limitation, and adding a parseable field without a corresponding
-rendering **MUST** be treated as an incomplete change.
+parser yields from a section a record **carries** — every authored section of §4, and not §4.18,
+whose currency is derived and never authored ([REC-111]). A field that can be parsed and cannot be
+rendered is a defect in this section, not an accepted limitation, and adding a parseable field
+without a corresponding rendering **MUST** be treated as an incomplete change.
 
 **[REC-136]** **Status provenance.** The value rendered on the `**Status:**` line **MUST** be the
 record's own status. Where a record has no status ([REC-101], *unstated*), the line **MUST** be
@@ -796,6 +797,11 @@ emit `accepted` for a record whose status is absent or is anything else.
 > later extension inherits the defect unless a rule forbids it. Stating emitter completeness as a
 > requirement makes the omission a conformance failure instead of an oversight nobody is
 > responsible for noticing.
+>
+> The rule is stated over the authored sections rather than over a numbered range for the same
+> reason. A range names the sections that existed the day it was written, so the next section added
+> is outside it by default and the defect returns through the rule meant to prevent it — which is
+> what happened here: the range stopped at §4.17 and §4.19 arrived after it.
 
 **[REC-047]** The `**Status:**` and `**Date:**` lines **MUST** be emitted on adjacent lines
 immediately after a single blank line following the H1, with no blank line between them.
@@ -832,6 +838,11 @@ these sections, in this order, after `## Decision` and before `## Alternatives c
 
 **[REC-138]** An emitter **MUST** omit any of these sections entirely when its field is absent or
 empty, and **MUST NOT** emit a placeholder for it ([REC-054]).
+
+**[REC-171]** An emitter **MUST** render `## Validity` where the record carries a non-empty
+`validity`, after the sections [REC-137] orders and before `## Alternatives considered`, as the
+condition verbatim in one paragraph. It **MUST** omit the section entirely where `validity` is
+absent or empty, and **MUST NOT** emit a placeholder for it ([REC-054]).
 
 **[REC-139]** An emitter **MUST** render the `**Id:**` line, adjacent to `**Status:**` and
 `**Date:**`, when the record carries an identifier. Dropping it would defeat [REC-076] and
@@ -1433,6 +1444,72 @@ a corpus that contradicts itself about what replaced what, and there is no defen
 a winner. Reporting indeterminacy tells a reader something true; picking one tells them something
 that may be false and looks identical to something known.
 
+### 4.19 Validity — the condition that ends a decision
+
+**[REC-164]** A record **MAY** carry a `## Validity` section stating the condition under which the
+decision stops applying. The section carries **one condition as prose**, not a list. A parser
+**MUST** yield the section body, trimmed, as `validity`, taken **verbatim** in the sense of
+[REC-082]: the emphasis-stripping and whitespace normalization of [REC-023] **MUST NOT** be applied
+to it, because a code span is the markup by which a condition names what it depends on ([REC-167]).
+
+**[REC-165]** An absent `## Validity` section **MUST** be read as *no condition declared*. It
+**MUST NOT** be read as *the decision never stops applying*.
+
+> [REC-084] stated for the other declared section, and for the same reason. Most records carry no
+> condition because nobody was asked for one, and a reader that took silence for a claim of
+> permanence would manufacture the strongest assertion in the format out of an empty file.
+
+**[REC-166]** The body of a **declared condition** **MUST** begin with `This stops applying when`,
+matched case-insensitively after leading whitespace. A `## Validity` section whose body does not
+**MUST** still be yielded as `validity`, and **MUST NOT** be read as a declared condition: no
+referent is derived from it ([REC-167]) and no checker reports on it.
+
+> The opener is what separates a condition from a paragraph about validity, and it is a writer's
+> rule rather than a reader's tolerance on purpose. Asked to record one, sessions returned the form
+> the ask and the template showed them; where the ask also permitted a bare statement of fact,
+> almost nothing came back that a checker could resolve, and where it named only the grammar's own
+> forms, every condition written named something that resolved. This is [REC-153]'s step 4 applied
+> to a body rather than to an item: prose that mentions a path declares no scope, and prose about
+> decay declares no condition.
+
+**[REC-167]** In a declared condition, each **code span** in the body is a **validity referent**,
+in document order. A parser **MUST** yield the span contents **verbatim** as `validity_referents`,
+as [REC-082] yields a declared scope item. Text outside a code span is prose and declares no
+referent. A referent is resolved exactly as a declared scope item is — the normalization of
+[REC-153], the three path forms of [REC-152], and the symbol reference of [REC-151] — and no second
+reference syntax is defined here: a reader **MUST NOT** search the tree for a bare symbol name, and
+a referent naming no artifact under those forms resolves to zero and is reported under [REC-169].
+
+> One grammar, two sections. The alternative was a bare symbol name resolved across the tree — the
+> form a writer reaches for unprompted, and the form most of the unresolved referents took when the
+> ask allowed it — which would need a new resolution rule and an ambiguity case for every symbol
+> that appears in more than one file. Reusing the declared scope grammar costs the writer a path
+> prefix and costs the format nothing.
+>
+> It also needs no state of its own for the unclassifiable case. A bare symbol is a **file** form
+> under [REC-152] that names no artifact, so it resolves to zero and reports under [REC-169]
+> already — seen, classified, and unresolved, rather than silently dropped.
+
+**[REC-168]** A declared condition **SHOULD** name at least one validity referent. A condition
+naming none is **recorded and not testable**: an implementation **MUST** yield it, **MUST NOT**
+discard it, and **MUST NOT** report it as either satisfied or unsatisfied.
+
+> Not a MUST, because the honest half of this section is the half a checker cannot reach. A
+> decision that stops applying when a regulator changes its mind has a real condition and no
+> referent, and a format that refused to record it would be trading the truth for the measurement.
+> What the rule forbids is the quiet promotion of such a condition to a verdict.
+
+**[REC-169]** A validity referent that resolves to **zero** artifacts **MUST** be reported as a
+distinct, named state, exactly as [REC-086] requires of a declared scope item, and for the reason
+[REC-086] gives: an empty resolution announces itself, while a condition that has quietly stopped
+naming anything does not.
+
+**[REC-170]** [REC-037]'s `expiry` and this section answer different questions, and neither
+supersedes the other. `expiry` bounds an **assumption**'s life and is free text; a `## Validity`
+condition bounds the **decision** and is resolvable against the tree. A record **MAY** carry both.
+An implementation **MUST NOT** derive one from the other, and **MUST NOT** read the presence of one
+as the absence of the other.
+
 ---
 
 ## 5. Provenance vocabulary
@@ -1972,7 +2049,7 @@ Every normative rule, with its one-line statement.
 | REC-132 | Where a document's first line is exactly ---, the bytes from that line through the next line that is exactly ---, inclusive, are YAML front matter…. |
 | REC-133 | In REC-097's form the separator is exactly one of em dash — (U+2014), en dash – (U+2013), or hyphen-minus -, with at least one whitespace character…. |
 | REC-134 | The alternatives a parser yields are objects, each carrying option and, where recorded, disposition and rationale (REC-097–REC-099). |
-| REC-135 | Emitter completeness. An emitter MUST be able to render every field a parser yields (§4.5–§4.17). |
+| REC-135 | Emitter completeness. |
 | REC-136 | Status provenance. The value rendered on the Status: line MUST be the record's own status. |
 | REC-137 | Where a record carries the corresponding field, an emitter MUST render each of these sections, in this order, after ## Decision and before ##…. |
 | REC-138 | An emitter MUST omit any of these sections entirely when its field is absent or empty, and MUST NOT emit a placeholder for it (REC-054). |
@@ -2001,6 +2078,14 @@ Every normative rule, with its one-line statement.
 | REC-161 | Status MAY also be written bare — a line that begins Status: after any leading whitespace, case-insensitively, with no emphasis and no list marker —…. |
 | REC-162 | Where the operative section selected under REC-018, REC-019 and REC-145 — Decision, or failing that one of its aliases — has an empty body (REC-004)…. |
 | REC-163 | Where a record has an operative section, every level-2 section whose heading's first word is Why, matched case-insensitively — ## Why, ## Why not a…. |
+| REC-164 | A record MAY carry a ## Validity section stating the condition under which the decision stops applying. |
+| REC-165 | An absent ## Validity section MUST be read as *no condition declared*. It MUST NOT be read as *the decision never stops applying*. |
+| REC-166 | The body of a declared condition MUST begin with This stops applying when, matched case-insensitively after leading whitespace. |
+| REC-167 | In a declared condition, each code span in the body is a validity referent, in document order. |
+| REC-168 | A declared condition SHOULD name at least one validity referent. |
+| REC-169 | A validity referent that resolves to zero artifacts MUST be reported as a distinct, named state, exactly as REC-086 requires of a declared scope…. |
+| REC-170 | REC-037's expiry and this section answer different questions, and neither supersedes the other. |
+| REC-171 | An emitter MUST render ## Validity where the record carries a non-empty validity, after the sections REC-137 orders and before ## Alternatives…. |
 
 #### Provenance
 

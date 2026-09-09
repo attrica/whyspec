@@ -37,19 +37,19 @@ RULE_RE = re.compile(r"^\*\*\[((?:REC|PROV|ENV|VER|INT)-\d{3})\]\*\*", re.M)
 # These are intentional tripwires, not estimates. A rule reduction or fixture
 # retirement changes them in the same commit as the manifest and coverage report.
 EXPECTED = {
-    "rules": 244,
-    "fixture_paths": 403,
-    "manifest_entries": 441,
-    "mapped_rule_ids": 221,
+    "rules": 252,
+    "fixture_paths": 410,
+    "manifest_entries": 457,
+    "mapped_rule_ids": 229,
 }
 EXPECTED_EVIDENCE = {
-    "computed": 287,
-    "drift_checked": 88,
+    "computed": 301,
+    "drift_checked": 90,
     "reserved": 66,
 }
 EXPECTED_MUST_NOT_EQUAL = {
-    "fixtures": 102,
-    "assertions": 118,
+    "fixtures": 109,
+    "assertions": 125,
 }
 
 # REC-145. Same obligation, different spelling -- measured against 84 real ADRs from the three
@@ -661,6 +661,7 @@ def render_record(inputs: dict[str, Any]) -> str:
         ("Evidence", "evidence"),
         ("Governs", "governs"),
         ("Relations", "relations"),
+        ("Validity", "validity"),
     ):
         if key in inputs:
             sections.append((heading, inputs.get(key), False))
@@ -878,6 +879,23 @@ def parse_record(data: bytes) -> dict[str, Any]:
             if alias_body is not None and governs_items(alias_body):
                 governs = governs_items(alias_body)
                 break
+    # REC-164 to REC-167: one condition as prose, not a list. The body is yielded verbatim
+    # (REC-023's normalizer would eat the code spans the condition depends on), and only a body
+    # opening with REC-166's sentence is a DECLARED CONDITION -- the opener is what separates a
+    # condition from a paragraph about validity, so a body without it yields `validity` and no
+    # referents at all. REC-165: the section's ABSENCE is "no condition declared", never a claim
+    # that the decision is permanent, so `validity` is None rather than "".
+    validity = section("Validity")
+    declared_condition = bool(
+        validity is not None
+        and re.match(r"^\s*this stops applying when", validity, re.I)
+    )
+    # REC-167: every code span, verbatim and in document order. Text outside a span is prose.
+    validity_referents = (
+        [m.group(1) for m in re.finditer(r"`([^`]*)`", validity)]
+        if declared_condition and validity is not None
+        else None
+    )
     id_match = re.search(r"^\*\*Id:\*\*\s*(\S+)", structural, re.I | re.M)
     # VER-011: the first `**Whyspec:**` line, label matched case-insensitively; a value that is
     # not MAJOR.MINOR is yielded absent, as REC-129 treats a malformed date.
@@ -957,6 +975,13 @@ def parse_record(data: bytes) -> dict[str, Any]:
             if governs is None
             else ["symbol" if "#" in i else "path_glob" for i in governs]
         ),
+        "validity": validity,
+        "validity_declared": validity is not None,
+        # REC-166: a body that does not open with the sentence is yielded but is not a declared
+        # condition, so it has no referents -- None, not [], which REC-168 reserves for a
+        # declared condition that names none.
+        "validity_condition_declared": declared_condition,
+        "validity_referents": validity_referents,
         "question": question,
         "rationale": rationale,
         "recommendation": recommendation,
@@ -1083,6 +1108,25 @@ def resolve_scope(items: list[str], corpus_files: list[str]) -> dict[str, Any]:
         "governs_reference_kinds": ["symbol" if "#" in i else "path_glob" for i in items],
         "raises": False,
         "errors": [],
+    }
+
+
+def resolve_validity(referents: list[str], corpus_files: list[str]) -> dict[str, Any]:
+    """REC-167 and REC-169: validity referents resolve by the declared scope rule, nothing more.
+
+    Reusing `scope_item_matches` is the point of REC-167 -- there is no second reference syntax
+    and no tree-wide symbol search, so a bare symbol is a REC-152 file form that names nothing,
+    resolves to zero, and reports under REC-169 rather than being dropped. REC-168: a condition
+    naming no referent is testable=False and is neither satisfied nor unsatisfied.
+    """
+    matched = [[f for f in corpus_files if scope_item_matches(r, f)] for r in referents]
+    counts = [len(m) for m in matched]
+    states = ["resolved" if c else "unresolved" for c in counts]
+    return {
+        "validity_referent_count": len(referents),
+        "validity_matched_counts": counts,
+        "validity_resolution_states": states,
+        "validity_testable": any(counts),
     }
 
 
@@ -1449,8 +1493,16 @@ def fixture_verdict(
             parsed = parse_record(document["record_text"].encode("utf-8"))
             # Only a record that declares scope has anything to resolve; a relation
             # scenario that also carries a corpus stays a drift check below.
+            actual: dict[str, Any] = {}
             if parsed.get("governs") is not None:
-                actual = resolve_scope(parsed["governs"], document["corpus_files"])
+                actual.update(resolve_scope(parsed["governs"], document["corpus_files"]))
+            # REC-167: a record may declare a condition without declaring scope, so validity
+            # resolution is computed independently of `governs`.
+            if parsed.get("validity_referents") is not None:
+                actual.update(
+                    resolve_validity(parsed["validity_referents"], document["corpus_files"])
+                )
+            if actual:
                 compare_known_expectations(actual, expect)
                 json_scenario_verdict(entry, document)
                 return COMPUTED

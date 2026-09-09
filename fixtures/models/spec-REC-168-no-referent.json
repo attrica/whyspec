@@ -1,0 +1,11 @@
+{
+  "record_text": "# Decision: Follow the regulator's guidance on retention\n\n**Status:** Accepted\n\n## Context\n\nHow long are audit records retained?\n\n## Decision\n\nAudit records are retained for seven years.\n\n## Validity\n\nThis stops applying when the regulator revises its retention guidance.\n",
+  "corpus_files": [
+    "src/audit/retain.py",
+    "src/audit/policy.py",
+    "docs/retention.md"
+  ],
+  "rule": "REC-168",
+  "statement": "A declared condition SHOULD name at least one validity referent. A condition naming none is recorded and not testable: an implementation MUST yield it, MUST NOT discard it, and MUST NOT report it as either satisfied or unsatisfied.",
+  "note": "The honest half of the section. The condition is real, the decision genuinely stops applying when it fires, and no referent in the tree can witness it. The conformant reading records the condition and reports testable=false; it does not discard it, and it does not resolve it to zero and call that a verdict."
+}

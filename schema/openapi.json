@@ -276,6 +276,32 @@
               "type": "string"
             }
           },
+          "validity": {
+            "description": "[REC-164] The `## Validity` section body, trimmed: the one condition under which the decision stops applying, carried as prose and taken VERBATIM in the sense of REC-082 -- REC-023's emphasis-stripping and whitespace normalization MUST NOT be applied, because a code span is how the condition names what it depends on. [REC-165] An ABSENT section means 'no condition declared' and MUST NOT be read as 'the decision never stops applying' -- the key is OMITTED, never an empty string. [REC-166] A body that does not begin `This stops applying when` is still yielded here and is not a declared condition. [REC-170] Distinct from an assumption's free-text REC-037 `expiry`; neither is derived from the other.",
+            "x-rule": [
+              "REC-164",
+              "REC-165",
+              "REC-166",
+              "REC-170"
+            ],
+            "x-layer": "parsed-record",
+            "x-name-source": "corpus",
+            "type": "string"
+          },
+          "validity_referents": {
+            "description": "[REC-167] The validity referents of a declared condition, in document order: the contents of each code span in the body, yielded VERBATIM as REC-082 yields a declared scope item. Text outside a code span declares no referent. A referent is resolved as declared scope is -- REC-153's normalization, REC-152's three path forms, REC-151's `<path>#<symbol>` reference -- and a reader MUST NOT search the tree for a bare symbol name. The key is OMITTED where the section is absent or its body is not a declared condition (REC-166); an empty array is a declared condition naming none, which REC-168 records and does not test. [REC-169] A referent resolving to zero artifacts is reported as a named state, as REC-086 requires of declared scope.",
+            "x-rule": [
+              "REC-167",
+              "REC-168",
+              "REC-169"
+            ],
+            "x-layer": "parsed-record",
+            "x-name-source": "corpus",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "relations": {
             "description": "[REC-087] Declared relations from the `## Relations` section, one per list item, in the form `<relation> <identifier>`. [REC-090] A relation whose target cannot be resolved is dropped silently; [REC-091] an AMBIGUOUS target is also dropped and MUST NOT be resolved by any tiebreak. [PROV-013] Every relation carries provenance: a declared relation takes the declaring record's tier and an inferred relation is `reconstructed`.",
             "x-rule": [

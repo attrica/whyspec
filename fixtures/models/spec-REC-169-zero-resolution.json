@@ -1,0 +1,11 @@
+{
+  "record_text": "# Decision: Validate requests at the edge handler\n\n**Status:** Accepted\n\n## Context\n\nWhere should request validation live?\n\n## Decision\n\nRequest validation runs at the edge handler, before any service call.\n\n## Validity\n\nThis stops applying when `src/edge/handler.py` stops validating, when `src/edge/retired.py` returns, or when `validateRequest` is renamed.\n",
+  "corpus_files": [
+    "src/edge/handler.py",
+    "src/edge/deep/parse.py",
+    "src/main.py"
+  ],
+  "rule": "REC-169",
+  "statement": "A validity referent that resolves to zero artifacts MUST be reported as a distinct, named state, exactly as REC-086 requires of a declared scope item.",
+  "note": "Three referents, three outcomes worth distinguishing. `src/edge/handler.py` resolves. `src/edge/retired.py` is a file form naming a path the tree no longer carries -- the staleness signal REC-086 exists to surface. `validateRequest` is a bare symbol: REC-167 forbids searching the tree for it, so it is a file form that names nothing and reports unresolved alongside the other, rather than being dropped or given a state of its own."
+}
