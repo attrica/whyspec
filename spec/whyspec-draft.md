@@ -1468,7 +1468,11 @@ to it, because a code span is the markup by which a condition names what it depe
 **[REC-166]** The body of a **declared condition** **MUST** begin with `This stops applying when`,
 matched case-insensitively after leading whitespace. A `## Validity` section whose body does not
 **MUST** still be yielded as `validity`, and **MUST NOT** be read as a declared condition: no
-referent is derived from it ([REC-167]) and no checker reports on it.
+referent is derived from it ([REC-167]) and no checker reports on it. This is what the presence of
+`validity_referents` records, and the only thing it records: the key is **absent** where the body
+is not a declared condition, and **present** where it is — empty where that condition names nothing
+([REC-168]). A reader therefore tells a condition from a paragraph without a third field, and an
+implementation **MUST NOT** yield one.
 
 > The opener is what separates a condition from a paragraph about validity, and it is a writer's
 > rule rather than a reader's tolerance on purpose. Asked to record one, sessions returned the form

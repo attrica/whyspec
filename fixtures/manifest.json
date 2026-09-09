@@ -12515,7 +12515,6 @@
    "verdict_kind": "field_expectation",
    "expect": {
     "parses": true,
-    "validity_declared": true,
     "validity": "This stops applying when `src/edge/**/*.py` no longer routes through a single handler, or when\n`src/edge/handler.py#validate_request` stops being the **only** entry point."
    },
    "spec_rule_ids": [
@@ -12556,7 +12555,6 @@
    "verdict_kind": "field_expectation",
    "expect": {
     "parses": true,
-    "validity_declared": false,
     "validity": null
    },
    "spec_rule_ids": [
@@ -12576,7 +12574,6 @@
    "verdict_kind": "field_expectation",
    "expect": {
     "parses": true,
-    "validity_declared": false,
     "validity": null,
     "validity_must_not_equal": ""
    },
@@ -12597,8 +12594,7 @@
    "verdict_kind": "field_expectation",
    "expect": {
     "parses": true,
-    "validity_declared": true,
-    "validity_condition_declared": false,
+    "validity": "Probably worth revisiting once `src/render/cache.py` grows a second eviction policy, but nobody\nhas committed to a condition yet.",
     "validity_referents": null
    },
    "spec_rule_ids": [
@@ -12618,9 +12614,11 @@
    "verdict_kind": "field_expectation",
    "expect": {
     "parses": true,
-    "validity_condition_declared": false,
-    "validity_condition_declared_must_not_equal": true,
-    "validity_referents": null
+    "validity": "Probably worth revisiting once `src/render/cache.py` grows a second eviction policy, but nobody\nhas committed to a condition yet.",
+    "validity_referents": null,
+    "validity_referents_must_not_equal": [
+     "src/render/cache.py"
+    ]
    },
    "spec_rule_ids": [
     "REC-166",
@@ -12639,7 +12637,6 @@
    "verdict_kind": "field_expectation",
    "expect": {
     "parses": true,
-    "validity_condition_declared": true,
     "validity_referents": [
      "tools/build_openapi.py",
      "schema/openapi.json",
@@ -12791,7 +12788,6 @@
    "expect": {
     "parses": true,
     "assumptions": 1,
-    "validity_condition_declared": true,
     "validity_referents": [
      "vendor/parser/"
     ]
@@ -12877,7 +12873,6 @@
    "verdict_kind": "field_expectation",
    "expect": {
     "parses": true,
-    "validity_condition_declared": true,
     "validity_referents": [
      "tools/build_openapi.py",
      "schema/openapi.json"
