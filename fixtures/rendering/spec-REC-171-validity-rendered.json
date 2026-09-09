@@ -1,0 +1,21 @@
+{
+  "rule": "REC-171",
+  "statement": "An emitter MUST render `## Validity` where the record carries a non-empty validity, after the sections REC-137 orders and before `## Alternatives considered`, as the condition verbatim in one paragraph. It MUST omit the section entirely where validity is absent or empty, and MUST NOT emit a placeholder for it.",
+  "inputs": {
+    "chosen": "Validate requests at the edge handler",
+    "question": "Where should request validation live?",
+    "options": [
+      "Validate requests at the edge handler",
+      "Validate inside each service"
+    ],
+    "rationale": "Request validation runs at the edge handler, before any service call.",
+    "date": "2026-05-15",
+    "status": "Accepted",
+    "governs": [
+      "src/edge/handler.py"
+    ],
+    "validity": "This stops applying when `src/edge/handler.py` stops being the single entry point."
+  },
+  "expected_output": "# Decision: Validate requests at the edge handler\n\n**Status:** Accepted\n**Date:** 2026-05-15\n\n## Context\n\nWhere should request validation live?\n\n## Decision\n\nRequest validation runs at the edge handler, before any service call.\n\n## Governs\n\n- src/edge/handler.py\n\n## Validity\n\nThis stops applying when `src/edge/handler.py` stops being the single entry point.\n\n## Alternatives considered\n\n1. Validate requests at the edge handler\n2. Validate inside each service\n",
+  "note": "The section is rendered verbatim as one paragraph, after the REC-137 sections and before `## Alternatives considered`. REC-054 governs the other half: validity is not a field whose emptiness is itself an answer, so an absent condition omits the section rather than emitting `(none recorded)`."
+}

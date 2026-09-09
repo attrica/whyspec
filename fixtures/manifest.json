@@ -12502,6 +12502,538 @@
     "REC-163",
     "REC-007"
    ]
+  },
+  {
+   "id": "spec-REC-164-valid-body-yielded-verbatim",
+   "family": "REC",
+   "rule_id": "REC-164",
+   "rule_statement": "A record MAY carry a `## Validity` section; a parser MUST yield its body, trimmed, as `validity`, taken VERBATIM in the sense of REC-082 \u2014 REC-023's emphasis-stripping and whitespace normalization MUST NOT be applied to it.",
+   "valid": true,
+   "kind": "record",
+   "path": "models/spec-REC-164-valid-validity-verbatim.md",
+   "notes": "The body carries both things REC-023's normalizer destroys: a `**` inside a recursive glob and a `**only**` emphasis in prose. Yielded verbatim, the glob survives and the condition still names what it depends on.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "validity_declared": true,
+    "validity": "This stops applying when `src/edge/**/*.py` no longer routes through a single handler, or when\n`src/edge/handler.py#validate_request` stops being the **only** entry point."
+   },
+   "spec_rule_ids": [
+    "REC-164",
+    "REC-082",
+    "REC-023"
+   ]
+  },
+  {
+   "id": "spec-REC-164-invalid-prose-normalizer-applied",
+   "family": "REC",
+   "rule_id": "REC-164",
+   "rule_statement": "A record MAY carry a `## Validity` section; a parser MUST yield its body, trimmed, as `validity`, taken VERBATIM in the sense of REC-082 \u2014 REC-023's emphasis-stripping and whitespace normalization MUST NOT be applied to it.",
+   "valid": false,
+   "kind": "record",
+   "path": "models/spec-REC-164-valid-validity-verbatim.md",
+   "notes": "The non-conformant reading runs REC-023 over the body: `src/edge/**/*.py` collapses to `src/edge//*.py`, converting a recursive glob into a literal empty path segment, and the condition then names a file that cannot exist. This is REC-082's failure repeated one section later.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "validity": "This stops applying when `src/edge/**/*.py` no longer routes through a single handler, or when\n`src/edge/handler.py#validate_request` stops being the **only** entry point.",
+    "validity_must_not_equal": "This stops applying when `src/edge//*.py` no longer routes through a single handler, or when `src/edge/handler.py#validate_request` stops being the only entry point."
+   },
+   "spec_rule_ids": [
+    "REC-164",
+    "REC-023"
+   ]
+  },
+  {
+   "id": "spec-REC-165-valid-absent-section-declares-nothing",
+   "family": "REC",
+   "rule_id": "REC-165",
+   "rule_statement": "An absent `## Validity` section MUST be read as no condition declared, and MUST NOT be read as the decision never stops applying.",
+   "valid": true,
+   "kind": "record",
+   "path": "models/spec-REC-151-valid-symbol-reference.md",
+   "notes": "Cross-references a record that carries no `## Validity` section. The key is absent, not empty: the record says nothing about when its decision stops applying, which is the overwhelmingly common case and is not a claim of permanence.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "validity_declared": false,
+    "validity": null
+   },
+   "spec_rule_ids": [
+    "REC-165",
+    "REC-084"
+   ]
+  },
+  {
+   "id": "spec-REC-165-invalid-absence-read-as-permanence",
+   "family": "REC",
+   "rule_id": "REC-165",
+   "rule_statement": "An absent `## Validity` section MUST be read as no condition declared, and MUST NOT be read as the decision never stops applying.",
+   "valid": false,
+   "kind": "record",
+   "path": "models/spec-REC-151-valid-symbol-reference.md",
+   "notes": "The forbidden reading turns silence into content. An empty string is a declared condition that says nothing, and a consumer cannot tell it from a record that was asked and had no answer \u2014 the same distinction REC-084 draws for declared scope.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "validity_declared": false,
+    "validity": null,
+    "validity_must_not_equal": ""
+   },
+   "spec_rule_ids": [
+    "REC-165",
+    "REC-084"
+   ]
+  },
+  {
+   "id": "spec-REC-166-valid-body-without-opener-is-not-a-condition",
+   "family": "REC",
+   "rule_id": "REC-166",
+   "rule_statement": "The body of a declared condition MUST begin with `This stops applying when`, matched case-insensitively after leading whitespace. A body that does not MUST still be yielded as `validity` and MUST NOT be read as a declared condition.",
+   "valid": true,
+   "kind": "record",
+   "path": "models/spec-REC-166-opener-absent.md",
+   "notes": "A `## Validity` section whose body is a paragraph about validity rather than a condition. It is yielded \u2014 the writer said something and the record keeps it \u2014 but it declares no condition, so no referent is derived from the path it happens to mention.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "validity_declared": true,
+    "validity_condition_declared": false,
+    "validity_referents": null
+   },
+   "spec_rule_ids": [
+    "REC-166",
+    "REC-153"
+   ]
+  },
+  {
+   "id": "spec-REC-166-invalid-referents-taken-from-prose",
+   "family": "REC",
+   "rule_id": "REC-166",
+   "rule_statement": "The body of a declared condition MUST begin with `This stops applying when`, matched case-insensitively after leading whitespace. A body that does not MUST still be yielded as `validity` and MUST NOT be read as a declared condition.",
+   "valid": false,
+   "kind": "record",
+   "path": "models/spec-REC-166-opener-absent.md",
+   "notes": "The non-conformant reading harvests `src/render/cache.py` from a paragraph that commits to nothing and reports the decision as testable against it. REC-153's step 4 refuses the same move for declared scope: prose that mentions a path declares none.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "validity_condition_declared": false,
+    "validity_condition_declared_must_not_equal": true,
+    "validity_referents": null
+   },
+   "spec_rule_ids": [
+    "REC-166",
+    "REC-153"
+   ]
+  },
+  {
+   "id": "spec-REC-167-valid-referents-verbatim-in-order",
+   "family": "REC",
+   "rule_id": "REC-167",
+   "rule_statement": "Each code span in a declared condition is a validity referent, in document order; a parser MUST yield the span contents verbatim as `validity_referents`. A reader MUST NOT search the tree for a bare symbol name.",
+   "valid": true,
+   "kind": "record",
+   "path": "models/spec-REC-167-valid-referents-in-order.md",
+   "notes": "Three code spans, yielded verbatim and in document order, including the symbol reference with its `#` intact. The final sentence of the body names a mechanism in prose and contributes no referent.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "validity_condition_declared": true,
+    "validity_referents": [
+     "tools/build_openapi.py",
+     "schema/openapi.json",
+     "schema/parsed-record.schema.json#properties"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-167",
+    "REC-151"
+   ]
+  },
+  {
+   "id": "spec-REC-167-invalid-prose-becomes-a-referent",
+   "family": "REC",
+   "rule_id": "REC-167",
+   "rule_statement": "Each code span in a declared condition is a validity referent, in document order; a parser MUST yield the span contents verbatim as `validity_referents`. A reader MUST NOT search the tree for a bare symbol name.",
+   "valid": false,
+   "kind": "record",
+   "path": "models/spec-REC-167-valid-referents-in-order.md",
+   "notes": "The forbidden reading takes text outside a code span as a referent. Marking the referents is what makes the condition machine-readable at all; a reader that guessed from prose would resolve a decision against files nobody named.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "validity_referents": [
+     "tools/build_openapi.py",
+     "schema/openapi.json",
+     "schema/parsed-record.schema.json#properties"
+    ],
+    "validity_referents_must_not_contain": [
+     "The mechanism described in the rationale above"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-167"
+   ]
+  },
+  {
+   "id": "spec-REC-168-valid-condition-without-referent-is-recorded",
+   "family": "REC",
+   "rule_id": "REC-168",
+   "rule_statement": "A declared condition SHOULD name at least one validity referent. A condition naming none is recorded and not testable: an implementation MUST yield it, MUST NOT discard it, and MUST NOT report it as either satisfied or unsatisfied.",
+   "valid": true,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-168-no-referent.json",
+   "notes": "A real condition no checker can witness. It is yielded and kept, and it is reported as not testable \u2014 neither satisfied nor unsatisfied. An empty referent list is a declared condition naming none, which is a different state from the absent key REC-166 produces.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "validity_referent_count": 0,
+    "validity_testable": false,
+    "validity_resolution_states": []
+   },
+   "spec_rule_ids": [
+    "REC-168"
+   ]
+  },
+  {
+   "id": "spec-REC-168-invalid-unwitnessable-condition-given-a-verdict",
+   "family": "REC",
+   "rule_id": "REC-168",
+   "rule_statement": "A declared condition SHOULD name at least one validity referent. A condition naming none is recorded and not testable: an implementation MUST yield it, MUST NOT discard it, and MUST NOT report it as either satisfied or unsatisfied.",
+   "valid": false,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-168-no-referent.json",
+   "notes": "The forbidden reading resolves a condition with no referent to zero artifacts and calls that a verdict. Zero referents and zero resolutions are different facts: one says the checker was never given anything to check, the other says what it was given has gone.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "validity_referent_count": 0,
+    "validity_testable": false,
+    "validity_testable_must_not_equal": true
+   },
+   "spec_rule_ids": [
+    "REC-168",
+    "REC-169"
+   ]
+  },
+  {
+   "id": "spec-REC-169-valid-zero-resolution-is-a-named-state",
+   "family": "REC",
+   "rule_id": "REC-169",
+   "rule_statement": "A validity referent that resolves to zero artifacts MUST be reported as a distinct, named state, exactly as REC-086 requires of a declared scope item.",
+   "valid": true,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-169-zero-resolution.json",
+   "notes": "One referent resolves, one names a path the tree no longer carries, and one is a bare symbol. All three are reported. The bare symbol needs no state of its own: REC-167 forbids searching the tree for it, so it is a REC-152 file form naming nothing and reports unresolved beside the stale path.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "validity_referent_count": 3,
+    "validity_matched_counts": [
+     1,
+     0,
+     0
+    ],
+    "validity_resolution_states": [
+     "resolved",
+     "unresolved",
+     "unresolved"
+    ],
+    "validity_testable": true,
+    "validity_reference_kinds": [
+     "file",
+     "file",
+     "unclassified"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-086",
+    "REC-152",
+    "REC-167",
+    "REC-169",
+    "REC-172"
+   ]
+  },
+  {
+   "id": "spec-REC-169-invalid-empty-resolution-dropped",
+   "family": "REC",
+   "rule_id": "REC-169",
+   "rule_statement": "A validity referent that resolves to zero artifacts MUST be reported as a distinct, named state, exactly as REC-086 requires of a declared scope item.",
+   "valid": false,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-169-zero-resolution.json",
+   "notes": "The non-conformant reading keeps only what resolved and reports a condition in good health. REC-086's argument applies unchanged: an empty resolution announces itself, and dropping it converts the format's best staleness signal into silence.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "validity_referent_count": 3,
+    "validity_resolution_states": [
+     "resolved",
+     "unresolved",
+     "unresolved"
+    ],
+    "validity_resolution_states_must_not_equal": [
+     "resolved"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-169",
+    "REC-086"
+   ]
+  },
+  {
+   "id": "spec-REC-170-valid-expiry-and-validity-coexist",
+   "family": "REC",
+   "rule_id": "REC-170",
+   "rule_statement": "REC-037's `expiry` and a `## Validity` condition answer different questions; a record MAY carry both, and an implementation MUST NOT derive one from the other or read the presence of one as the absence of the other.",
+   "valid": true,
+   "kind": "record",
+   "path": "models/spec-REC-170-valid-expiry-and-validity.md",
+   "notes": "One record carries both: an assumption bounded in free text by REC-037's `expiry`, and a decision bounded by a resolvable condition. They are about different objects \u2014 the assumption's life and the decision's \u2014 and both survive the parse independently.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "assumptions": 1,
+    "validity_condition_declared": true,
+    "validity_referents": [
+     "vendor/parser/"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-170",
+    "REC-037"
+   ]
+  },
+  {
+   "id": "spec-REC-170-invalid-one-derived-from-the-other",
+   "family": "REC",
+   "rule_id": "REC-170",
+   "rule_statement": "REC-037's `expiry` and a `## Validity` condition answer different questions; a record MAY carry both, and an implementation MUST NOT derive one from the other or read the presence of one as the absence of the other.",
+   "valid": false,
+   "kind": "record",
+   "path": "models/spec-REC-170-valid-expiry-and-validity.md",
+   "notes": "The forbidden reading promotes an assumption's free-text expiry into the decision's condition. REC-037 says `expiry` is not machine-checkable; copying it into a section that is would manufacture a checkable claim the writer never made.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "assumptions": 1,
+    "validity_referents": [
+     "vendor/parser/"
+    ],
+    "validity_referents_must_not_equal": [
+     "when upstream announces a rewrite"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-170",
+    "REC-037"
+   ]
+  },
+  {
+   "id": "spec-REC-171-valid-validity-rendered-in-position",
+   "family": "REC",
+   "rule_id": "REC-171",
+   "rule_statement": "An emitter MUST render `## Validity` where the record carries a non-empty validity, after the sections REC-137 orders and before `## Alternatives considered`, and MUST omit the section entirely where validity is absent or empty.",
+   "valid": true,
+   "kind": "render_scenario",
+   "path": "rendering/spec-REC-171-validity-rendered.json",
+   "notes": "The condition is rendered verbatim as one paragraph, after the sections REC-137 orders and before `## Alternatives considered`, so the emitted record parses back to the same `validity` under REC-164.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "output": "# Decision: Validate requests at the edge handler\n\n**Status:** Accepted\n**Date:** 2026-05-15\n\n## Context\n\nWhere should request validation live?\n\n## Decision\n\nRequest validation runs at the edge handler, before any service call.\n\n## Governs\n\n- src/edge/handler.py\n\n## Validity\n\nThis stops applying when `src/edge/handler.py` stops being the single entry point.\n\n## Alternatives considered\n\n1. Validate requests at the edge handler\n2. Validate inside each service\n"
+   },
+   "spec_rule_ids": [
+    "REC-171",
+    "REC-137",
+    "REC-164"
+   ]
+  },
+  {
+   "id": "spec-REC-171-invalid-placeholder-for-absent-condition",
+   "family": "REC",
+   "rule_id": "REC-171",
+   "rule_statement": "An emitter MUST render `## Validity` where the record carries a non-empty validity, after the sections REC-137 orders and before `## Alternatives considered`, and MUST omit the section entirely where validity is absent or empty.",
+   "valid": false,
+   "kind": "render_scenario",
+   "path": "rendering/spec-REC-171-validity-rendered.json",
+   "notes": "REC-054's rule for the write path. `(none recorded)` is reserved for a section whose emptiness is itself an answer; a record with no condition was usually never asked for one, and a placeholder would state a false claim about the record's own completeness.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "output": "# Decision: Validate requests at the edge handler\n\n**Status:** Accepted\n**Date:** 2026-05-15\n\n## Context\n\nWhere should request validation live?\n\n## Decision\n\nRequest validation runs at the edge handler, before any service call.\n\n## Governs\n\n- src/edge/handler.py\n\n## Validity\n\nThis stops applying when `src/edge/handler.py` stops being the single entry point.\n\n## Alternatives considered\n\n1. Validate requests at the edge handler\n2. Validate inside each service\n",
+    "output_must_not_equal": "# Decision: Validate requests at the edge handler\n\n**Status:** Accepted\n**Date:** 2026-05-15\n\n## Context\n\nWhere should request validation live?\n\n## Decision\n\nRequest validation runs at the edge handler, before any service call.\n\n## Governs\n\n- src/edge/handler.py\n\n## Validity\n\n(none recorded)\n\n## Alternatives considered\n\n1. Validate requests at the edge handler\n2. Validate inside each service\n"
+   },
+   "spec_rule_ids": [
+    "REC-171",
+    "REC-054",
+    "REC-138"
+   ]
+  },
+  {
+   "id": "spec-REC-167-valid-scheme-and-repeat-discarded",
+   "family": "REC",
+   "rule_id": "REC-167",
+   "rule_statement": "Each code span in a declared condition is a candidate validity referent; a parser MUST derive them in document order, discarding an empty or URI-scheme token and collapsing a repeat to its first occurrence, and MUST yield the derived references as `validity_referents`.",
+   "valid": true,
+   "kind": "record",
+   "path": "models/spec-REC-167-derivation.md",
+   "notes": "Five code spans, two referents. The URL names something outside the repository. `./tools/build_openapi.py` is the same artifact as `tools/build_openapi.py` once REC-153 removes the leading `./`, so it collapses to the first mention. Two mentions of one artifact are one dependency.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "validity_condition_declared": true,
+    "validity_referents": [
+     "tools/build_openapi.py",
+     "schema/openapi.json"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-167",
+    "REC-153"
+   ]
+  },
+  {
+   "id": "spec-REC-167-invalid-url-and-repeat-kept",
+   "family": "REC",
+   "rule_id": "REC-167",
+   "rule_statement": "Each code span in a declared condition is a candidate validity referent; a parser MUST derive them in document order, discarding an empty or URI-scheme token and collapsing a repeat to its first occurrence, and MUST yield the derived references as `validity_referents`.",
+   "valid": false,
+   "kind": "record",
+   "path": "models/spec-REC-167-derivation.md",
+   "notes": "The non-conformant reading publishes a four-item list: a URL that can never resolve, and one artifact counted twice. The referent list is public, so an implementation that kept either would report a different set of dependencies from one that did not, and a consumer could not tell which reading it held.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "parses": true,
+    "validity_referents": [
+     "tools/build_openapi.py",
+     "schema/openapi.json"
+    ],
+    "validity_referents_must_not_contain": [
+     "https://spec.openapis.org/oas/v3.1.0",
+     "./tools/build_openapi.py"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-167",
+    "REC-153"
+   ]
+  },
+  {
+   "id": "spec-REC-172-valid-five-kinds-and-unclassified",
+   "family": "REC",
+   "rule_id": "REC-172",
+   "rule_statement": "Each validity referent MUST be classified by REC-151 where its text carries a `#` and otherwise by REC-152's three path forms; a referent that resolves to no artifact and whose text carries no `/`, no `#` and no glob metacharacter MUST additionally be reported as unclassified.",
+   "valid": true,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-172-kinds.json",
+   "notes": "`README.md` carries no `/` and resolves, so it is a file: the unclassified test is applied after resolution precisely so a root-level file is not mistaken for a bare symbol. The two unresolved referents keep different kinds \u2014 a path that has gone, and a token that names no path at all.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "validity_referent_count": 6,
+    "validity_reference_kinds": [
+     "directory",
+     "glob",
+     "symbol",
+     "file",
+     "file",
+     "unclassified"
+    ],
+    "validity_matched_counts": [
+     1,
+     1,
+     1,
+     1,
+     0,
+     0
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-172",
+    "REC-151",
+    "REC-152",
+    "REC-169"
+   ]
+  },
+  {
+   "id": "spec-REC-172-invalid-bare-token-reported-as-decay",
+   "family": "REC",
+   "rule_id": "REC-172",
+   "rule_statement": "Each validity referent MUST be classified by REC-151 where its text carries a `#` and otherwise by REC-152's three path forms; a referent that resolves to no artifact and whose text carries no `/`, no `#` and no glob metacharacter MUST additionally be reported as unclassified.",
+   "valid": false,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-172-kinds.json",
+   "notes": "The forbidden reading calls the bare token a file, so a writer's slip is reported in the same words as a path that has gone. REC-151 makes the same argument for a malformed symbol reference: keeping the kind intact is what makes the empty resolution actionable.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "validity_referent_count": 6,
+    "validity_reference_kinds": [
+     "directory",
+     "glob",
+     "symbol",
+     "file",
+     "file",
+     "unclassified"
+    ],
+    "validity_reference_kinds_must_not_equal": [
+     "directory",
+     "glob",
+     "symbol",
+     "file",
+     "file",
+     "file"
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-172",
+    "REC-151",
+    "REC-086"
+   ]
+  },
+  {
+   "id": "spec-REC-173-valid-symbol-must-occur",
+   "family": "REC",
+   "rule_id": "REC-173",
+   "rule_statement": "The file-granularity coarsening of REC-155 MUST NOT be applied to a validity referent: a `<path>#<symbol>` validity referent resolves only where the path resolves AND the symbol occurs in that file as a whole word.",
+   "valid": true,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-173-symbol-occurrence.json",
+   "notes": "The file is still there and the function is not, so the referent resolves to zero and the condition is reported unresolved rather than satisfied. This is the whole difference between asking which files a decision governs and asking whether what its condition names is still there.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "validity_referent_count": 1,
+    "validity_matched_counts": [
+     0
+    ],
+    "validity_resolution_states": [
+     "unresolved"
+    ],
+    "validity_testable": false
+   },
+   "spec_rule_ids": [
+    "REC-173",
+    "REC-155",
+    "REC-169"
+   ]
+  },
+  {
+   "id": "spec-REC-173-invalid-coarsened-to-the-file",
+   "family": "REC",
+   "rule_id": "REC-173",
+   "rule_statement": "The file-granularity coarsening of REC-155 MUST NOT be applied to a validity referent: a `<path>#<symbol>` validity referent resolves only where the path resolves AND the symbol occurs in that file as a whole word.",
+   "valid": false,
+   "kind": "record_scenario",
+   "path": "models/spec-REC-173-symbol-occurrence.json",
+   "notes": "The non-conformant reading applies REC-155's coarsening, resolves the referent to the file, and reports the decision live on the strength of a symbol that had already gone. REC-155 permits that coarsening for declared scope, where it is the honest coarse answer; here it reintroduces the failure the section exists to catch.",
+   "verdict_kind": "field_expectation",
+   "expect": {
+    "validity_referent_count": 1,
+    "validity_matched_counts": [
+     0
+    ],
+    "validity_matched_counts_must_not_equal": [
+     1
+    ]
+   },
+   "spec_rule_ids": [
+    "REC-173",
+    "REC-155"
+   ]
   }
  ]
 }

@@ -6,6 +6,30 @@ asked to read its history first. Entries are grouped by the version they belong 
 
 ## 0.2
 
+- **REC-164**–**REC-173** added: a `## Validity` section carrying the one condition under which
+  a decision stops applying, with its referents written in the declared scope grammar already
+  defined by [REC-151]–[REC-153]. A vocabulary extension under [VER-002] and [VER-004]: the
+  section is optional, records written before it parse identically after it, and the version is
+  unchanged. **REC-037 is not revised.** Its free-text `(expires: …)` bounds an assumption's life
+  and stays exactly as it was; [REC-170] states the relationship, because a reader of one now
+  needs to know the other exists. The section reuses the scope grammar rather than defining a
+  second reference syntax: a bare symbol name resolved across the tree would have needed a new
+  resolution rule and an ambiguity case for every symbol appearing in more than one file.
+  [REC-173] withholds one thing the scope grammar does allow: [REC-155]'s file-granularity
+  coarsening does not apply to a condition's referent, because a decision that stops applying when
+  a function is removed must not resolve on the file that no longer contains it.
+
+- **REC-135** revised. Emitter completeness was stated over the closed range §4.5–§4.17, which
+  named the sections that existed the day it was written — so §4.19 fell outside it by default,
+  and the rule meant to stop a format reading records it cannot write would have inherited that
+  defect itself. Only the upper bound was stale and only the upper bound is removed: the rule now
+  reads over the authored sections of §4.5 onward, excluding §4.18, whose currency is derived and
+  never authored ([REC-111]). §4.5 stays the floor on purpose — widening the rule downward would
+  place a new obligation on emitters for records that already exist, which [VER-003] makes a
+  meaning change. As bounded, no record changes meaning and no emitter that was conformant becomes
+  non-conformant for any record it could previously encounter, so this belongs to the same
+  vocabulary extension ([VER-004]) and carries no version marker.
+
 - **REC-001** removed. The bare root filename `Whyfile` was reserved for a future index when the
   project carried that name; the name is retired and the reservation with it. The identifier is not
   reused. The historical note on the earlier names is removed with it: the project is Whyspec, a

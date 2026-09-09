@@ -1,0 +1,15 @@
+{
+  "record_text": "# Decision: Validate requests in one function\n\n**Status:** Accepted\n\n## Context\n\nWhere does request validation live?\n\n## Decision\n\nOne function validates every request before any service call.\n\n## Validity\n\nThis stops applying when `src/edge/handler.py#validate_request` is removed.\n",
+  "corpus_files": [
+    "src/edge/handler.py"
+  ],
+  "corpus_symbols": {
+    "src/edge/handler.py": [
+      "route",
+      "log_request"
+    ]
+  },
+  "rule": "REC-173",
+  "statement": "The file-granularity coarsening of REC-155 MUST NOT be applied to a validity referent: a `<path>#<symbol>` validity referent resolves only where the path resolves AND the symbol occurs in that file as a whole word.",
+  "note": "The file is still there and the function is not. Coarsening to the file -- which REC-155 permits for declared scope, where the question is which files a decision governs -- would resolve this referent and report the decision live on the strength of a symbol that had already gone. That is the failure the section exists to catch, reintroduced by the resolver, so the referent resolves to zero and reports under REC-169."
+}

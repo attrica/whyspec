@@ -1,0 +1,16 @@
+{
+  "record_text": "# Decision: Validate requests at the edge handler\n\n**Status:** Accepted\n\n## Context\n\nWhere should request validation live?\n\n## Decision\n\nRequest validation runs at the edge handler.\n\n## Validity\n\nThis stops applying when `src/edge/`, `src/edge/*.py`, `src/edge/handler.py#validate_request`, `README.md`, `src/edge/retired.py` or `validateRequest` change.\n",
+  "corpus_files": [
+    "src/edge/handler.py",
+    "README.md"
+  ],
+  "corpus_symbols": {
+    "src/edge/handler.py": [
+      "validate_request",
+      "route"
+    ]
+  },
+  "rule": "REC-172",
+  "statement": "Each validity referent MUST be classified by REC-151 where its text carries a `#` and otherwise by REC-152's three path forms; a referent that resolves to no artifact and whose text carries no `/`, no `#` and no glob metacharacter MUST additionally be reported as unclassified.",
+  "note": "Six referents, one per outcome the report has to keep apart. `README.md` carries no `/` and resolves, so it is a file and not unclassified -- the test is applied after resolution for exactly this case. `src/edge/retired.py` is an unresolved file: a path that has gone, which is decay. `validateRequest` is an unresolved bare token: a writer's slip one path prefix would fix. Reporting both as an empty resolution with no kind would make the slip indistinguishable from the decay."
+}
