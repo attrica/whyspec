@@ -777,10 +777,11 @@ construction.
 ```
 
 **[REC-135]** **Emitter completeness.** An emitter **MUST** be able to render every field a
-parser yields from a section a record **carries** — every authored section of §4, and not §4.18,
-whose currency is derived and never authored ([REC-111]). A field that can be parsed and cannot be
-rendered is a defect in this section, not an accepted limitation, and adding a parseable field
-without a corresponding rendering **MUST** be treated as an incomplete change.
+parser yields from an **authored** section of §4.5 onward that a record carries — every such
+section, however many are added after this rule, and not §4.18, whose currency is derived and never
+authored ([REC-111]). A field that can be parsed and cannot be rendered is a defect in this section,
+not an accepted limitation, and adding a parseable field without a corresponding rendering
+**MUST** be treated as an incomplete change.
 
 **[REC-136]** **Status provenance.** The value rendered on the `**Status:**` line **MUST** be the
 record's own status. Where a record has no status ([REC-101], *unstated*), the line **MUST** be
@@ -798,10 +799,15 @@ emit `accepted` for a record whose status is absent or is anything else.
 > requirement makes the omission a conformance failure instead of an oversight nobody is
 > responsible for noticing.
 >
-> The rule is stated over the authored sections rather than over a numbered range for the same
-> reason. A range names the sections that existed the day it was written, so the next section added
-> is outside it by default and the defect returns through the rule meant to prevent it — which is
-> what happened here: the range stopped at §4.17 and §4.19 arrived after it.
+> The rule once named a closed range, §4.5–§4.17. A closed range names the sections that existed
+> the day it was written, so the next section added falls outside it by default and the defect
+> returns through the rule meant to prevent it — which is what happened: the range stopped at
+> §4.17 and §4.19 arrived after it. Only the **upper** bound was stale, and only the upper bound is
+> removed. §4.5 remains the floor deliberately: §4.1–§4.4 establish the record's kind and title
+> through the heading grammars, and every field they bear on is already required elsewhere — but
+> widening the rule downward would place a new obligation on emitters for records that already
+> exist, which is a meaning change under [VER-003] and not a thing to do in passing while adding a
+> section.
 
 **[REC-047]** The `**Status:**` and `**Date:**` lines **MUST** be emitted on adjacent lines
 immediately after a single blank line following the H1, with no blank line between them.
