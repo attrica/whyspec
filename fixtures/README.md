@@ -100,6 +100,28 @@ Each fixture `kind` implies a mechanical check:
 human-readable view generated from it (rule -> fixtures), useful for spotting an untested
 rule or an orphaned fixture at a glance.
 
+### Expectation keys are not the field set
+
+The keys inside an `expect` object are a vocabulary about **parser behaviour**, and they are
+deliberately wider than the fields a parsed record serializes. Most of them name no field at
+all: `parses` is asserted by nearly every record fixture and is not a field; neither are
+`governs_declared`, `evidence_declared`, `attribution_recorded`, the `engine_*` keys of the
+differential fixtures, or the counts and projections several rules are tested through. An
+implementation reading this corpus computes them; it does not store them.
+
+So a key with no matching field in `schema/parsed-record.schema.json` is **not** by itself a
+defect. The test a key has to pass is different: **the concept it asserts must be defined by a
+rule**, even where the key itself is not a field. `governs_declared` passes because [REC-084]
+defines scope-not-declared as a distinct state. A key asserting something no rule defines does
+not pass, because an implementer working from the published text alone would write a conforming
+parser and still fail here, with no rule to read that tells them why.
+
+One further test, and it is the one that is easy to miss: a key must not be **redundant with a
+field**. Where a value is a function of a field the specification already defines, the fixture
+asserts the field and the implementation derives the rest. This is [REC-111]'s reasoning about
+currency applied to the corpus — a stored value that could be derived goes stale in a way a
+derived one cannot — and two keys were removed under it after they had already shipped.
+
 ## A note on the two rules with no invalid fixture
 
 corpus **REC-004** (Alternatives section is optional) and corpus **REC-009** (ADR title-prefix
